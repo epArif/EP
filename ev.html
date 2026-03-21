@@ -207,7 +207,7 @@ img{max-width:100%;display:block}
 .mini-meta{font-size:11px;color:var(--text3)}
 
 /* ── BOTTOM NAV ── */
-#bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(6,6,8,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(200,168,75,.08);padding:6px 0 0;display:flex;z-index:200;touch-action:none;-webkit-user-select:none;user-select:none}
+#bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(6,6,8,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(200,168,75,.08);padding:8px 0 env(safe-area-inset-bottom,34px);display:flex;align-items:center;z-index:200;touch-action:none;-webkit-user-select:none;user-select:none}
 #bnav.hide{transform:translateY(110%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;touch-action:manipulation;padding:4px 0;position:relative}
 .bn-item:active .bn-icon{opacity:.6}
