@@ -10742,10 +10742,16 @@ body.light-mode .feat-card-meta  { color: rgba(180,140,0,0.75) !important; }
 
   <!-- ══ MANUAL TAB ══ -->
   <div id="trk-tab-manual">
-    <button onclick="_openTrackerForm()" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:linear-gradient(135deg,rgba(14,248,122,0.12),rgba(14,248,122,0.05));border:1px solid rgba(14,248,122,0.3);border-radius:var(--radius-md);font-size:14px;font-weight:700;color:#0ef87a;cursor:pointer;-webkit-tap-highlight-color:transparent;margin-bottom:14px;font-family:var(--font-bn);">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      নতুন Apply করা Job যোগ করো
-    </button>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <button onclick="_openTrackerForm()" style="display:flex;align-items:center;justify-content:center;gap:8px;flex:1;padding:13px;background:linear-gradient(135deg,rgba(14,248,122,0.12),rgba(14,248,122,0.05));border:1px solid rgba(14,248,122,0.3);border-radius:var(--radius-md);font-size:14px;font-weight:700;color:#0ef87a;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:var(--font-bn);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        নতুন Apply করা Job যোগ করো
+      </button>
+      <button onclick="_downloadTrackerPDF()" title="PDF Download" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:13px 14px;background:linear-gradient(135deg,rgba(116,185,255,0.12),rgba(116,185,255,0.05));border:1px solid rgba(116,185,255,0.3);border-radius:var(--radius-md);font-size:13px;font-weight:700;color:#74b9ff;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;font-family:var(--font-bn);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        PDF
+      </button>
+    </div>
     <div id="tracker-list"></div>
   </div>
 
@@ -13804,6 +13810,58 @@ window._onTrkPdfSelected = function(inp) {
   reader.readAsDataURL(file);
 };
 
+window._downloadTrackerPDF = function() {
+  var data = [];
+  try { data = JSON.parse(localStorage.getItem('ep_apply_tracker') || '[]'); } catch(e) {}
+  if (!data.length) { alert('কোনো tracker entry নেই।'); return; }
+
+  var statusLabels = { applied:'Applied', admit:'Admit', exam:'Exam', result:'Result', viva:'Viva', done:'শেষ' };
+  var statusColors = { applied:'#74b9ff', admit:'#a29bfe', exam:'#ffd166', result:'#fd79a8', viva:'#e17055', done:'#0ef87a' };
+
+  var rows = data.map(function(e, i) {
+    var st = e.status || 'applied';
+    var color = statusColors[st] || '#74b9ff';
+    var label = statusLabels[st] || st;
+    var dateStr = e.date ? e.date : '—';
+    var bgRow = i % 2 === 0 ? '#0d1b2a' : '#091525';
+    return '<tr style="background:' + bgRow + ';">' +
+      '<td style="padding:10px 12px;border-bottom:1px solid #1a2a3a;color:#e0eaff;font-size:13px;">' + (e.name || '—') + '</td>' +
+      '<td style="padding:10px 12px;border-bottom:1px solid #1a2a3a;color:#a0b8d0;font-size:12px;">' + (e.org || '—') + '</td>' +
+      '<td style="padding:10px 12px;border-bottom:1px solid #1a2a3a;text-align:center;">' +
+        '<span style="background:' + color + '22;color:' + color + ';border:1px solid ' + color + '55;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;">' + label + '</span>' +
+      '</td>' +
+      '<td style="padding:10px 12px;border-bottom:1px solid #1a2a3a;color:#a0b8d0;font-size:12px;text-align:center;">' + dateStr + '</td>' +
+      '<td style="padding:10px 12px;border-bottom:1px solid #1a2a3a;color:#6a8a9a;font-size:11px;">' + (e.notes || '—') + '</td>' +
+    '</tr>';
+  }).join('');
+
+  var now = new Date();
+  var dateLabel = now.toLocaleDateString('bn-BD', { year:'numeric', month:'long', day:'numeric' });
+
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Application Tracker</title>' +
+    '<style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#060e1a;font-family:Inter,Arial,sans-serif;padding:32px;}' +
+    'h1{color:#74b9ff;font-size:22px;margin-bottom:4px;}p.sub{color:#5a7a8a;font-size:12px;margin-bottom:24px;}' +
+    'table{width:100%;border-collapse:collapse;border-radius:10px;overflow:hidden;}' +
+    'thead tr{background:#0a1e30;}th{padding:11px 12px;color:#74b9ff;font-size:12px;text-align:left;border-bottom:2px solid #1a3a5a;font-weight:700;}' +
+    'th:nth-child(3),th:nth-child(4){text-align:center;}' +
+    '.footer{margin-top:20px;color:#3a5a6a;font-size:11px;text-align:right;}' +
+    '@media print{body{background:#fff;padding:20px;}h1{color:#1a4a7a;}p.sub{color:#555;}table{border:1px solid #ccc;}thead tr{background:#e8f0fe;}th{color:#1a4a7a;border-bottom:2px solid #aac;}tr{background:#fff !important;}.footer{color:#888;}}' +
+    '</style></head><body>' +
+    '<h1>📋 Application Tracker</h1>' +
+    '<p class="sub">Export date: ' + dateLabel + ' &nbsp;|&nbsp; মোট: ' + data.length + 'টি entry</p>' +
+    '<table><thead><tr><th>Job / Post</th><th>Organization</th><th style="text-align:center;">Status</th><th style="text-align:center;">Exam Date</th><th>Notes</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody></table>' +
+    '<p class="footer">Ex•Po JOB — Application Tracker</p>' +
+    '</body></html>';
+
+  var win = window.open('', '_blank');
+  if (!win) { alert('Popup blocked! Please allow popups and try again.'); return; }
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(function() { win.print(); }, 600);
+};
+
 window._saveTrackerEntry = function() {
   var name = (document.getElementById('trk-name').value || '').trim();
   if (!name) { alert('Job-এর নাম দিতে হবে।'); return; }
@@ -14532,8 +14590,10 @@ document.addEventListener('DOMContentLoaded', function() {
       var recentList    = document.getElementById('ep-recent-list');
       if (recentSection && recentList && trkData.length > 0) {
         var recent = trkData.slice().sort(function(a, b) {
-          return (b.createdAt || 0) - (a.createdAt || 0);
-        }).slice(0, 3);
+          var bTime = Math.max(b.updatedAt || 0, b.createdAt || 0);
+          var aTime = Math.max(a.updatedAt || 0, a.createdAt || 0);
+          return bTime - aTime;
+        }).slice(0, 1);
 
         var statusColors = {
           applied: '#74b9ff', admit: '#a29bfe', exam: 'var(--gold-1)',
