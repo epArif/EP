@@ -1480,6 +1480,12 @@ img{max-width:100%;display:block}
 .math-img-stack.grid-full{grid-template-columns:1fr!important;background:transparent;gap:1px}
 .math-img-stack.grid-full .math-img-item{border-right:none}
 .img-upload-btn.grid-full-on{background:rgba(200,169,110,.18)!important;border-color:var(--gold,#c8a96e)!important;color:var(--gold,#c8a96e)!important}
+@keyframes img-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes img-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+.img-upload-spinner{width:30px;height:30px;border:3px solid rgba(201,169,110,.2);border-top-color:var(--gold,#c8a96e);border-radius:50%;animation:img-spin .75s linear infinite;margin-bottom:7px}
+.img-pending-wrap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px;background:#0d0d0e;border-radius:9px}
+.img-pending-label{font-size:10px;color:var(--gold,#c8a96e);font-weight:700;animation:img-pulse 1.2s ease-in-out infinite;text-align:center;line-height:1.4}
+.img-pending-sublabel{font-size:9px;color:var(--text3,#5a4f40);text-align:center}
 /* IMAGE fills card */
 .math-img-item img{width:100%;height:auto;display:block;object-fit:contain;cursor:zoom-in;-webkit-touch-callout:none;user-select:none}
 /* card top bar — always visible */
@@ -4006,9 +4012,9 @@ const MathView = {
                 <span class="math-del-check">✓</span>
               </div>
               ${isPending
-                ? `<div style="width:100%;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(45,212,191,.06);border:1px dashed rgba(45,212,191,.25);border-radius:8px;padding:12px;box-sizing:border-box">
-                     <div style="font-size:22px">☁️</div>
-                     <div style="font-size:10px;color:var(--text3);text-align:center;line-height:1.4">মূল device-এ আছে<br>Push করলে sync হবে</div>
+                ? `<div style="width:100%;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(201,169,110,.04);border:1px dashed rgba(201,169,110,.25);border-radius:8px;padding:12px;box-sizing:border-box">
+                     <div class="img-upload-spinner" style="width:26px;height:26px;border-width:2.5px"></div>
+                     <div style="font-size:10px;color:var(--gold,#c8a96e);text-align:center;line-height:1.4;font-weight:700;animation:img-pulse 1.2s ease-in-out infinite">Upload হচ্ছে...</div>
                    </div>`
                 : `<img src="${imgSrc.startsWith('http')?imgSrc:'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'}"
                         data-idb="${imgSrc}" data-idx="${i}" class="math-thumb-img" alt="ছবি ${i+1}">`
@@ -4308,44 +4314,38 @@ const MathView = {
       r.onerror = ()=>{ toast('⚠️ ছবি পড়া যায়নি'); resolve(); };
       r.onload = async e=>{
         const dataUrl = e.target.result;
-        const compressed = await MathView._compress(dataUrl, 0.92);
+        const key = Store.data.settings.imgbbKey;
+        if(!key){ toast('⚠️ imgbb key নেই — Settings → imgbb API Key দিন'); resolve(); return; }
         const sub = Store.data.subjects['math'];
         MathView._migrate(sub);
         const topic = MathView._topic;
         if(!topic){ toast('⚠️ আগে topic select করুন'); resolve(); return; }
+        // Push placeholder → shows spinner immediately
         if(!sub.mathImages[topic]) sub.mathImages[topic]=[];
-        const idbKey = 'math-img:paste:'+Date.now();
-        try{ await ImageDB.put(idbKey, compressed); }catch(_){}
-        // ── Show instantly from IDB ──
-        sub.mathImages[topic].push(idbKey);
-        Store.save();
+        const _pIdx = sub.mathImages[topic].length;
+        sub.mathImages[topic].push('idb:pending');
         MathView._renderImages(sub);
-        toast('📋 ছবি paste হয়েছে ✅');
-        // ── Upload to imgbb in background (non-blocking) ──
-        const imgIdx = sub.mathImages[topic].length - 1;
-        const imgbbKey = Store.data.settings.imgbbKey;
-        if(imgbbKey){
-          (async()=>{
-            try{
-              const fd = new FormData();
-              fd.append('image', compressed.split(',')[1]);
-              fd.append('key', imgbbKey);
-              const res = await fetch('https://api.imgbb.com/1/upload', {method:'POST',body:fd,credentials:'omit'});
-              const json = await res.json();
-              if(json && json.success){
-                const url = json.data.url;
-                try{ await ImageDB.put(ImgBB._lcoKey(url), compressed); }catch(_){}
-                const live = Store.data.subjects['math'];
-                if(live && live.mathImages && live.mathImages[topic] && live.mathImages[topic][imgIdx] === idbKey){
-                  live.mathImages[topic][imgIdx] = url;
-                  Store._saveQuiet ? Store._saveQuiet() : Store.save();
-                  const thumbs = document.querySelectorAll('.math-thumb-img');
-                  thumbs.forEach(el=>{ if(el.dataset.idb===idbKey){ el.dataset.idb=url; } });
-                  toast('☁️ imgbb-তে sync হয়েছে ✅');
-                }
-              }
-            }catch(_){}
-          })();
+        toast('⏳ ছবি upload হচ্ছে imgbb-তে...');
+        try{
+          // >1MB dataUrl (~1.33MB string) → compress harder (same logic as addImages path)
+          const _tm = dataUrl.length > 1.33 * 1024 * 1024 ? 0.45 : 1.5;
+          const compressed = await ImgBB.compress(dataUrl, _tm);
+          const url = await ImgBB.upload(compressed);
+          if(url){
+            ImageDB.put(ImgBB._lcoKey(url), dataUrl).catch(()=>{});
+            sub.mathImages[topic][_pIdx] = url; // replace placeholder
+            Store.save();
+            MathView._renderImages(sub);
+            toast('☁️ ছবি imgbb-তে upload হয়েছে ✅');
+          } else {
+            sub.mathImages[topic].splice(_pIdx, 1);
+            MathView._renderImages(sub);
+            toast('⚠️ imgbb upload failed — ছবি add হয়নি');
+          }
+        }catch(_){
+          sub.mathImages[topic].splice(_pIdx, 1);
+          MathView._renderImages(sub);
+          toast('⚠️ Upload error — ছবি add হয়নি');
         }
         resolve();
       };
@@ -4478,59 +4478,53 @@ const MathView = {
 
   async handleFiles(files){
     if(!files || !files.length) return;
-    const fileArray = Array.from(files); // copy FIRST — clearing input invalidates live FileList
-    // Reset input so same file can be picked again
+    const fileArray = Array.from(files);
     const inp = document.getElementById('math-img-input');
     if(inp) inp.value = '';
+    const key = Store.data.settings.imgbbKey;
+    if(!key){ toast('⚠️ imgbb key নেই — Settings → imgbb API Key দিন'); return; }
     const sub = Store.data.subjects['math'];
     this._migrate(sub);
     const topic = this._topic;
     if(!topic){ toast('⚠️ আগে একটা topic select করুন'); return; }
     if(!sub.mathImages[topic]) sub.mathImages[topic] = [];
     const total = fileArray.length;
-
-    for(const file of fileArray){
+    const _sizeTxt = total === 1 && fileArray[0].size ? ` (${(fileArray[0].size/1024/1024).toFixed(1)}MB)` : '';
+    toast(`⏳ ${total}টি ছবি upload হচ্ছে imgbb-তে...` + _sizeTxt);
+    // ── Push idb:pending placeholders FIRST → shows spinner immediately ──
+    const placeholderIndices = fileArray.map(()=>{
+      const idx = sub.mathImages[topic].length;
+      sub.mathImages[topic].push('idb:pending');
+      return idx;
+    });
+    MathView._renderImages(sub); // show spinner(s) right away
+    let done = 0;
+    // ── PARALLEL: compress+upload all images simultaneously ──
+    await Promise.all(fileArray.map(async (file, fi)=>{
+      const pIdx = placeholderIndices[fi];
       try{
-        const dataUrl = await this._readFile(file);
-        const compressed = await this._compress(dataUrl, 0.92);
-        const idbKey = 'math-img:' + Date.now() + '-' + Math.random().toString(36).slice(2);
-        await ImageDB.put(idbKey, compressed);
-        // ── Show instantly from IDB ──
-        sub.mathImages[topic].push(idbKey);
-        Store.save();
-        this._renderImages(sub);
-        toast(total > 1 ? `💾 ছবি save হয়েছে (${sub.mathImages[topic].length}/${total})` : '💾 ছবি save হয়েছে');
-        // ── Upload to imgbb in background (non-blocking) ──
-        const imgIdx = sub.mathImages[topic].length - 1;
-        const imgbbKey = Store.data.settings.imgbbKey;
-        if(imgbbKey){
-          (async()=>{
-            try{
-              const formData = new FormData();
-              formData.append('image', compressed.split(',')[1]);
-              formData.append('key', imgbbKey);
-              const res = await fetch('https://api.imgbb.com/1/upload', {method:'POST',body:formData});
-              const json = await res.json();
-              if(json.success){
-                const url = json.data.url;
-                // store local copy so it never goes blank
-                try{ await ImageDB.put(ImgBB._lcoKey(url), compressed); }catch(_){}
-                // silently update the key in store
-                const live = Store.data.subjects['math'];
-                if(live && live.mathImages && live.mathImages[topic] && live.mathImages[topic][imgIdx] === idbKey){
-                  live.mathImages[topic][imgIdx] = url;
-                  Store._saveQuiet ? Store._saveQuiet() : Store.save();
-                  // update only this img element's src — no full re-render (avoids blank flash)
-                  const thumbs = document.querySelectorAll('.math-thumb-img');
-                  thumbs.forEach(el=>{ if(el.dataset.idb===idbKey){ el.dataset.idb=url; } });
-                  toast('☁️ imgbb-তে sync হয়েছে ✅');
-                }
-              }
-            }catch(_){}
-          })();
+        const dataUrl = await MathView._readFile(file);
+        const _mt = file.size > 1024*1024 ? 0.45 : 1.5;
+        const compressed = await ImgBB.compress(dataUrl, _mt);
+        const url = await ImgBB.upload(compressed);
+        if(url){
+          ImageDB.put(ImgBB._lcoKey(url), dataUrl).catch(()=>{});
+          sub.mathImages[topic][pIdx] = url; // replace placeholder with real URL
+          done++;
+          Store.save();
+          MathView._renderImages(sub);
+          toast(total > 1 ? `☁️ ${done}/${total} ছবি upload হয়েছে` : '☁️ ছবি imgbb-তে upload হয়েছে ✅');
+        } else {
+          sub.mathImages[topic].splice(pIdx, 1); // remove failed placeholder
+          MathView._renderImages(sub);
+          toast('⚠️ imgbb upload failed — ছবি add হয়নি');
         }
-      }catch(e){ toast('❌ ছবি save হয়নি: '+e.message); }
-    }
+      }catch(e){
+        sub.mathImages[topic].splice(pIdx, 1);
+        MathView._renderImages(sub);
+        toast('❌ Upload error: '+e.message);
+      }
+    }));
   },
 
   _readFile(file){
@@ -5727,31 +5721,39 @@ const AddView = {
     r.onerror = ()=> toast('⚠️ ছবি পড়া যায়নি');
     r.onload  = async e => {
       const originalDataUrl = e.target.result;
-      // ── Show instantly from local data ──
-      AddView._addPreview(originalDataUrl, false);
-      toast('💾 ছবি যোগ হয়েছে ✅');
-      // ── Upload to imgbb in background (non-blocking) ──
       const key = Store.data.settings.imgbbKey;
-      if(key){
-        const imgIdx = AddView._images.length - 1;
-        (async()=>{
-          try{
-            const compressed = await ImgBB.compress(originalDataUrl);
-            const url = await ImgBB.upload(compressed);
-            if(url){
-              // store local original under lcoKey so display never goes blank
-              ImageDB.put(ImgBB._lcoKey(url), originalDataUrl).catch(()=>{});
-              // replace the dataUrl in _images with the http URL (for cross-device sync)
-              if(AddView._images[imgIdx] === originalDataUrl){
-                AddView._images[imgIdx] = url;
-                // update the img element directly — no full re-render
-                const grid = document.querySelectorAll('#img-preview .img-prev-item img');
-                if(grid[imgIdx]) grid[imgIdx].src = originalDataUrl; // keep showing local quality
-              }
-              toast('☁️ imgbb-তে sync হয়েছে ✅');
-            }
-          }catch(_){}
-        })();
+      if(!key){
+        toast('⚠️ imgbb key নেই — Settings → imgbb API Key দিন');
+        return;
+      }
+      // ── Show loading placeholder, block save until upload finishes ──
+      const placeholderIdx = AddView._images.length;
+      AddView._images.push('idb:pending');
+      AddView._renderImgGrid();
+      const _fsize = fileOrBlob && fileOrBlob.size ? fileOrBlob.size : 0;
+      const _sizeTxt = _fsize > 0 ? ` (${(_fsize/1024/1024).toFixed(1)}MB)` : '';
+      toast('⏳ ছবি upload হচ্ছে imgbb-তে...' + _sizeTxt);
+      // Smart target: >1MB file → compress harder → much faster upload
+      const _targetMB = _fsize > 1*1024*1024 ? 0.45 : 1.5;
+      try{
+        const compressed = await ImgBB.compress(originalDataUrl, _targetMB);
+        const url = await ImgBB.upload(compressed);
+        if(url){
+          // Cache original locally so display stays sharp on this device
+          ImageDB.put(ImgBB._lcoKey(url), originalDataUrl).catch(()=>{});
+          // Replace placeholder with real imgbb URL
+          AddView._images[placeholderIdx] = url;
+          AddView._renderImgGrid();
+          toast('☁️ ছবি imgbb-তে upload হয়েছে ✅');
+        } else {
+          AddView._images.splice(placeholderIdx, 1);
+          AddView._renderImgGrid();
+          toast('⚠️ imgbb upload failed — ছবি add হয়নি');
+        }
+      }catch(_){
+        AddView._images.splice(placeholderIdx, 1);
+        AddView._renderImgGrid();
+        toast('⚠️ Upload error — ছবি add হয়নি');
       }
     };
     r.readAsDataURL(fileOrBlob);
@@ -5768,14 +5770,14 @@ const AddView = {
       ${imgs.length > 1 ? `<button class="img-del-all-btn" onclick="AddView.removeAllImgs()">🗑 সব মুছুন</button>` : ''}
     </div>`;
     const grid = `<div class="img-grid">${imgs.map((src, i) => {
-      // Display src: for IDB keys show placeholder, for http/data show directly
-      const dispSrc = src.startsWith('http') || src.startsWith('data:') ? src : '';
+      const isPending = src === 'idb:pending';
+      const dispSrc = src.startsWith('http') ? src : '';
       return `<div class="img-prev-item">
-        ${dispSrc ? `<img src="${dispSrc}" loading="lazy">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:12px">📦 saved</div>`}
-        <button class="img-del" onclick="AddView.removeImg(${i})">
+        ${dispSrc ? `<img src="${dispSrc}" loading="lazy">` : isPending ? `<div class="img-pending-wrap"><div class="img-upload-spinner"></div><div class="img-pending-label">Upload হচ্ছে...</div><div class="img-pending-sublabel">imgbb-তে যাচ্ছে</div></div>` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:12px">📦 saved</div>`}
+        ${isPending ? '' : `<button class="img-del" onclick="AddView.removeImg(${i})">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           মুছুন
-        </button>
+        </button>`}
       </div>`;
     }).join('')}</div>`;
     prev.innerHTML = bar + grid;
@@ -5877,6 +5879,8 @@ const AddView = {
     const contentEl=document.getElementById('f-content');
     const content=(contentEl.innerText||'').trim();
     if(!content&&!this._images.length){ toast('⚠️ Content বা Image দিন'); return; }
+    // ── Block save if any image is still uploading — prevents silent image drop ──
+    if(this._images.some(i=>i==='idb:pending')){ toast('⏳ ছবি upload হচ্ছে — একটু অপেক্ষা করুন তারপর Save করুন'); return; }
     const d=Store.data;
     const sub=d.subjects[subId];
     if(!sub){ toast('⚠️ Subject select করুন'); return; }
@@ -5886,31 +5890,8 @@ const AddView = {
     const finalImageKeys=[];
     for(let i=0;i<this._images.length;i++){
       const stored=this._images[i];
-      if(!stored) continue;
-      if(stored.startsWith('http')){
-        // imgbb URL — store as-is
-        finalImageKeys.push(stored);
-      } else if(stored.startsWith('data:')){
-        // base64 dataUrl — retry imgbb upload on save (in case it failed on add)
-        const imgbbKey=Store.data.settings.imgbbKey;
-        let savedAsUrl=false;
-        if(imgbbKey){
-          try{
-            const url=await ImgBB.upload(stored);
-            if(url){ finalImageKeys.push(url); savedAsUrl=true; }
-          }catch(_){}
-        }
-        if(!savedAsUrl){
-          // Fall back to IDB (local only)
-          // KEY MUST start with 'idb:' so Store.save() strip logic preserves it
-          const newKey='idb:img_'+dayId+'_'+i;
-          await ImageDB.put(newKey, stored).catch(()=>{});
-          finalImageKeys.push(newKey);
-        }
-      } else {
-        // already an IDB key
-        finalImageKeys.push(stored);
-      }
+      if(!stored || stored==='idb:pending') continue; // skip still-uploading placeholders
+      finalImageKeys.push(stored); // all images are now imgbb http URLs
     }
     if(this.editingDayId){
       const dayIdx=sub.days.findIndex(x=>x.id===dayId);
@@ -7051,10 +7032,12 @@ const ImgBB = {
         try{
           const res  = await fetch('https://api.imgbb.com/1/upload', {method:'POST', body:fd, credentials:'omit', signal:ctrl.signal});
           if(res.status === 400) throw new Error('imgbb 400 — API key ভুল।');
+          if(res.status === 413) throw new Error('imgbb 413 — ছবি অনেক বড়।');
           if(res.status === 429){ // rate limited — wait before retry
             if(attempt < 3) await new Promise(r=>setTimeout(r, 2000*attempt));
             continue;
           }
+          if(!res.ok) throw new Error('imgbb ' + res.status);
           const json = await res.json();
           if(json && json.success) url = json.data.url;
         } finally { clearTimeout(tid); }
@@ -7071,16 +7054,33 @@ const ImgBB = {
   },
 
   // Compress a dataUrl to be imgbb-friendly.
-  // TARGET: 5MB base64 string — imgbb supports up to 32MB; 5MB is safe and keeps quality high.
+  // TARGET: based on targetMB — imgbb supports up to 32MB; we target well below that.
   // STRATEGY: quality loop → canvas shrink loop (guaranteed to fit).
-  async compress(dataUrl){
+  // FIX: reuse ONE canvas (prevents iOS GPU memory overflow from 14 canvas allocations).
+  // FIX: use Blob URL for large dataUrls (iOS img.src limit ~2MB causes onerror on large files).
+  async compress(dataUrl, targetMB){
     if(!dataUrl || !dataUrl.startsWith('data:')) return dataUrl;
-    const TARGET = 5 * 1024 * 1024; // 5 MB base64 string length
-    const MAX_DIM = 2400; // up from 1920 — sharper images
+    const TARGET = (targetMB || 1.5) * 1024 * 1024;
+    const MAX_DIM = 1600;
+
+    // For dataUrls larger than 2MB, convert to Blob URL — avoids iOS Safari img.src size limit
+    let blobUrl = null;
+    if(dataUrl.length > 2 * 1024 * 1024){
+      try{
+        const parts = dataUrl.split(',');
+        const mime  = parts[0].split(':')[1].split(';')[0];
+        const bin   = atob(parts[1]);
+        const bytes = new Uint8Array(bin.length);
+        for(let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        blobUrl = URL.createObjectURL(new Blob([bytes], {type: mime}));
+      } catch(_){ /* fallback to dataUrl below */ }
+    }
+
     return new Promise(res=>{
+      const cleanup = ()=>{ if(blobUrl){ try{ URL.revokeObjectURL(blobUrl); }catch(_){} } };
       const img = new Image();
-      img.onerror = ()=>res(dataUrl);
-      img.onload = ()=>{
+      img.onerror = ()=>{ cleanup(); res(dataUrl); };
+      img.onload  = ()=>{
         let w = img.naturalWidth  || img.width;
         let h = img.naturalHeight || img.height;
         // Step 1: cap max dimension
@@ -7088,37 +7088,40 @@ const ImgBB = {
           if(w >= h){ h = Math.round(h * MAX_DIM / w); w = MAX_DIM; }
           else       { w = Math.round(w * MAX_DIM / h); h = MAX_DIM; }
         }
-        // Helper: draw to canvas and return jpeg dataUrl
-        const toJpeg = (srcEl, tw, th, quality)=>{
-          const c = document.createElement('canvas');
-          c.width = tw; c.height = th;
-          c.getContext('2d').drawImage(srcEl, 0, 0, tw, th);
-          return c.toDataURL('image/jpeg', quality);
+        // ONE canvas reused across all iterations — critical for iOS GPU memory budget
+        const cv  = document.createElement('canvas');
+        const ctx = cv.getContext('2d');
+        if(!ctx){ cleanup(); res(dataUrl); return; }
+        const toJpeg = (tw, th, quality)=>{
+          cv.width = tw; cv.height = th;
+          ctx.drawImage(img, 0, 0, tw, th);
+          return cv.toDataURL('image/jpeg', quality);
         };
-        // Step 2: quality loop at current dimensions — start high, floor at 0.82 (sharp)
-        let out = toJpeg(img, w, h, 0.92);
-        let q = 0.92;
-        while(out.length > TARGET && q > 0.82){
-          q = Math.max(0.82, q - 0.04);
-          out = toJpeg(img, w, h, q);
+        // Step 2: quality loop at current dimensions — start high, floor at 0.76
+        let out = toJpeg(w, h, 0.90);
+        let q = 0.90;
+        while(out.length > TARGET && q > 0.76){
+          q = Math.max(0.76, q - 0.04);
+          out = toJpeg(w, h, q);
         }
         // Step 3: canvas shrink loop — gentle 18% reduction per pass (quality-preserving)
         let sw = w, sh = h, pass = 0;
         while(out.length > TARGET && pass < 8){
           sw = Math.max(1, Math.round(sw * 0.82));
           sh = Math.max(1, Math.round(sh * 0.82));
-          out = toJpeg(img, sw, sh, 0.88);
+          out = toJpeg(sw, sh, 0.88);
           pass++;
         }
         // Step 4: absolute last resort — always fits
         if(out.length > TARGET){
           const lw = Math.min(sw, 800);
           const lh = Math.round(sh * (lw / sw));
-          out = toJpeg(img, lw, lh, 0.75);
+          out = toJpeg(lw, lh, 0.75);
         }
+        cleanup();
         res(out);
       };
-      img.src = dataUrl;
+      img.src = blobUrl || dataUrl;
     });
   }
 };
@@ -7507,6 +7510,10 @@ const Sync = {
       setSyncDot('ok');
       if(manual) toast('☁️ Synced!');
     }catch(e){ setSyncDot('err'); if(manual) toast('⚠️ '+e.message); }
+    // ── After push: let _pullDone handle any pull that was queued during push.
+    // The queued pull will be clock-skew-proof via _lastPulledRemoteTs Guard 2
+    // and SSE echo protected via _postPushUntil. No data overwrite risk.
+    try{ this._pullDone(); }catch(_){}
   },
 
   // ── Pull (load from cloud) ────────────────────
@@ -7562,6 +7569,7 @@ const Sync = {
 
   _pulling: false,    // guard: prevent concurrent overlapping pull calls
   _pendingPull: false, // queue a pull that arrived while one was in-flight
+  _postPushUntil: 0,  // timestamp until which SSE-triggered pulls are blocked (post-push echo guard)
   // ── Clock-skew-proof pull guard ──────────────────────────────────────────
   // Track the last _updatedAt we actually FETCHED from Firebase (not what we wrote locally).
   // If Firebase's current _updatedAt > _lastPulledRemoteTs, data changed → pull.
@@ -7570,7 +7578,7 @@ const Sync = {
   _lastPulledRemoteTs: 0,
 
   async pull(manual=false, _fromSSE=false){
-    if(this._pushing){ return; } // never pull while a push is in flight
+    if(this._pushing){ this._pendingPull=true; return; } // never pull while a push is in flight — queue for retry
     if(this._pulling && !manual){ return; }
     this._pulling = true;
     const s=Store.data.settings;
@@ -7594,6 +7602,24 @@ const Sync = {
         // CRITICAL FIX: re-fetch after push so we apply fresh Firebase data, not stale pre-push snapshot.
         // Old bug: iOS pushed its data then applied old PC remote → local/cloud mismatch forever.
         if(Store._dirty){
+          // ── Image rescue BEFORE push: absorb imgbb URLs from remote snapshot into local days
+          // so a dirty push from this device doesn't wipe images uploaded on another device.
+          // Example bug: PC adds image → Firebase updated → iOS has dirty edit →
+          // iOS's Guard 1 pushes OLD local data (without PC image) → PC image LOST from Firebase.
+          // Fix: merge remote http:// images into local days BEFORE pushing.
+          try{
+            Object.keys(remote.subjects||{}).forEach(rSubId=>{
+              (remote.subjects[rSubId]?.days||[]).forEach(rDay=>{
+                const lDay=(Store.data.subjects?.[rSubId]?.days||[]).find(d=>d.id===rDay.id);
+                if(!lDay) return;
+                const remoteHttp=(rDay.images||[]).filter(i=>i.startsWith('http'));
+                if(!remoteHttp.length) return;
+                const localSet=new Set(lDay.images||[]);
+                remoteHttp.forEach(i=>localSet.add(i));
+                lDay.images=Array.from(localSet);
+              });
+            });
+          }catch(_){}
           try{ await this._push(); }catch(_){}
           try{ const fresh=await this._fetch(); if(fresh) remote=fresh; }catch(_){}
         }
@@ -7606,6 +7632,13 @@ const Sync = {
         // `===` fixes this: only identical timestamps are skipped, lower PC ts passes through.
         const remoteTs = remote._updatedAt || 0;
         if(!manual && !_fromSSE && remoteTs > 0 && this._lastPulledRemoteTs > 0 && remoteTs === this._lastPulledRemoteTs){
+          setSyncDot('ok');
+          return;
+        }
+        // Guard 2b: block SSE echo for 3s after our own push.
+        // Firebase echoes back our own PUT as an SSE event — without this guard,
+        // the echo triggers a pull that can overwrite freshly-pushed data (auto-delete bug).
+        if(_fromSSE && Date.now() < this._postPushUntil){
           setSyncDot('ok');
           return;
         }
@@ -7659,7 +7692,7 @@ const Sync = {
         Store._d.settings.syncKey1      = saved.key1;
         Store._d.settings.syncKey2      = saved.key2;
         Store._d.settings.syncBinId     = saved.binId;
-        Store._d.settings.imgbbKey      = saved.imgbbKey  || Store._d.settings.imgbbKey  || '8d16f4a1124133986c2254c83eb9868d';
+        Store._d.settings.imgbbKey      = saved.imgbbKey  || Store._d.settings.imgbbKey  || '';
         Store._d.settings.claudeKey     = saved.claudeKey || Store._d.settings.claudeKey || '';
         Store._d.settings.proxyUrl      = saved.proxyUrl  || Store._d.settings.proxyUrl  || '';
         Store._d.settings.sync2Provider = saved.sync2Provider || Store._d.settings.sync2Provider || '';
@@ -7814,6 +7847,10 @@ const Sync = {
     Store.data._updatedAt = cloudData._updatedAt;
     // Also stamp _lastPulledRemoteTs — we know exactly what's in Firebase right now
     this._lastPulledRemoteTs = cloudData._updatedAt;
+    // ── Post-push echo guard: block SSE-triggered pulls for 3s ──
+    // Firebase echoes our own PUT back as an SSE event; without this, that echo
+    // triggers an immediate pull that can overwrite newly deleted/edited data.
+    this._postPushUntil = Date.now() + 3000;
     try{ const raw=localStorage.getItem('expo_vault_v2'); if(raw){ const d=JSON.parse(raw); d._updatedAt=cloudData._updatedAt; localStorage.setItem('expo_vault_v2',JSON.stringify(d)); } }catch(_){}
     // Clear dirty — this device's edits are now safely in cloud
     Store._dirty = false;
