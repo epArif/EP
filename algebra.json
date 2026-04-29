@@ -1,0 +1,632 @@
+[
+{
+"cat": "গণিত",
+"q": "If $x + \frac{1}{x} = \sqrt{3}$, then the value of $x^6 + \frac{1}{x^6} + 2$ is:",
+"o": ["0", "1", "2", "4"],
+"a": 0,
+"e": "Given $x + \frac{1}{x} = \sqrt{3}$. Squaring both sides: $x^2 + \frac{1}{x^2} + 2 = 3 \Rightarrow x^2 + \frac{1}{x^2} = 1$. Cubing this: $(x^2)^3 + (\frac{1}{x^2})^3 + 3(x^2)(\frac{1}{x^2})(x^2 + \frac{1}{x^2}) = 1^3 \Rightarrow x^6 + \frac{1}{x^6} + 3(1) = 1 \Rightarrow x^6 + \frac{1}{x^6} = -2$. Therefore, $x^6 + \frac{1}{x^6} + 2 = -2 + 2 = 0$."
+},
+{
+"cat": "গণিত",
+"q": "If $a + b + c = 0$, what is the value of $\frac{a^2}{bc} + \frac{b^2}{ca} + \frac{c^2}{ab}$?",
+"o": ["0", "1", "2", "3"],
+"a": 3,
+"e": "If $a+b+c=0$, then $a^3+b^3+c^3 = 3abc$. The given expression is $\frac{a^3+b^3+c^3}{abc}$. Substituting the identity: $\frac{3abc}{abc} = 3$."
+},
+{
+"cat": "গণিত",
+"q": "For what value of $k$, the expression $x^6 - 18x^3 + k$ will be a perfect square?",
+"o": ["9", "36", "81", "18"],
+"a": 2,
+"e": "To be a perfect square, it should follow $(a-b)^2 = a^2 - 2ab + b^2$. Here $a^2 = (x^3)^2$ and $2ab = 18x^3$. So, $2(x^3)b = 18x^3 \Rightarrow b = 9$. Thus $k = b^2 = 9^2 = 81$."
+},
+{
+"cat": "গণিত",
+"q": "If $x = 2 + \sqrt{3}$, then the value of $x^2 + \frac{1}{x^2}$ is:",
+"o": ["10", "12", "14", "16"],
+"a": 2,
+"e": "If $x = 2 + \sqrt{3}$, then $\frac{1}{x} = \frac{1}{2+\sqrt{3}} = 2 - \sqrt{3}$. So, $x + \frac{1}{x} = 4$. Then $x^2 + \frac{1}{x^2} = (x + \frac{1}{x})^2 - 2 = 4^2 - 2 = 14$."
+},
+{
+"cat": "গণিত",
+"q": "The roots of the equation $x^2 - 5x + 6 = 0$ are:",
+"o": ["2, 3", "-2, -3", "2, -3", "5, 6"],
+"a": 0,
+"e": "Factoring the quadratic: $x^2 - 3x - 2x + 6 = 0 \Rightarrow x(x-3) - 2(x-3) = 0 \Rightarrow (x-2)(x-3) = 0$. So roots are 2 and 3."
+},
+{
+"cat": "গণিত",
+"q": "If $a/b + b/a = 1$, then $a^3 + b^3 = ?$",
+"o": ["1", "0", "-1", "2"],
+"a": 1,
+"e": "$a/b + b/a = 1 \Rightarrow (a^2 + b^2)/ab = 1 \Rightarrow a^2 - ab + b^2 = 0$. We know $a^3 + b^3 = (a+b)(a^2 - ab + b^2)$. Since the second factor is 0, the result is 0."
+},
+{
+"cat": "গণিত",
+"q": "If $x^2 - 3x + 1 = 0$, then the value of $x^3 + \frac{1}{x^3}$ is:",
+"o": ["18", "27", "24", "15"],
+"a": 0,
+"e": "$x^2 - 3x + 1 = 0 \Rightarrow x + 1/x = 3$. Then $x^3 + 1/x^3 = (x+1/x)^3 - 3(x+1/x) = 3^3 - 3(3) = 27 - 9 = 18$."
+},
+{
+"cat": "গণিত",
+"q": "Solve for $x$: $2^{x+3} + 2^{x+1} = 20$",
+"o": ["0", "1", "2", "3"],
+"a": 1,
+"e": "$2^x \cdot 2^3 + 2^x \cdot 2^1 = 20 \Rightarrow 2^x(8+2) = 20 \Rightarrow 2^x \cdot 10 = 20 \Rightarrow 2^x = 2^1 \Rightarrow x = 1$."
+},
+{
+"cat": "গণিত",
+"q": "If $(x-y) = 2$ and $xy = 24$, find $x^2 + y^2$.",
+"o": ["50", "52", "48", "44"],
+"a": 1,
+"e": "$x^2 + y^2 = (x-y)^2 + 2xy = 2^2 + 2(24) = 4 + 48 = 52$."
+},
+{
+"cat": "গণিত",
+"q": "The sum of a number and its reciprocal is 2. The number is:",
+"o": ["0", "1", "-1", "2"],
+"a": 1,
+"e": "$x + 1/x = 2$ only when $x = 1$. This is a standard symmetry property in algebra."
+},
+{
+"cat": "গণিত",
+"q": "If $3^x = 81$, then $3^{x-3} = ?$",
+"o": ["3", "9", "27", "1"],
+"a": 0,
+"e": "$3^x = 3^4 \Rightarrow x = 4$. Then $3^{4-3} = 3^1 = 3$."
+},
+{
+"cat": "গণিত",
+"q": "If $x+y=12$ and $x-y=2$, then $xy=?$",
+"o": ["35", "37", "33", "34"],
+"a": 0,
+"e": "$x = (12+2)/2 = 7$, $y = (12-2)/2 = 5$. $xy = 7 \times 5 = 35$."
+},
+{
+"cat": "গণিত",
+"q": "What is the value of $(x+y)^2 - (x-y)^2$?",
+"o": ["2(x^2+y^2)", "4xy", "2xy", "0"],
+"a": 1,
+"e": "This is the direct formula for $4ab$. $(x+y)^2 - (x-y)^2 = 4xy$."
+},
+{
+"cat": "গণিত",
+"q": "If $x^2+y^2=25$ and $xy=12$, find $x+y$.",
+"o": ["7", "1", "5", "12"],
+"a": 0,
+"e": "$(x+y)^2 = x^2 + y^2 + 2xy = 25 + 2(12) = 49$. So $x+y = \sqrt{49} = 7$."
+},
+{
+"cat": "গণিত",
+"q": "If $x = \sqrt{3} + \sqrt{2}$, then $x^3 + 1/x^3 = ?$",
+"o": ["18\sqrt{3}", "10\sqrt{3}", "12\sqrt{3}", "15\sqrt{3}"],
+"a": 0,
+"e": "$x = \sqrt{3} + \sqrt{2} \Rightarrow 1/x = \sqrt{3} - \sqrt{2}$. $x+1/x = 2\sqrt{3}$. $x^3+1/x^3 = (2\sqrt{3})^3 - 3(2\sqrt{3}) = 24\sqrt{3} - 6\sqrt{3} = 18\sqrt{3}$."
+},
+{
+"cat": "গণিত",
+"q": "The product of $(x+2)$ and $(x-2)$ is:",
+"o": ["x^2+4", "x^2-4", "x^2-2", "x^2+2"],
+"a": 1,
+"e": "Using $(a+b)(a-b) = a^2 - b^2$, we get $x^2 - 2^2 = x^2 - 4$."
+},
+{
+"cat": "গণিত",
+"q": "If $a+b=5$ and $ab=6$, then $a^3+b^3=?$",
+"o": ["35", "45", "55", "25"],
+"a": 0,
+"e": "$a^3+b^3 = (a+b)^3 - 3ab(a+b) = 5^3 - 3(6)(5) = 125 - 90 = 35$."
+},
+{
+"cat": "গণিত",
+"q": "If $x^4 + 1/x^4 = 119$, find $x - 1/x$.",
+"o": ["3", "4", "5", "2"],
+"a": 0,
+"e": "$(x^2 + 1/x^2)^2 - 2 = 119 \Rightarrow x^2 + 1/x^2 = 11$. Then $(x - 1/x)^2 + 2 = 11 \Rightarrow (x - 1/x)^2 = 9 \Rightarrow x - 1/x = 3$."
+},
+{
+"cat": "গণিত",
+"q": "The value of $(a+b+c)^2$ is:",
+"o": ["a^2+b^2+c^2+ab+bc+ca", "a^2+b^2+c^2+2ab+2bc+2ca", "a^2+b^2+c^2-2ab-2bc-2ca", "None"],
+"a": 1,
+"e": "Standard algebraic identity for the square of a trinomial."
+},
+{
+"cat": "গণিত",
+"q": "If $x+y=5$ and $x-y=3$, then $x^2-y^2=?$",
+"o": ["15", "8", "2", "16"],
+"a": 0,
+"e": "$x^2-y^2 = (x+y)(x-y) = 5 \times 3 = 15$."
+},
+{
+"cat": "গণিত",
+"q": "Find $x$ if $\sqrt{x+4} + \sqrt{x-4} = 4$.",
+"o": ["5", "4", "0", "16"],
+"a": 0,
+"e": "Testing options: If $x=5$, $\sqrt{9} + \sqrt{1} = 3 + 1 = 4$. Correct."
+},
+{
+"cat": "গণিত",
+"q": "If $x^2-11x+1=0$, then $x^2+1/x^2=?$",
+"o": ["119", "121", "123", "117"],
+"a": 0,
+"e": "$x+1/x = 11$. $x^2+1/x^2 = 11^2 - 2 = 121 - 2 = 119$."
+},
+{
+"cat": "গণিত",
+"q": "The degree of the polynomial $4x^3 + 5x^2 - 7$ is:",
+"o": ["2", "3", "1", "0"],
+"a": 1,
+"e": "The degree of a polynomial is the highest power of the variable, which is 3 here."
+},
+{
+"cat": "গণিত",
+"q": "If $a:b = 2:3$ and $b:c = 4:5$, then $a:b:c = ?$",
+"o": ["8:12:15", "2:4:5", "8:10:15", "2:12:15"],
+"a": 0,
+"e": "Make $b$ common: $a:b = 8:12$ and $b:c = 12:15$. So $a:b:c = 8:12:15$."
+},
+{
+"cat": "গণিত",
+"q": "If $x+y=7$ and $xy=10$, find $1/x + 1/y$.",
+"o": ["7/10", "10/7", "17/10", "3/10"],
+"a": 0,
+"e": "$1/x + 1/y = (x+y)/xy = 7/10$."
+},
+{
+"cat": "গণিত",
+"q": "If $x^{1/3} = 2$, then $x = ?$",
+"o": ["2", "4", "8", "6"],
+"a": 2,
+"e": "Cubing both sides, $x = 2^3 = 8$."
+},
+{
+"cat": "গণিত",
+"q": "The solution of $x/2 + x/3 = 10$ is:",
+"o": ["12", "10", "15", "20"],
+"a": 0,
+"e": "$(3x+2x)/6 = 10 \Rightarrow 5x = 60 \Rightarrow x = 12$."
+},
+{
+"cat": "গণিত",
+"q": "If $a+b=3$ and $a-b=1$, then $a^2+b^2=?$",
+"o": ["5", "10", "8", "4"],
+"a": 0,
+"e": "$2(a^2+b^2) = (a+b)^2 + (a-b)^2 = 3^2 + 1^2 = 10 \Rightarrow a^2+b^2 = 5$."
+},
+{
+"cat": "গণিত",
+"q": "If $x-1/x = 4$, then $x^2+1/x^2 = ?$",
+"o": ["18", "14", "16", "20"],
+"a": 0,
+"e": "$(x-1/x)^2 + 2 = 4^2 + 2 = 18$."
+},
+{
+"cat": "গণিত",
+"q": "If $2^a = 32$, what is $a$?",
+"o": ["4", "5", "6", "3"],
+"a": 1,
+"e": "$2^5 = 32$, so $a = 5$."
+},
+{
+"cat": "গণিত",
+"q": "The value of $101^2 - 99^2$ is:",
+"o": ["200", "400", "2", "4000"],
+"a": 1,
+"e": "$(101+99)(101-99) = 200 \times 2 = 400$."
+},
+{
+"cat": "গণিত",
+"q": "If $x/y = 4/5$, then $(7x+6y)/(7x-6y) = ?$",
+"o": ["29/1", "-29/1", "1/29", "None"],
+"a": 1,
+"e": "Let $x=4k, y=5k$. $(28k+30k)/(28k-30k) = 58k/-2k = -29$."
+},
+{
+"cat": "গণিত",
+"q": "If $x+1/x = 5$, find $x^2+1/x^2$.",
+"o": ["23", "25", "27", "21"],
+"a": 0,
+"e": "$5^2 - 2 = 23$."
+},
+{
+"cat": "গণিত",
+"q": "If $f(x) = x^2 - 5x + 6$, then $f(2) = ?$",
+"o": ["0", "1", "2", "3"],
+"a": 0,
+"e": "$2^2 - 5(2) + 6 = 4 - 10 + 6 = 0$."
+},
+{
+"cat": "গণিত",
+"q": "If $x=1, y=2, z=3$, find $x^2+y^2+z^2$.",
+"o": ["14", "6", "9", "12"],
+"a": 0,
+"e": "$1+4+9 = 14$."
+},
+{
+"cat": "গণিত",
+"q": "The expansion of $(a+b)^2 - 2ab$ is:",
+"o": ["a^2+b^2", "a^2-b^2", "(a-b)^2", "0"],
+"a": 0,
+"e": "$(a+b)^2 - 2ab = a^2+b^2+2ab-2ab = a^2+b^2$."
+},
+{
+"cat": "গণিত",
+"q": "If $x^2-1=0$, then $x=?$",
+"o": ["1", "-1", "\pm 1", "0"],
+"a": 2,
+"e": "$x^2=1 \Rightarrow x = \pm 1$."
+},
+{
+"cat": "গণিত",
+"q": "If $a+b+c=9$ and $ab+bc+ca=26$, find $a^2+b^2+c^2$.",
+"o": ["29", "31", "27", "33"],
+"a": 0,
+"e": "$(a+b+c)^2 - 2(ab+bc+ca) = 9^2 - 2(26) = 81 - 52 = 29$."
+},
+{
+"cat": "গণিত",
+"q": "If $2^x \cdot 4^x = 64$, find $x$.",
+"o": ["2", "3", "1", "4"],
+"a": 0,
+"e": "$2^x \cdot 2^{2x} = 2^6 \Rightarrow 2^{3x} = 2^6 \Rightarrow 3x=6 \Rightarrow x=2$."
+},
+{
+"cat": "গণিত",
+"q": "If $x-y=4$ and $xy=12$, find $x^3-y^3$.",
+"o": ["208", "144", "192", "200"],
+"a": 0,
+"e": "$(x-y)^3 + 3xy(x-y) = 4^3 + 3(12)(4) = 64 + 144 = 208$."
+},
+{
+"cat": "গণিত",
+"q": "Find the discriminant of $x^2-4x+4=0$.",
+"o": ["0", "16", "8", "-16"],
+"a": 0,
+"e": "$D = b^2 - 4ac = (-4)^2 - 4(1)(4) = 16 - 16 = 0$."
+},
+{
+"cat": "গণিত",
+"q": "If $x:y = 3:4$, find $(4x-y):(2x+3y)$.",
+"o": ["4:9", "8:18", "1:2", "None"],
+"a": 0,
+"e": "Let $x=3, y=4$. $(12-4):(6+12) = 8:18 = 4:9$."
+},
+{
+"cat": "গণিত",
+"q": "If $x+1/x = 4$, find $x^4+1/x^4$.",
+"o": ["194", "196", "198", "192"],
+"a": 0,
+"e": "$x^2+1/x^2 = 4^2-2 = 14$. $x^4+1/x^4 = 14^2-2 = 196-2 = 194$."
+},
+{
+"cat": "গণিত",
+"q": "The remainder when $x^2-5x+6$ is divided by $x-2$ is:",
+"o": ["0", "1", "2", "3"],
+"a": 0,
+"e": "By remainder theorem, put $x=2$: $2^2-5(2)+6 = 0$."
+},
+{
+"cat": "গণিত",
+"q": "If $x^2+1/x^2=2$, find $x+1/x$.",
+"o": ["2", "4", "1", "0"],
+"a": 0,
+"e": "$(x+1/x)^2 - 2 = 2 \Rightarrow (x+1/x)^2 = 4 \Rightarrow x+1/x = 2$."
+},
+{
+"cat": "গণিত",
+"q": "If $3^x = 9^y$, then $x:y = ?$",
+"o": ["2:1", "1:2", "1:1", "3:1"],
+"a": 0,
+"e": "$3^x = (3^2)^y = 3^{2y} \Rightarrow x=2y \Rightarrow x/y = 2/1$."
+},
+{
+"cat": "গণিত",
+"q": "The HCF of $x^2-y^2$ and $x-y$ is:",
+"o": ["x-y", "x+y", "x^2-y^2", "1"],
+"a": 0,
+"e": "$x^2-y^2 = (x+y)(x-y)$. Common factor is $x-y$."
+},
+{
+"cat": "গণিত",
+"q": "If $x+y=10$ and $x^2+y^2=58$, find $xy$.",
+"o": ["21", "20", "22", "19"],
+"a": 0,
+"e": "$(x+y)^2 = x^2+y^2+2xy \Rightarrow 100 = 58+2xy \Rightarrow 2xy=42 \Rightarrow xy=21$."
+},
+{
+"cat": "গণিত",
+"q": "If $\sqrt{x} = 3$, find $x^2$.",
+"o": ["9", "81", "27", "3"],
+"a": 1,
+"e": "$\sqrt{x}=3 \Rightarrow x=9$. Then $x^2 = 9^2 = 81$."
+},
+{
+"cat": "গণিত",
+"q": "The sum of roots of $ax^2+bx+c=0$ is:",
+"o": ["-b/a", "b/a", "c/a", "-c/a"],
+"a": 0,
+"e": "Standard quadratic property: sum of roots $= -b/a$."
+},
+{
+"cat": "গণিত",
+"q": "If $x + y = 6$ and $x - y = 4$, then $x^2 + y^2$ is:",
+"o": ["20", "26", "52", "10"],
+"a": 1,
+"e": "$2(x^2+y^2) = (x+y)^2 + (x-y)^2 = 6^2 + 4^2 = 36 + 16 = 52 \Rightarrow x^2+y^2 = 26$."
+},
+{
+"cat": "গণিত",
+"q": "The value of $(a-b)^2 + 4ab$ is equal to:",
+"o": ["a^2+b^2", "(a+b)^2", "a^2-b^2", "2(a^2+b^2)"],
+"a": 1,
+"e": "Standard identity: $(a-b)^2 + 4ab = (a+b)^2$."
+},
+{
+"cat": "গণিত",
+"q": "If $x = 3$ and $y = -2$, what is the value of $x^2 - 2xy + y^2$?",
+"o": ["1", "5", "25", "13"],
+"a": 2,
+"e": "$x^2 - 2xy + y^2 = (x-y)^2 = (3 - (-2))^2 = (3+2)^2 = 5^2 = 25$."
+},
+{
+"cat": "গণিত",
+"q": "If $x + 1/x = 2$, then $x^{100} + 1/x^{100}$ is:",
+"o": ["1", "2", "100", "0"],
+"a": 1,
+"e": "If $x + 1/x = 2$, then $x=1$. So, $1^{100} + 1/1^{100} = 1 + 1 = 2$."
+},
+{
+"cat": "গণিত",
+"q": "What is the cube of $(2x+3)$?",
+"o": ["8x^3+27", "8x^3+36x^2+54x+27", "4x^2+12x+9", "8x^3+18x+27"],
+"a": 1,
+"e": "$(a+b)^3 = a^3 + 3a^2b + 3ab^2 + b^3 = (2x)^3 + 3(2x)^2(3) + 3(2x)(3^2) + 3^3 = 8x^3 + 36x^2 + 54x + 27$."
+},
+{
+"cat": "গণিত",
+"q": "If $x^2 - 7x + 12 = 0$, then $x = ?$",
+"o": ["3, 4", "-3, -4", "2, 6", "1, 12"],
+"a": 0,
+"e": "$x^2 - 4x - 3x + 12 = 0 \Rightarrow (x-4)(x-3) = 0 \Rightarrow x = 3, 4$."
+},
+{
+"cat": "গণিত",
+"q": "The simplified form of $\frac{x^2-9}{x-3}$ is:",
+"o": ["x-3", "x+3", "x^2+3", "x+9"],
+"a": 1,
+"e": "$\frac{(x+3)(x-3)}{x-3} = x+3$."
+},
+{
+"cat": "গণিত",
+"q": "If $2^{x-1} = 8$, what is the value of $x$?",
+"o": ["3", "4", "2", "5"],
+"a": 1,
+"e": "$2^{x-1} = 2^3 \Rightarrow x-1 = 3 \Rightarrow x = 4$."
+},
+{
+"cat": "গণিত",
+"q": "If $a + b + c = 6$ and $a^2 + b^2 + c^2 = 14$, what is $ab + bc + ca$?",
+"o": ["11", "22", "10", "12"],
+"a": 0,
+"e": "$(a+b+c)^2 = a^2+b^2+c^2 + 2(ab+bc+ca) \Rightarrow 36 = 14 + 2(ab+bc+ca) \Rightarrow 2(ab+bc+ca) = 22 \Rightarrow ab+bc+ca = 11$."
+},
+{
+"cat": "গণিত",
+"q": "If $x = y^a, y = z^b, z = x^c$, then $abc = ?$",
+"o": ["0", "1", "-1", "xyz"],
+"a": 1,
+"e": "$x = (z^b)^a = z^{ab} = (x^c)^{ab} = x^{abc} \Rightarrow abc = 1$."
+},
+{
+"cat": "গণিত",
+"q": "The roots of $x^2 + x - 20 = 0$ are:",
+"o": ["4, -5", "-4, 5", "4, 5", "-4, -5"],
+"a": 0,
+"e": "$x^2 + 5x - 4x - 20 = 0 \Rightarrow (x+5)(x-4) = 0 \Rightarrow x = 4, -5$."
+},
+{
+"cat": "গণিত",
+"q": "If $x^4 + \frac{1}{x^4} = 322$, find $x + \frac{1}{x}$.",
+"o": ["4", "5", "6", "4.47"],
+"a": 3,
+"e": "$x^2 + \frac{1}{x^2} = \sqrt{322+2} = 18$. Then $x + \frac{1}{x} = \sqrt{18+2} = \sqrt{20} \approx 4.47$."
+},
+{
+"cat": "গণিত",
+"q": "Find $k$ for which $x-2$ is a factor of $x^2 - 5x + k$.",
+"o": ["6", "-6", "4", "2"],
+"a": 0,
+"e": "Put $x=2$: $2^2 - 5(2) + k = 0 \Rightarrow 4 - 10 + k = 0 \Rightarrow k = 6$."
+},
+{
+"cat": "গণিত",
+"q": "If $x/y = 6/7$, find $\frac{x-y}{x+y} + \frac{1}{13}$.",
+"o": ["0", "1", "2/13", "1/13"],
+"a": 0,
+"e": "$\frac{x-y}{x+y} = \frac{6-7}{6+7} = -1/13$. So, $-1/13 + 1/13 = 0$."
+},
+{
+"cat": "গণিত",
+"q": "The solution set of $|x-3| < 5$ is:",
+"o": ["-2 < x < 8", "x < 8", "x > -2", "None"],
+"a": 0,
+"e": "-5 < x-3 < 5 $\Rightarrow$ -2 < x < 8."
+},
+{
+"cat": "গণিত",
+"q": "If $x^2 + 1/x^2 = 7$, then $x^3 + 1/x^3 = ?$",
+"o": ["18", "27", "15", "16"],
+"a": 0,
+"e": "$x^2+1/x^2 = (x+1/x)^2 - 2 = 7 \Rightarrow x+1/x = 3$. Then $x^3+1/x^3 = 3^3 - 3(3) = 18$."
+},
+{
+"cat": "গণিত",
+"q": "If $a + b = 10$ and $a - b = 6$, find $ab$.",
+"o": ["16", "64", "16", "4"],
+"a": 0,
+"e": "$4ab = (a+b)^2 - (a-b)^2 = 10^2 - 6^2 = 100 - 36 = 64 \Rightarrow ab = 16$."
+},
+{
+"cat": "গণিত",
+"q": "If $5^x = 125$, then $x^2 = ?$",
+"o": ["3", "9", "25", "15"],
+"a": 1,
+"e": "$5^x = 5^3 \Rightarrow x=3$. $x^2 = 3^2 = 9$."
+},
+{
+"cat": "গণিত",
+"q": "What is the product of $(a+b)$, $(a-b)$, and $(a^2+b^2)$?",
+"o": ["a^4+b^4", "a^4-b^4", "(a^2-b^2)^2", "a^2-b^2"],
+"a": 1,
+"e": "$(a+b)(a-b) = a^2-b^2$. Then $(a^2-b^2)(a^2+b^2) = a^4-b^4$."
+},
+{
+"cat": "গণিত",
+"q": "If $x - 1/x = 3$, find $x^4 + 1/x^4$.",
+"o": ["119", "121", "123", "117"],
+"a": 0,
+"e": "$x^2+1/x^2 = 3^2+2 = 11$. $x^4+1/x^4 = 11^2-2 = 119$."
+},
+{
+"cat": "গণিত",
+"q": "If $x:y = 2:3$, find $(3x+2y)/(2x+5y)$.",
+"o": ["12/19", "11/19", "13/19", "14/19"],
+"a": 0,
+"e": "Let $x=2, y=3$. $(3(2)+2(3))/(2(2)+5(3)) = (6+6)/(4+15) = 12/19$."
+},
+{
+"cat": "গণিত",
+"q": "The linear equation $2x + 3 = 7$ has how many solutions?",
+"o": ["One", "Two", "Infinite", "None"],
+"a": 0,
+"e": "A linear equation in one variable always has exactly one unique solution."
+},
+{
+"cat": "গণিত",
+"q": "If $a^2 + b^2 + c^2 = ab + bc + ca$, then:",
+"o": ["a=b=c", "a+b=c", "a^2+b^2=c^2", "None"],
+"a": 0,
+"e": "This equality holds only when $a=b=c$, which makes each term $(a-b)^2 + (b-c)^2 + (c-a)^2 = 0$."
+},
+{
+"cat": "গণিত",
+"q": "If $x = \sqrt{2} - 1$, then $x + 1/x = ?$",
+"o": ["2\sqrt{2}", "2", "\sqrt{2}", "1"],
+"a": 0,
+"e": "$1/x = \frac{1}{\sqrt{2}-1} = \sqrt{2}+1$. $x+1/x = (\sqrt{2}-1) + (\sqrt{2}+1) = 2\sqrt{2}$."
+},
+{
+"cat": "গণিত",
+"q": "The factorized form of $x^2 - x - 6$ is:",
+"o": ["(x-3)(x+2)", "(x+3)(x-2)", "(x-6)(x+1)", "(x-1)(x+6)"],
+"a": 0,
+"e": "$x^2 - 3x + 2x - 6 = x(x-3) + 2(x-3) = (x-3)(x+2)$."
+},
+{
+"cat": "গণিত",
+"q": "If $a/b = 4/3$, then $(3a+4b)/(3a-4b) = ?$",
+"o": ["1", "0", "Infinite", "None"],
+"a": 3,
+"e": "$a=4k, b=3k \Rightarrow (12k+12k)/(12k-12k) = 24k/0$, which is undefined."
+},
+{
+"cat": "গণিত",
+"q": "If $x^{x\sqrt{x}} = (x\sqrt{x})^x$, find $x$.",
+"o": ["2.25", "2", "3", "1.5"],
+"a": 0,
+"e": "$x^{x^{1.5}} = (x^{1.5})^x = x^{1.5x} \Rightarrow x^{1.5} = 1.5x \Rightarrow \sqrt{x} = 1.5 \Rightarrow x = 2.25$."
+},
+{
+"cat": "গণিত",
+"q": "If $(x+y+z) = 0$, find $x^3+y^3+z^3 - 3xyz$.",
+"o": ["0", "1", "3", "-1"],
+"a": 0,
+"e": "Standard identity: $x^3+y^3+z^3 - 3xyz = (x+y+z)(x^2+y^2+z^2-xy-yz-zx)$. If $x+y+z=0$, the whole expression is 0."
+},
+{
+"cat": "গণিত",
+"q": "If $a^x = b, b^y = c, c^z = a$, then $xyz = ?$",
+"o": ["0", "1", "-1", "a"],
+"a": 1,
+"e": "Similar to a previous question: $a = c^z = (b^y)^z = (a^x)^{yz} = a^{xyz} \Rightarrow xyz=1$."
+},
+{
+"cat": "গণিত",
+"q": "If $x^2 + y^2 + z^2 = 2(x - y - z) - 3$, find $x+y+z$.",
+"o": ["1", "-1", "0", "3"],
+"a": 1,
+"e": "$x^2-2x+1 + y^2+2y+1 + z^2+2z+1 = 0 \Rightarrow (x-1)^2 + (y+1)^2 + (z+1)^2 = 0$. So $x=1, y=-1, z=-1$. $x+y+z = 1-1-1 = -1$."
+},
+{
+"cat": "গণিত",
+"q": "The sum of the digits of a two-digit number is 9. If 27 is added, the digits reverse. The number is:",
+"o": ["36", "63", "45", "54"],
+"a": 0,
+"e": "Option testing: 3+6=9. $36+27=63$. Digits are reversed. Correct."
+},
+{
+"cat": "গণিত",
+"q": "If $x = 11$, then the value of $x^5 - 12x^4 + 12x^3 - 12x^2 + 12x - 1$ is:",
+"o": ["10", "11", "12", "0"],
+"a": 0,
+"e": "Substitute $12 = x+1$: $x^5 - (x+1)x^4 + (x+1)x^3 - (x+1)x^2 + (x+1)x - 1 = x^5 - x^5 - x^4 + x^4 + x^3 - x^3 - x^2 + x^2 + x - 1 = x-1 = 11-1 = 10$."
+},
+{
+"cat": "গণিত",
+"q": "The nature of roots of $x^2 + x + 1 = 0$ is:",
+"o": ["Real and equal", "Real and unequal", "Imaginary", "None"],
+"a": 2,
+"e": "$D = b^2 - 4ac = 1^2 - 4(1)(1) = -3 < 0$. Roots are imaginary."
+},
+{
+"cat": "গণিত",
+"q": "If $x:y = 5:2$, then $(8x+9y):(8x+2y) = ?$",
+"o": ["29:22", "22:29", "26:21", "21:26"],
+"a": 0,
+"e": "Let $x=5, y=2$. $(40+18):(40+4) = 58:44 = 29:22$."
+},
+{
+"cat": "গণিত",
+"q": "If $x^2 + y^2 = 25$ and $xy = 12$, then $(x-y)^2 = ?$",
+"o": ["1", "49", "25", "7"],
+"a": 0,
+"e": "$(x-y)^2 = x^2+y^2 - 2xy = 25 - 24 = 1$."
+},
+{
+"cat": "গণিত",
+"q": "If $a^4 + a^2b^2 + b^4 = 8$ and $a^2 + ab + b^2 = 4$, then $a^2 - ab + b^2 = ?$",
+"o": ["2", "4", "1", "8"],
+"a": 0,
+"e": "$(a^2 + ab + b^2)(a^2 - ab + b^2) = a^4 + a^2b^2 + b^4 \Rightarrow 4 \times (a^2 - ab + b^2) = 8 \Rightarrow a^2 - ab + b^2 = 2$."
+},
+{
+"cat": "গণিত",
+"q": "Solve for $x$: $3^{2x+1} = 243$.",
+"o": ["2", "3", "4", "5"],
+"a": 0,
+"e": "$3^{2x+1} = 3^5 \Rightarrow 2x+1 = 5 \Rightarrow 2x = 4 \Rightarrow x = 2$."
+},
+{
+"cat": "গণিত",
+"q": "If $x$ is a real number and $x^2 - 6x + 9 = 0$, then $x$ is:",
+"o": ["3", "-3", "0", "9"],
+"a": 0,
+"e": "$(x-3)^2 = 0 \Rightarrow x = 3$."
+},
+{
+"cat": "গণিত",
+"q": "If $a/b = c/d = e/f = 3$, then $\frac{2a^2+3c^2+4e^2}{2b^2+3d^2+4f^2} = ?$",
+"o": ["3", "9", "27", "1"],
+"a": 1,
+"e": "Each ratio squared is 9. Using the property of equal ratios, the whole expression is also 9."
+},
+{
+"cat": "গণিত",
+"q": "If $x + 1/x = \sqrt{2}$, then $x^4 + 1$ is:",
+"o": ["x^2", "0", "2", "1"],
+"a": 1,
+"e": "$x^2 + 1/x^2 = (\sqrt{2})^2 - 2 = 0 \Rightarrow x^4 + 1 = 0$."
+}
+]
