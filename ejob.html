@@ -10847,14 +10847,52 @@ body.light-mode .feat-card-meta  { color: rgba(180,140,0,0.75) !important; }
 
 
   <!-- ══ MANUAL TAB ══ -->
-    <div style="display:flex;gap:8px;margin-bottom:14px;">
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
       <button onclick="_openTrackerForm()" style="display:flex;align-items:center;justify-content:center;gap:8px;flex:1;padding:13px;background:linear-gradient(135deg,rgba(14,248,122,0.12),rgba(14,248,122,0.05));border:1px solid rgba(14,248,122,0.3);border-radius:var(--radius-md);font-size:14px;font-weight:700;color:#0ef87a;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:var(--font-bn);">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         নতুন Apply করা Job যোগ করো
       </button>
-
     </div>
+
+    <!-- ══ BACKUP / RESTORE / PRINT ROW ══ -->
+    <div style="display:flex;gap:7px;margin-bottom:14px;">
+      <!-- Download JSON backup -->
+      <button onclick="_exportTrackerData()" title="সব data JSON হিসেবে download করো" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 6px;background:rgba(116,185,255,0.08);border:1px solid rgba(116,185,255,0.25);border-radius:var(--radius-md);font-size:12px;font-weight:700;color:#74b9ff;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:var(--font-bn);">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Backup
+      </button>
+      <!-- Upload JSON restore -->
+      <button onclick="document.getElementById('trk-import-input').click()" title="আগের backup restore করো" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 6px;background:rgba(162,155,254,0.08);border:1px solid rgba(162,155,254,0.25);border-radius:var(--radius-md);font-size:12px;font-weight:700;color:#a29bfe;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:var(--font-bn);">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Restore
+      </button>
+      <!-- Print / Save as PDF -->
+      <button onclick="_downloadTrackerPDF()" title="সব entry PDF হিসেবে print করো" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 6px;background:rgba(253,121,168,0.08);border:1px solid rgba(253,121,168,0.25);border-radius:var(--radius-md);font-size:12px;font-weight:700;color:#fd79a8;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:var(--font-bn);">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print PDF
+      </button>
+    </div>
+    <!-- Hidden file input for JSON restore -->
+    <input type="file" id="trk-import-input" accept=".json" style="display:none" onchange="_importTrackerData(this)">
+
     <div id="tracker-list"></div>
+
+  <!-- ══ PDF VIEWER MODAL ══ -->
+  <div id="trk-pdf-viewer-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:10010;background:rgba(0,0,0,0.95);">
+    <div style="display:flex;flex-direction:column;height:100%;height:100dvh;">
+      <!-- Viewer header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg-surface);border-bottom:1px solid var(--border);flex-shrink:0;gap:8px;">
+        <span id="trk-pdf-viewer-title" style="font-size:13px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;">PDF</span>
+        <button id="trk-pdf-dl-btn" style="display:flex;align-items:center;gap:5px;padding:7px 12px;background:rgba(116,185,255,0.1);border:1px solid rgba(116,185,255,0.3);border-radius:var(--radius-sm);font-size:12px;font-weight:700;color:#74b9ff;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download
+        </button>
+        <button id="trk-pdf-close-btn" onclick="_closePdfViewer()" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.25);border-radius:var(--radius-sm);color:#ff4d6d;cursor:pointer;flex-shrink:0;font-size:16px;line-height:1;">✕</button>
+      </div>
+      <!-- PDF iframe -->
+      <iframe id="trk-pdf-viewer-frame" style="flex:1;border:none;background:#fff;width:100%;" title="PDF Viewer"></iframe>
+    </div>
+  </div>
 
   <button class="fp-exit-btn" onclick="goHome()">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -12035,7 +12073,7 @@ document.addEventListener('wheel', function(e) {
   setTimeout(function() { clearTimeout(_safetyTimer); }, 2700);
 })();
 
-var WEBHOOK = "https://script.google.com/macros/s/AKfycbyXXXTpD3y4V7wM5Qd05SAAbfeQakbL9_gTUIbdnJ-v9TodFQlIcEYhcRdoGT3doFGC/exec";
+var WEBHOOK = "https://script.google.com/macros/s/AKfycbxVOhJKMT9PkeAhdgVUjOMpGu_TSL6ZpF7nPokY859eoa3XMDr5-0KCdW3S3oNRB-Mf/exec";
 
 /* ── Gemini keys removed — calls now proxied via Google Apps Script webhook ──
    API keys are stored server-side in Apps Script Properties, not in the HTML.
@@ -13502,7 +13540,7 @@ function _updateFilterCounts() {
   var counts = { ALL: valid.length, HOT: 0, BBA: 0, BANK: 0, GOVT: 0, GRADE9_10: 0, GRADE11_16: 0, OTHER: 0, SAVED: 0 };
   valid.forEach(function(j) {
     var cat = j['Category'] || 'OTHER';
-    var fullText = ((j['Job Name']||'') + ' ' + (j['Organization']||'') + ' ' + cat + ' ' + (j['Grade Info']||'')).toLowerCase();
+    var fullText = ((j['Job Name']||'') + ' ' + (j['Organization']||'') + ' ' + cat + ' ' + (j['GradeTag']||j['Grade Info']||'')).toLowerCase();
     if (cat === 'HOT')      { counts.HOT++; }
     else if (cat === 'BBA') { counts.BBA++; }
     else if (cat === 'BANK'){ counts.BANK++; }
@@ -13728,7 +13766,7 @@ function _renderJobs() {
     }
 
     var cat = j['Category'] || 'OTHER';
-    var fullText = ((j['Job Name']||'') + ' ' + (j['Organization']||'') + ' ' + cat + ' ' + (j['Grade Info']||'')).toLowerCase();
+    var fullText = ((j['Job Name']||'') + ' ' + (j['Organization']||'') + ' ' + cat + ' ' + (j['GradeTag']||j['Grade Info']||'')).toLowerCase();
 
     // Grade 9/10 detection — broad: BCS non-cadre, AD, SI, Senior Officer, Inspector level
     var isGrade9 = cat === 'GRADE9' || fullText.match(
@@ -13830,15 +13868,26 @@ function _renderJobs() {
     var aOrder = catOrder[a['Category']] !== undefined ? catOrder[a['Category']] : 7;
     var bOrder = catOrder[b['Category']] !== undefined ? catOrder[b['Category']] : 7;
     if (aOrder !== bOrder) return aOrder - bOrder;
-    return (parseInt(a['daysLeft']) || 999) - (parseInt(b['daysLeft']) || 999);
+    // ✅ FIX: null দিন = তারিখ অজানা → list-এর নিচে রাখো
+    var _da = (a['daysLeft'] === null || a['daysLeft'] === undefined) ? 9999 : (parseInt(a['daysLeft']) || 9999);
+    var _db = (b['daysLeft'] === null || b['daysLeft'] === undefined) ? 9999 : (parseInt(b['daysLeft']) || 9999);
+    return _da - _db;
   });
 
   function _jobCardHtml(j, isPref) {
-    var days  = parseInt(j['daysLeft']) || 0;
-    if (days < 0 || days >= 999) return ''; // expired / sentinel — skip rendering
-    var cls   = days <= 3 ? 'red' : days <= 7 ? 'yellow' : 'green';
+    // ✅ FIX: null = unknown date (GAS v4.2 returns null, not 999)
+    var _dlRaw = j['daysLeft'];
+    var days   = (_dlRaw === null || _dlRaw === undefined || _dlRaw === '')
+                 ? null : parseInt(_dlRaw);
+    if (days !== null && days < 0)   return ''; // expired — hide
+    if (days !== null && days >= 999) return ''; // old sentinel — hide
+    var cls = (days === null) ? 'gray'
+            : days <= 3      ? 'red'
+            : days <= 7      ? 'yellow'
+            : 'green';
     var cat   = j['Category'] || 'OTHER';
-    var gradeInfo = j['Grade Info'] || '';
+    // ✅ FIX: GAS sends 'GradeTag', not 'Grade Info'
+    var gradeInfo = j['GradeTag'] || j['Grade Info'] || '';
     var jColor = cat === 'HOT' ? '#ff4757' : cat === 'BBA' ? '#ff7675' : cat === 'GOVT' ? '#74b9ff' : cat === 'BANK' ? '#0ef87a' : (cat === 'GRADE9' || cat === 'GRADE10') ? '#fdcb6e' : cat === 'GRADE11_16' ? '#a29bfe' : 'var(--gold-1)';
     var link  = j['Circular Link'] || '#';
     var safeId = encodeURIComponent(j['Job Name'] || '').replace(/'/g, "\\'");
@@ -13879,8 +13928,9 @@ function _renderJobs() {
     var jobName = j['Job Name'] || '';
     // Progress bar
     var _maxDays = 30;
-    var _pct = Math.min(100, Math.max(4, Math.round((1 - days / _maxDays) * 100)));
-    var _barColor = days <= 3 ? '#ff4757' : days <= 7 ? '#fdcb6e' : '#0ef87a';
+    // ✅ FIX: null দিয়ে calculation করলে NaN আসে — তাই আলাদা handle
+    var _pct      = (days === null) ? 55 : Math.min(100, Math.max(4, Math.round((1 - days / _maxDays) * 100)));
+    var _barColor = (days === null) ? 'rgba(255,255,255,0.2)' : days <= 3 ? '#ff4757' : days <= 7 ? '#fdcb6e' : '#0ef87a';
     var progressBar = '<div style="height:3px;background:rgba(255,255,255,0.06);border-radius:2px;margin-top:10px;overflow:hidden;">'
       + '<div style="height:100%;width:' + _pct + '%;background:' + _barColor + ';border-radius:2px;"></div></div>';
     // Vacancies pill
@@ -13909,7 +13959,7 @@ function _renderJobs() {
       + (j['End Date'] ? '<span class="job-card-pill" style="flex-shrink:0;">শেষ: ' + j['End Date'] + '</span>' : '')
       + dateConfBadge
       + vacanciesPill
-      + '<span class="job-card-countdown ' + cls + '" style="flex-shrink:0;">' + (days >= 0 ? days + ' দিন' : 'শেষ') + '</span>'
+      + '<span class="job-card-countdown ' + cls + '" style="flex-shrink:0;">' + (days === null ? 'তারিখ ?' : days === 0 ? 'আজই শেষ' : days + ' দিন') + '</span>'
       + '<div style="margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0;">'
       + '<button onclick="_sendJobToAlert(this,\'' + safeId + '\')" title="' + bellTitle + '" style="width:32px;height:32px;border-radius:var(--radius-sm);' + bellStyle + 'display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;-webkit-tap-highlight-color:transparent;transition:background 0.15s,border-color 0.15s;">🔔</button>'
       + '<button onclick="_sendJobToTracker(this,\'' + safeId + '\',\'' + safeOrg + '\',\'' + safeDate + '\')" title="' + pinTitle + '" style="width:32px;height:32px;border-radius:var(--radius-sm);' + pinStyle + 'display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;-webkit-tap-highlight-color:transparent;transition:background 0.15s,border-color 0.15s;">📌</button>'      + '<button onclick="_shareJob(\'' + safeId + '\',\'' + safeOrg + '\',\'' + encodeURIComponent(link) + '\')" title="Share করো" style="width:32px;height:32px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;-webkit-tap-highlight-color:transparent;">🔗</button>'      + (link !== '#' ? '<a href="' + link + '" target="_blank" rel="noopener" style="padding:6px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-pill);font-size:11px;color:var(--text-secondary);text-decoration:none;-webkit-tap-highlight-color:transparent;white-space:nowrap;">দেখো →</a>' : '')
@@ -14314,6 +14364,158 @@ window._openTrkApplyPdf = function(id) {
   a.click();
 };
 
+// ══════════════════════════════════════════════════════
+//  VIEW PDF — opens PDF in full-screen modal iframe
+// ══════════════════════════════════════════════════════
+var _currentBlobUrl = null;
+
+window._viewTrkPdf = function(id, type) {
+  var all = _getTrkData();
+  var e = all.find(function(x){ return x.id === id; });
+  if (!e) return;
+  var b64  = (type === 'apply') ? e.applyPdf  : e.pdf;
+  var name = (type === 'apply') ? (e.applyPdfName || 'application.pdf') : (e.pdfName || 'admit.pdf');
+  if (!b64) { alert('কোনো PDF সেভ করা নেই।\nEdit-এ গিয়ে PDF যোগ করো।'); return; }
+
+  // Revoke previous blob
+  if (_currentBlobUrl) { try { URL.revokeObjectURL(_currentBlobUrl); } catch(_){} _currentBlobUrl = null; }
+
+  try {
+    // base64 → Blob → Blob URL
+    var arr = b64.split(',');
+    var byteStr = atob(arr.length > 1 ? arr[1] : arr[0]);
+    var buf = new Uint8Array(byteStr.length);
+    for (var i = 0; i < byteStr.length; i++) buf[i] = byteStr.charCodeAt(i);
+    var blob = new Blob([buf], { type: 'application/pdf' });
+    _currentBlobUrl = URL.createObjectURL(blob);
+
+    var overlay = document.getElementById('trk-pdf-viewer-overlay');
+    var frame   = document.getElementById('trk-pdf-viewer-frame');
+    var title   = document.getElementById('trk-pdf-viewer-title');
+    var dlBtn   = document.getElementById('trk-pdf-dl-btn');
+    if (!overlay || !frame) return;
+
+    title.textContent = name;
+    frame.src = _currentBlobUrl;
+    overlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    // Wire download button to this specific file
+    dlBtn.onclick = function() {
+      var a = document.createElement('a');
+      a.href = _currentBlobUrl;
+      a.download = name;
+      a.click();
+    };
+
+  } catch(err) {
+    // Fallback: download directly (for browsers that block blob URLs)
+    var a2 = document.createElement('a');
+    a2.href = b64;
+    a2.download = name;
+    a2.click();
+    if (window._epToast) window._epToast('PDF download হচ্ছে...', 'ok', 2000);
+  }
+};
+
+window._closePdfViewer = function() {
+  var overlay = document.getElementById('trk-pdf-viewer-overlay');
+  var frame   = document.getElementById('trk-pdf-viewer-frame');
+  if (overlay) overlay.style.display = 'none';
+  if (frame)   frame.src = '';
+  document.body.style.overflow = '';
+  if (_currentBlobUrl) { try { URL.revokeObjectURL(_currentBlobUrl); } catch(_){} _currentBlobUrl = null; }
+};
+
+// ══════════════════════════════════════════════════════
+//  EXPORT — one-click JSON backup
+// ══════════════════════════════════════════════════════
+window._exportTrackerData = function() {
+  var applyData = _getTrkData();
+  var autoData  = [];
+  try { autoData = JSON.parse(localStorage.getItem(_AUTO_TRK_KEY) || '[]'); } catch(_){}
+
+  if (!applyData.length && !autoData.length) {
+    if (window._epToast) window._epToast('Tracker-এ কোনো data নেই।', 'warn', 2500);
+    return;
+  }
+
+  var backup = {
+    app:              'ExPo JOB Tracker',
+    version:          2,
+    exported_at:      new Date().toISOString(),
+    ep_apply_tracker: applyData,
+    ep_auto_tracker:  autoData,
+    total_entries:    applyData.length + autoData.length
+  };
+
+  var json = JSON.stringify(backup, null, 2);
+  var blob = new Blob([json], { type: 'application/json' });
+  var url  = URL.createObjectURL(blob);
+  var dateStr = new Date().toISOString().slice(0, 10);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'expo_tracker_backup_' + dateStr + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
+
+  if (window._epToast) window._epToast('✅ Backup download হচ্ছে! (' + backup.total_entries + ' entries)', 'ok', 3000);
+};
+
+// ══════════════════════════════════════════════════════
+//  IMPORT — restore from JSON backup (merge, no duplicate)
+// ══════════════════════════════════════════════════════
+window._importTrackerData = function(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var reader = new FileReader();
+
+  reader.onloadend = function() {
+    try {
+      var raw  = JSON.parse(reader.result);
+      // Support both formats: direct array or wrapped backup object
+      var applyArr = Array.isArray(raw) ? raw : (raw.ep_apply_tracker || []);
+      var autoArr  = Array.isArray(raw) ? [] : (raw.ep_auto_tracker  || []);
+
+      if (!Array.isArray(applyArr)) throw new Error('Invalid format');
+
+      // Merge apply tracker — skip duplicates by id
+      var existing    = _getTrkData();
+      var existingIds = {};
+      existing.forEach(function(e){ existingIds[e.id] = true; });
+      var newEntries  = applyArr.filter(function(e){ return e.id && !existingIds[e.id]; });
+      _saveTrkData(existing.concat(newEntries));
+
+      // Merge auto tracker — skip duplicates by id
+      var autoExisting = [];
+      try { autoExisting = JSON.parse(localStorage.getItem(_AUTO_TRK_KEY) || '[]'); } catch(_){}
+      var autoIds = {};
+      autoExisting.forEach(function(e){ autoIds[e.id] = true; });
+      var newAuto = autoArr.filter(function(e){ return e.id && !autoIds[e.id]; });
+      if (newAuto.length) {
+        try { localStorage.setItem(_AUTO_TRK_KEY, JSON.stringify(autoExisting.concat(newAuto))); } catch(_){}
+      }
+
+      _renderTrackerList();
+      _updateTrackerBadge();
+
+      var total = newEntries.length + newAuto.length;
+      var msg   = total > 0
+        ? '✅ ' + newEntries.length + ' টি entry import হয়েছে!'
+        : '⚠ কোনো নতুন entry নেই — সব আগে থেকেই আছে।';
+      if (window._epToast) window._epToast(msg, total > 0 ? 'ok' : 'warn', 3000);
+
+    } catch(err) {
+      alert('❌ Import ব্যর্থ হয়েছে!\n\n' + err.message + '\n\nএই app থেকে Backup করা .json ফাইল দাও।');
+    }
+    input.value = ''; // reset so same file can be re-imported
+  };
+
+  reader.readAsText(file);
+};
+
 function _updateTrackerBadge() {
   var all   = _getTrkData();
   var badge = document.getElementById('tracker-count-badge');
@@ -14396,10 +14598,18 @@ function _renderTrackerList() {
         + (e.resultDate ? '<div style="font-size:11px;color:#fd79a8;margin-bottom:4px;display:flex;align-items:center;gap:5px;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fd79a8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Result: ' + e.resultDate + '</div>' : '')
         + (e.notes ? '<div style="font-size:11px;color:var(--text-muted);font-style:italic;margin-bottom:8px;">' + _esc(e.notes) + '</div>' : '')
         // Action buttons
-        + '<div style="display:flex;gap:7px;margin-top:6px;">'
-          + '<button onclick="event.stopPropagation();_openTrackerForm(\'' + e.id + '\')" style="flex:1;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);font-size:11px;font-weight:700;color:var(--text-secondary);cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:var(--font-en);display:flex;align-items:center;justify-content:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>'
-          + (e.pdf ? '<button onclick="event.stopPropagation();_openTrkPdf(\'' + e.id + '\')" style="flex:1;padding:8px;background:rgba(116,185,255,0.07);border:1px solid rgba(116,185,255,0.2);border-radius:var(--radius-sm);font-size:11px;font-weight:700;color:#74b9ff;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:var(--font-en);display:flex;align-items:center;justify-content:center;gap:5px;" title="Admit Card PDF ডাউনলোড করো"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Admit PDF</button>' : '')
-
+        + '<div style="display:flex;gap:7px;margin-top:6px;flex-wrap:wrap;">'
+          + '<button onclick="event.stopPropagation();_openTrackerForm(\'' + e.id + '\')" style="flex:1;min-width:60px;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);font-size:11px;font-weight:700;color:var(--text-secondary);cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:var(--font-en);display:flex;align-items:center;justify-content:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>'
+          // ── Admit Card PDF: View + Download ──
+          + (e.pdf
+            ? '<button onclick="event.stopPropagation();_viewTrkPdf(\'' + e.id + '\',\'admit\')" style="flex:1;min-width:60px;padding:8px;background:rgba(162,155,254,0.08);border:1px solid rgba(162,155,254,0.25);border-radius:var(--radius-sm);font-size:11px;font-weight:700;color:#a29bfe;cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;gap:5px;" title="Admit Card দেখো"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Admit</button>'
+            + '<button onclick="event.stopPropagation();_openTrkPdf(\'' + e.id + '\')" style="padding:8px 10px;background:rgba(116,185,255,0.07);border:1px solid rgba(116,185,255,0.2);border-radius:var(--radius-sm);font-size:11px;font-weight:700;color:#74b9ff;cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;" title="Admit Card ডাউনলোড করো"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>'
+            : '')
+          // ── Application PDF: View + Download ──
+          + (e.applyPdf
+            ? '<button onclick="event.stopPropagation();_viewTrkPdf(\'' + e.id + '\',\'apply\')" style="flex:1;min-width:60px;padding:8px;background:rgba(253,121,168,0.08);border:1px solid rgba(253,121,168,0.25);border-radius:var(--radius-sm);font-size:11px;font-weight:700;color:#fd79a8;cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;gap:5px;" title="Application Form দেখো"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Form</button>'
+            + '<button onclick="event.stopPropagation();_openTrkApplyPdf(\'' + e.id + '\')" style="padding:8px 10px;background:rgba(253,121,168,0.06);border:1px solid rgba(253,121,168,0.18);border-radius:var(--radius-sm);font-size:11px;font-weight:700;color:#fd79a8;cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;" title="Application Form ডাউনলোড করো"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>'
+            : '')
           + '<button onclick="event.stopPropagation();_deleteTrkEntry(\'' + e.id + '\')" style="width:34px;padding:8px;background:rgba(255,77,109,0.06);border:1px solid rgba(255,77,109,0.15);border-radius:var(--radius-sm);color:#ff4d6d;cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>'
         + '</div>'
       + '</div>'
