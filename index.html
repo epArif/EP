@@ -9134,6 +9134,13 @@ body.is-android.drawer-open-mobile #drawer-toggle-btn {
   touch-action: manipulation !important;
   pointer-events: auto !important;
 }</style>
+<!-- ═══ KaTeX — renders $...$ LaTeX math (questions/options/explanations) as book-style typesetting ═══ -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css" integrity="sha384-vlBdW0r3AcZO/HboRPznQNowvexd3fY8qHOWkBi5q7KGgqJ+F48+DceybYmrVbmB" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.js" integrity="sha384-AtrdNsnxl/75rvBneBVH7DtOvCxSVahR2zWqle1coBKd8DEmLoviqNeJSx64gNAs" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous"></script>
+<!-- ═══ jsonrepair — tolerates minor JSON typos in hand-edited exam files
+     (trailing/missing commas, smart quotes, single quotes...) ═══ -->
+<script defer src="https://cdn.jsdelivr.net/npm/jsonrepair@3.14.0/lib/umd/jsonrepair.min.js"></script>
 </head>
 <body>
 
@@ -10438,7 +10445,7 @@ window.addEventListener('DOMContentLoaded', () => {
           if (navigator.onLine) {
             setTimeout(function() {
               fetch(srcFile, { cache: 'no-store', credentials: 'omit' })
-                .then(function(r){ return r.ok ? r.json() : null; })
+                .then(function(r){ return r.ok ? r.text().then(_lenientJSONParse) : null; })
                 .then(function(data){
                   if (!data || !Array.isArray(data) || !data.length) return;
                   var _dbJ = JSON.stringify(data);
@@ -10660,6 +10667,67 @@ function _showSubmittedNotice() {
 function _showWelcomePopup() { /* disabled */ }
 
 /* ═══════════════════════════════════════════
+   LENIENT JSON LOADING
+   Hand-typed/copy-pasted exam files pick up small mistakes — a stray,
+   missing, or doubled comma, smart quotes pasted from Word/Sheets, a
+   single backslash in a LaTeX command (\frac instead of the JSON-correct
+   \\frac). Instead of failing the whole file over one typo, try
+   progressively more forgiving passes before giving up.
+═══════════════════════════════════════════ */
+
+/* Doubles a raw backslash UNLESS it's already an unambiguous, "closed"
+   JSON escape (\" \\ \/ \uXXXX, or \b \f \n \r \t not immediately followed
+   by another letter). This rescues LaTeX commands like \log, \frac,
+   \nabla, \times... while leaving real JSON escapes and already-correct
+   double-backslash LaTeX untouched. */
+function fixLatexBackslashes(s) {
+  return s.replace(/\\\\|\\(?!["\\\/]|[bfnrt](?![a-zA-Z])|u[0-9a-fA-F]{4})/g,
+    m => (m === '\\\\' ? m : '\\\\')
+  );
+}
+
+/* Collapses an accidental double/triple comma (",,", ",  ,") into one.
+   jsonrepair's own handling of this case is unreliable (it can silently
+   restructure arrays instead of just removing the extra comma), so this
+   runs as our own pass before jsonrepair ever sees the text. */
+function fixDoubleCommas(s) {
+  return s.replace(/,(\s*,)+/g, ',');
+}
+
+function _lightRepair(s) {
+  return fixDoubleCommas(fixLatexBackslashes(s));
+}
+
+/* Tries: 1) plain JSON.parse (fast path for already-valid files)
+          2) + LaTeX backslash fix + double-comma fix
+          3) + jsonrepair (trailing/missing commas, smart/single quotes,
+             unquoted keys, etc.)
+   Returns a Promise — if jsonrepair's deferred CDN script hasn't finished
+   loading yet (very first load racing the network), it waits briefly and
+   retries rather than failing outright. */
+function _lenientJSONParse(text, _waited) {
+  try { return Promise.resolve(JSON.parse(text)); } catch (e1) {}
+
+  const fixed = _lightRepair(text);
+  try { return Promise.resolve(JSON.parse(fixed)); } catch (e2) {}
+
+  if (window.JSONRepair && window.JSONRepair.jsonrepair) {
+    try {
+      return Promise.resolve(JSON.parse(window.JSONRepair.jsonrepair(fixed)));
+    } catch (e3) {
+      return Promise.reject(e3);
+    }
+  }
+
+  if (!_waited || _waited < 4000) {
+    return new Promise(resolve => setTimeout(resolve, 150))
+      .then(() => _lenientJSONParse(text, (_waited || 0) + 150));
+  }
+
+  return Promise.reject(new Error('JSON ফাইলটি পড়া যায়নি — ফরম্যাট চেক করুন।'));
+}
+
+/* ═══════════════════════════════════════════
    DATA LOADING
 ═══════════════════════════════════════════ */
 function loadFromFile(src) {
@@ -10692,7 +10760,7 @@ function loadFromFile(src) {
         .then(function(r) {
           clearTimeout(timer);
           if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.json();
+          return r.text().then(_lenientJSONParse);
         })
         .then(resolve, function(e) { clearTimeout(timer); reject(e); });
     });
@@ -11408,6 +11476,30 @@ function showExamControls() {
 /* ═══════════════════════════════════════════
    RENDER QUESTIONS
 ═══════════════════════════════════════════ */
+/* ── KaTeX: render any $...$ / $$...$$ / \(...\) / \[...\] LaTeX inside an
+   element as proper book-style math. Safe no-op if there's nothing to
+   render, and self-retries if the CDN script hasn't finished loading yet. */
+function _renderMath(el) {
+  if (!el) return;
+  if (typeof window.renderMathInElement === 'function') {
+    try {
+      renderMathInElement(el, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '\\[', right: '\\]', display: true }
+        ],
+        throwOnError: false,
+        strict: false
+      });
+    } catch (e) { /* malformed LaTeX in source data — leave text as-is */ }
+  } else {
+    // KaTeX (deferred) hasn't loaded yet — try again shortly.
+    setTimeout(function () { _renderMath(el); }, 150);
+  }
+}
+
 function renderExam() {
   const container = document.getElementById('questions-container');
   container.innerHTML = '';
@@ -11457,6 +11549,7 @@ function renderExam() {
   });
 
   container.appendChild(frag);
+  _renderMath(container); // typeset any $...$ LaTeX in questions/options/explanations
 
   // Radio listeners — save + ripple + answered count
   container.querySelectorAll('input[type=radio]').forEach(radio => {
@@ -15396,7 +15489,7 @@ window.exitToHome = function() {
       if (navigator.onLine) {
         setTimeout(function() {
           fetch(fetchUrl, { cache: 'no-store', credentials: 'omit' })
-            .then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(r) { return r.ok ? r.text().then(_lenientJSONParse) : null; })
             .then(function(fresh) {
               if (!fresh || !Array.isArray(fresh) || !fresh.length) return;
               var freshJSON = JSON.stringify(fresh);
