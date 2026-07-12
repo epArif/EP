@@ -9757,7 +9757,7 @@ let savedAnswers = {};
 let isMobile = false;
 let intersectionObserver = null;
 
-const ADMIN_WEBHOOK = "https://script.google.com/macros/s/AKfycbxMnwcvNhE-XWaRVn5UlsglDYT0xlSwKxrw3prLYYtlnzZj8evCAE6ys4cMzQiY7W2h/exec";
+const ADMIN_WEBHOOK = "https://script.google.com/macros/s/AKfycbwwc6gfW1vT_6RsNayCCVI4B_b_oZhECCAoDzfQ8wWQghtURIrBJtAEroJQvW-I-0vT/exec";
 
 /* ═══════════════════════════════════════════════════════════════
    DEVICE IDENTIFICATION + INDEXED DB + BROADCAST SYNC SYSTEM
@@ -12506,6 +12506,7 @@ function sendToAdmin() {
     method: 'POST', mode: 'no-cors',
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({
+      secret: "ev_boss_2026_arif",
       message: msg,
       // Extra structured data for Google Sheet logging
       data: {
