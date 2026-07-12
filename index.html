@@ -12027,8 +12027,13 @@ function doFinishExam() {
     buildResultPage(subData);
     window._resultSubData = subData;
     syncRatingGlow();
+  } catch(e) { console.error('[doFinishExam phase2 - buildResultPage]', e); }
+
+  // ── PHASE 2b: Send to Telegram/Sheet — always attempt this,
+  //     even if the result-page rendering above threw an error.
+  try {
     sendToAdmin();
-  } catch(e) { console.error('[doFinishExam phase2]', e); }
+  } catch(e) { console.error('[doFinishExam phase2 - sendToAdmin]', e); }
 
   // ── PHASE 3: Hide controls & switch page ──
   var topbar = document.getElementById('exam-topbar');
@@ -12420,6 +12425,7 @@ function closeReceiptIfBg(e) {
    ADMIN WEBHOOK
 ═══════════════════════════════════════════ */
 function sendToAdmin() {
+ try {
   const name = (document.getElementById('user-name').value.trim()) || 'Unknown';
   const usePenalty = document.getElementById('neg-toggle').checked;
   const score = (globalCorrect - (usePenalty ? globalWrong * 0.25 : 0)).toFixed(1);
@@ -12502,6 +12508,8 @@ function sendToAdmin() {
     `${cheatFlag}` +
     `${subjectLines}`;
 
+  console.log('[sendToAdmin] posting result to webhook…', ADMIN_WEBHOOK);
+
   fetch(ADMIN_WEBHOOK, {
     method: 'POST', mode: 'no-cors',
     headers: { 'Content-Type': 'text/plain' },
@@ -12518,7 +12526,10 @@ function sendToAdmin() {
         exam: _examLabel
       }
     })
-  }).catch(function() {
+  }).then(function() {
+    console.log('[sendToAdmin] fetch completed (no-cors mode: response is opaque, this only confirms the request was sent without a network error).');
+  }).catch(function(err) {
+    console.error('[sendToAdmin] fetch FAILED — network error:', err);
     try {
       navigator.serviceWorker.ready.then(function(reg) {
         try { reg.sync && reg.sync.register('ep-result-sync').catch(function(){}); } catch(x){}
@@ -12528,6 +12539,9 @@ function sendToAdmin() {
     } catch(x) {}
     if (window._epToast) window._epToast('📥 Offline — result queue হয়েছে। Online হলে auto-send হবে।', 'warn');
   });
+ } catch(e) {
+  console.error('[sendToAdmin] threw before fetch could fire:', e);
+ }
 }
 
 /* ═══════════════════════════════════════════
