@@ -24,7 +24,7 @@
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0; padding:0; background:var(--bg); color:var(--text);}
-  body{ font-family:'Inter','Noto Sans Bengali',sans-serif; padding:calc(20px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(60px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left)); max-width:760px; margin:0 auto; min-height:100vh; }
+  body{ font-family:'Inter','Noto Sans Bengali',sans-serif; padding:max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(60px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); max-width:760px; margin:0 auto; min-height:100vh; }
   ::selection{ background:var(--gold-dim); color:var(--text); }
 
   .banner{ background:linear-gradient(180deg, rgba(217,168,78,0.14), rgba(217,168,78,0)); border:1px solid var(--gold-dim); border-radius:var(--radius); padding:10px 14px; font-size:12px; color:#E9CE9A; margin-bottom:14px; line-height:1.55; }
@@ -125,10 +125,12 @@
   .day-card.today{ border-color:var(--gold); box-shadow:0 0 0 1px rgba(217,168,78,0.25); }
   .day-card.is-tomorrow{ border-color:var(--gold-dim); }
   .day-card.past-missed{ border-color:#4a4030; }
+  .day-card.is-revision{ border-color:var(--teal-dim); background:linear-gradient(160deg, var(--panel), rgba(79,167,158,0.06)); }
   .day-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px; }
   .day-date{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--gold); }
   .day-weekday{ font-size:11px; color:var(--text-muted); }
   .missed-tag{ font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--danger); border:1px solid #5a3a30; padding:1px 6px; border-radius:999px; margin-left:6px; }
+  .revision-tag{ font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--teal); border:1px solid var(--teal-dim); padding:1px 6px; border-radius:999px; margin-left:6px; }
 
   .item-block{ border-bottom:1px solid var(--border); padding:8px 0; }
   .item-block:last-child{ border-bottom:none; }
@@ -221,16 +223,46 @@
   .fc-face{ position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; border:1px solid var(--border); background:linear-gradient(160deg, var(--panel), var(--panel-2)); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; gap:8px; }
   .fc-face.front{ }
   .fc-face.back{ transform:rotateY(180deg); border-color:var(--teal-dim); }
-  .fc-word{ font-family:'Fraunces','Noto Sans Bengali',serif; font-weight:600; font-size:24px; color:var(--text); }
-  .fc-sub{ font-size:12.5px; color:var(--text-muted); font-family:'Noto Sans Bengali',sans-serif; }
-  .fc-meaning{ font-family:'Noto Sans Bengali','Inter',sans-serif; font-size:16px; color:#E9CE9A; line-height:1.5; }
-  .fc-hint{ font-size:10px; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; letter-spacing:0.05em; }
+  .fc-word{ font-family:'Fraunces','Noto Sans Bengali',serif; font-weight:700; font-size:27px; letter-spacing:0.01em; line-height:1.3; background:linear-gradient(135deg, #F3F1EC 35%, var(--gold)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .fc-sub{ font-size:13.5px; color:var(--text-muted); font-family:'Noto Sans Bengali',sans-serif; letter-spacing:0.01em; margin-top:1px; }
+  .fc-meaning{ font-family:'Noto Sans Bengali','Inter',sans-serif; font-weight:500; font-size:18.5px; color:#F0DDB0; line-height:1.65; padding:0 8px; }
+  .fc-hint{ font-size:11px; color:var(--text-muted); font-family:'Noto Sans Bengali','IBM Plex Mono',monospace; letter-spacing:0.03em; opacity:0.72; margin-top:2px; }
   .fc-controls{ width:100%; display:flex; align-items:center; gap:8px; }
-  .fc-controls button{ flex:1; padding:10px 6px; border-radius:10px; border:1px solid var(--border); background:var(--panel); color:var(--text); font-size:12px; cursor:pointer; font-family:'IBM Plex Mono',monospace; }
+  .fc-controls button{ flex:1; padding:10px 6px; border-radius:10px; border:1px solid var(--border); background:var(--panel); color:var(--text); font-size:12px; cursor:pointer; font-family:'IBM Plex Mono',monospace; transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease; }
   .fc-controls button:hover{ border-color:var(--gold-dim); color:var(--gold); }
+  .fc-controls button:active{ transform:scale(0.92); }
+  .fc-controls button.fc-btn-pop{ animation: fcBtnPop .32s ease; }
+  @keyframes fcBtnPop{
+    0%{ transform:scale(1); box-shadow:none; }
+    40%{ transform:scale(0.88); box-shadow:0 0 0 4px rgba(217,168,78,0.30) inset, 0 0 14px rgba(217,168,78,0.35); border-color:var(--gold); }
+    100%{ transform:scale(1); box-shadow:none; }
+  }
   .fc-controls button.fc-ai{ background:linear-gradient(135deg, var(--gold), var(--teal)); color:var(--bg); font-weight:600; border:none; }
-  .fc-ai-box{ width:100%; background:var(--panel-2); border:1px solid var(--teal-dim); border-radius:12px; padding:10px 12px; font-size:12.5px; color:#B9E3DE; font-family:'Noto Sans Bengali','Inter',sans-serif; line-height:1.55; min-height:20px; display:none; }
+  .fc-controls button.fc-ai.fc-btn-pop{ animation: fcAiBtnPop .32s ease; }
+  @keyframes fcAiBtnPop{
+    0%{ transform:scale(1); filter:brightness(1); }
+    40%{ transform:scale(0.88); filter:brightness(1.35); box-shadow:0 0 16px rgba(217,168,78,0.55); }
+    100%{ transform:scale(1); filter:brightness(1); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .fc-controls button.fc-btn-pop, .fc-controls button.fc-ai.fc-btn-pop{ animation:none !important; }
+  }
+  .fc-ai-box{ width:100%; background:var(--panel-2); border:1px solid var(--teal-dim); border-radius:12px; padding:12px 14px; font-size:12.5px; color:#B9E3DE; font-family:'Noto Sans Bengali','Inter',sans-serif; line-height:1.6; min-height:20px; display:none; box-shadow:0 6px 18px rgba(0,0,0,0.25); }
   .fc-ai-box.show{ display:block; }
+  .fc-ai-box p{ margin:0; }
+  .fc-ai-block + .fc-ai-block{ margin-top:10px; padding-top:10px; border-top:1px dashed var(--teal-dim); }
+  .fc-ai-label{ display:block; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.04em; color:var(--gold); margin-bottom:3px; }
+  .fc-ai-loading{ color:var(--text-muted); font-style:italic; }
+  .fc-ai-error{ color:var(--danger); }
+
+  /* premium polish: cards & modals get a touch more depth */
+  .fc-card{ box-shadow:0 14px 34px rgba(0,0,0,0.4); }
+  .fc-face{ box-shadow:inset 0 1px 0 rgba(255,255,255,0.04); }
+  .modal-box{ box-shadow:0 20px 50px rgba(0,0,0,0.5); }
+  .fc-controls button.fc-ai{ box-shadow:0 6px 16px rgba(212,175,55,0.25); }
+  .modal-btn{ transition:transform .15s ease, box-shadow .15s ease; }
+  .modal-btn:hover{ transform:translateY(-1px); }
+  .modal-btn.primary:hover, .modal-btn.teal:hover{ box-shadow:0 6px 14px rgba(0,0,0,0.35); }
   .fc-trigger{ background:none; border:1px solid var(--border); color:var(--text-muted); border-radius:6px; width:24px; height:24px; font-size:12px; cursor:pointer; line-height:1; flex-shrink:0; margin-right:4px; }
   .fc-trigger:hover{ color:var(--teal); border-color:var(--teal-dim); }
   .day-fc-btn{ background:none; border:1px solid var(--gold-dim); color:var(--gold); border-radius:8px; font-size:10.5px; padding:4px 9px; cursor:pointer; font-family:'IBM Plex Mono',monospace; white-space:nowrap; }
@@ -283,6 +315,7 @@
         <label>Pantry ID</label>
         <input type="text" id="pantryIdInput" placeholder="তোমার getPantry ID এখানে বসাও">
         <div class="modal-actions">
+          <button id="pantrySave" class="modal-btn ghost">💾 ID সংরক্ষণ করো</button>
           <button id="pantryUpload" class="modal-btn teal">☁️ Upload করো</button>
           <button id="pantryDownload" class="modal-btn primary">⬇️ Restore করো</button>
         </div>
@@ -290,15 +323,16 @@
       </div>
 
       <div class="settings-section">
-        <h4>🔥 Cloud Sync (Firebase Firestore)</h4>
-        <div class="settings-hint">console.firebase.google.com এ একটা প্রজেক্ট বানাও, Firestore চালু করো (Rules-এ টেস্ট মোডে allow read/write দিয়ো), তারপর Project settings → General থেকে Project ID এবং একটা Web API Key নিয়ে এখানে বসাও। Sync ID টা তুমি নিজে যা ইচ্ছা লিখতে পারো — যেই ডিভাইসে একই Project ID + API Key + Sync ID বসাবে, সবগুলোতে progress sync হবে। getPantry-এর সাথে এটা একই সাথে/বদলে ব্যবহার করা যাবে।</div>
-        <label>Firebase Project ID</label>
-        <input type="text" id="fbProjectIdInput" placeholder="যেমন: my-memoria-app">
-        <label>Firebase Web API Key</label>
-        <input type="text" id="fbApiKeyInput" placeholder="AIza... (Project settings থেকে)">
+        <h4>🔥 Cloud Sync (Firebase Realtime Database)</h4>
+        <div class="settings-hint">console.firebase.google.com এ প্রজেক্ট বানাও (অথবা তোমার আগের ExPo Vault প্রজেক্টটাই ব্যবহার করো), Realtime Database চালু করো, তারপর ডেটাবেজের URL (যেমন <b>https://your-project-default-rtdb.firebaseio.com</b>) এখানে বসাও। Rules টেস্ট মোডে (allow read/write: true) থাকলে Auth ফাঁকা রাখতে পারো। Sync ID তুমি নিজে যা ইচ্ছা লিখতে পারো — একই URL + Sync ID যেই ডিভাইসে বসাবে, সব জায়গায় progress sync হবে।</div>
+        <label>Firebase Database URL</label>
+        <input type="text" id="fbDbUrlInput" placeholder="https://your-project-default-rtdb.firebaseio.com">
+        <label>Auth Token / Database Secret (ঐচ্ছিক)</label>
+        <input type="text" id="fbApiKeyInput" placeholder="Rules প্রাইভেট হলে বসাও, নাহলে ফাঁকা রাখো">
         <label>Sync ID</label>
         <input type="text" id="fbDocIdInput" placeholder="default">
         <div class="modal-actions">
+          <button id="fbSave" class="modal-btn ghost">💾 তথ্য সংরক্ষণ করো</button>
           <button id="fbUpload" class="modal-btn teal">☁️ Upload করো</button>
           <button id="fbDownload" class="modal-btn primary">⬇️ Restore করো</button>
         </div>
@@ -307,7 +341,7 @@
 
       <div class="settings-section">
         <h4>🧠 Gemini API (Flashcard AI-এর জন্য)</h4>
-        <div class="settings-hint">নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ৪টা API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে; একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। rate-limit এড়াতে প্রতিটা retry-র আগে ১ মিনিট wait করবে।</div>
+        <div class="settings-hint">নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ৪টা API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে (কোনো wait ছাড়াই); একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। সব key + সব মডেল একবার করে fail হয়ে গেলে rate-limit এড়াতে ১ মিনিট wait করে আবার প্রথম থেকে try করবে। প্রতিটা শব্দের AI উত্তর একবার আনলে save হয়ে থাকবে (ফোনেই), পরে আবার একই শব্দ দেখলে offline-এও কাজ করবে আর নতুন করে token খরচ হবে না।</div>
         <label style="font-size:11px;color:var(--text-muted);">মডেল (ক্রম অনুযায়ী try হবে)</label>
         <div id="apiModelsWrap"></div>
         <label style="font-size:11px;color:var(--text-muted);margin-top:6px;display:block;">API Key (ক্রম অনুযায়ী try হবে)</label>
@@ -332,11 +366,11 @@
           <div class="fc-face front">
             <div class="fc-word" id="fcFrontWord"></div>
             <div class="fc-sub" id="fcFrontSub"></div>
-            <div class="fc-hint">ট্যাপ করো উল্টানোর জন্য</div>
+            <div class="fc-hint">👆 ট্যাপ করো উল্টানোর জন্য</div>
           </div>
           <div class="fc-face back">
             <div class="fc-meaning" id="fcBackMeaning"></div>
-            <div class="fc-hint">আবার ট্যাপ করো</div>
+            <div class="fc-hint">↺ আবার ট্যাপ করো</div>
           </div>
         </div>
       </div>
@@ -493,238 +527,207 @@ const SCHEDULE = [
   {g:'en', type:'groupverb', k:'Group Verb: Get', r:[78,87]},
 ]},
 {date:'2026-07-26', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[141,160]},
-  {g:'bn', k:'বিপরীত শব্দ', type:'bnant', r:[161,180]},
-  {g:'en', type:'wm', k:'Word Meaning', r:[156,175]},
-  {g:'en', type:'groupverb', k:'Group Verb: Give', r:[88,93]},
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[140,160]},
+  {g:'bn', k:'বিপরীত শব্দ', type:'bnant', r:[170,190]},
+  {g:'en', k:'Word Meaning', type:'wm', r:[156,175]},
+  {g:'en', k:'Group Verb: Give', type:'groupverb', r:[88,93]},
+]},
+{date:'2026-07-27', items:[
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[160,180]},
+  {g:'bn', k:'বিপরীত শব্দ', type:'bnant', r:[191,210]},
+  {g:'en', k:'Word Meaning', type:'wm', r:[176,195]},
+  {g:'en', k:'Group Verb: Go', type:'groupverb', r:[94,107]},
 ]},
 {date:'2026-07-28', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[161,180]},
-  {g:'bn', k:'বিপরীত শব্দ', type:'bnant', r:[181,200]},
-  {g:'en', type:'wm', k:'Word Meaning', r:[176,195]},
-  {g:'en', type:'groupverb', k:'Group Verb: Go', r:[94,107]},
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[180,200]},
+  {g:'bn', k:'বিপরীত শব্দ', type:'bnant', r:[210,230]},
+  {g:'en', k:'Word Meaning', type:'wm', r:[295,315]},
+  {g:'en', k:'Group Verb: Look', type:'groupverb', r:[108,115]},
 ]},
 {date:'2026-07-29', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[181,200]},
-  {g:'bn', k:'বিপরীত শব্দ', type:'bnant', r:[201,220]},
-  {g:'en', type:'wm', k:'Word Meaning', r:[196,235]},
-  {g:'en', type:'groupverb', k:'Group Verb: Look', r:[108,115]},
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[200,220]},
+  {g:'bn', k:'বিপরীত শব্দ', type:'bnant', r:[230,250]},
+  {g:'en', k:'Word Meaning', type:'wm', r:[315,335]},
+  {g:'en', k:'Group Verb: Make', type:'groupverb', r:[116,126]},
 ]},
 {date:'2026-07-30', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[201,220]},
-  {g:'bn', k:'বিপরীত শব্দ', type:'bnant', r:[221,240]},
-  {g:'en', type:'wm', k:'Word Meaning', r:[236,275]},
-  {g:'en', type:'groupverb', k:'Group Verb: Make', r:[116,126]},
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[220,240]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[1,20]},
+  {g:'en', k:'Word Meaning', type:'wm', r:[335,355]},
+  {g:'en', k:'Group Verb: Put', type:'groupverb', r:[127,135]},
 ]},
 {date:'2026-08-02', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[221,240]},
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[1,20]},
-  {g:'en', type:'wm', k:'Word Meaning', r:[276,315]},
-  {g:'en', type:'groupverb', k:'Group Verb: Put', r:[127,135]},
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[241,260]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[20,40]},
+  {g:'en', k:'Word Meaning', type:'wm', r:[355,375]},
+  {g:'en', k:'Group Verb: Run', type:'groupverb', r:[136,147]},
 ]},
 {date:'2026-08-03', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[241,260]},
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[21,40]},
-  {g:'en', type:'wm', k:'Word Meaning', r:[316,355]},
-  {g:'en', type:'groupverb', k:'Group Verb: Run', r:[136,147]},
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[260,280]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[40,60]},
+  {g:'en', k:'Synonym', type:'syn', r:[20,40]},
+  {g:'en', k:'Group Verb: Set', type:'groupverb', r:[148,159]},
 ]},
 {date:'2026-08-04', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[261,280]},
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[41,60]},
-  {g:'en', type:'syn', k:'Synonym', r:[1,40]},
-  {g:'en', type:'groupverb', k:'Group Verb: Set', r:[148,159]},
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[280,300]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[60,80]},
+  {g:'en', k:'Synonym', type:'syn', r:[40,60]},
+  {g:'en', k:'Group Verb: Stand', type:'groupverb', r:[160,167]},
 ]},
 {date:'2026-08-05', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[281,300]},
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[61,80]},
-  {g:'en', type:'syn', k:'Synonym', r:[41,60]},
-  {g:'en', type:'groupverb', k:'Group Verb: Stand', r:[160,167]},
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[300,330]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[80,100]},
+  {g:'en', k:'Synonym', type:'syn', r:[60,80]},
+  {g:'en', k:'Group Verb: Take', type:'groupverb', r:[168,177]},
 ]},
 {date:'2026-08-06', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[301,330]},
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[81,100]},
-  {g:'en', type:'syn', k:'Synonym', r:[61,80]},
-  {g:'en', type:'groupverb', k:'Group Verb: Take', r:[168,177]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[100,120]},
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[1,20]},
+  {g:'en', k:'Synonym', type:'syn', r:[80,100]},
+  {g:'en', k:'Group Verb: Turn', type:'groupverb', r:[178,188]},
 ]},
 {date:'2026-08-09', items:[
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[101,120]},
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[1,20]},
-  {g:'en', type:'syn', k:'Synonym', r:[81,100]},
-  {g:'en', type:'groupverb', k:'Group Verb: Turn', r:[178,188]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[120,140]},
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[20,40]},
+  {g:'en', k:'Synonym', type:'syn', r:[100,120]},
 ]},
 {date:'2026-08-10', items:[
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[121,140]},
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[21,40]},
-  {g:'en', type:'syn', k:'Synonym', r:[101,120]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[140,160]},
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[40,60]},
+  {g:'en', k:'Synonym', type:'syn', r:[120,140]},
+  {g:'en', k:'Idioms: page 1', type:'idiom', r:[1,22]},
 ]},
 {date:'2026-08-11', items:[
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[141,160]},
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[41,60]},
-  {g:'en', type:'syn', k:'Synonym', r:[121,140]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[160,180]},
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[60,80]},
+  {g:'en', k:'Synonym', type:'syn', r:[140,160]},
+  {g:'en', k:'Idioms: page 2', type:'idiom', r:[23,50]},
 ]},
 {date:'2026-08-12', items:[
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[161,180]},
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[61,80]},
-  {g:'en', type:'syn', k:'Synonym', r:[141,160]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[180,200]},
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[80,100]},
+  {g:'en', k:'Synonym', type:'syn', r:[160,180]},
+  {g:'en', k:'Idioms: page 3', type:'idiom', r:[51,76]},
 ]},
 {date:'2026-08-13', items:[
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[181,200]},
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[81,100]},
-  {g:'en', type:'syn', k:'Synonym', r:[161,180]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[200,220]},
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[100,120]},
+  {g:'en', k:'Synonym', type:'syn', r:[180,200]},
+  {g:'en', k:'Idioms: page 4', type:'idiom', r:[77,92]},
 ]},
 {date:'2026-08-16', items:[
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[201,220]},
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[101,120]},
-  {g:'en', type:'syn', k:'Synonym', r:[181,200]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[220,240]},
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[120,140]},
+  {g:'en', k:'Synonym', type:'syn', r:[200,220]},
+  {g:'en', k:'Idioms: page 5', type:'idiom', r:[93,108]},
 ]},
 {date:'2026-08-17', items:[
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[221,240]},
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[121,140]},
-  {g:'en', type:'syn', k:'Synonym', r:[201,220]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[240,260]},
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[140,160]},
+  {g:'en', k:'Synonym', type:'syn', r:[220,240]},
+  {g:'en', k:'Idioms: page 6', type:'idiom', r:[109,117]},
 ]},
 {date:'2026-08-18', items:[
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[241,260]},
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[141,160]},
-  {g:'en', type:'syn', k:'Synonym', r:[221,240]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[260,280]},
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[160,180]},
+  {g:'en', k:'Synonym', type:'syn', r:[240,260]},
+  {g:'en', k:'Idioms: page 7', type:'idiom', r:[118,128]},
 ]},
 {date:'2026-08-19', items:[
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[261,280]},
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[161,180]},
-  {g:'en', type:'syn', k:'Synonym', r:[241,260]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[280,298]},
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[180,200]},
+  {g:'en', k:'Synonym', type:'syn', r:[260,280]},
+  {g:'en', k:'Idioms: page 8', type:'idiom', r:[129,146]},
 ]},
 {date:'2026-08-20', items:[
-  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[281,298]},
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[181,200]},
-  {g:'en', type:'syn', k:'Synonym', r:[261,280]},
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[200,220]},
+  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[1,20]},
+  {g:'en', k:'Synonym', type:'syn', r:[280,300]},
+  {g:'en', k:'Idioms: page 9', type:'idiom', r:[147,162]},
 ]},
 {date:'2026-08-23', items:[
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[201,220]},
-  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[1,20]},
-  {g:'en', type:'syn', k:'Synonym', r:[281,300]},
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[220,240]},
+  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[20,40]},
+  {g:'en', k:'Synonym', type:'syn', r:[300,320]},
+  {g:'en', k:'Idioms: page 10', type:'idiom', r:[163,170]},
 ]},
 {date:'2026-08-24', items:[
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[221,240]},
-  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[21,40]},
-  {g:'en', type:'syn', k:'Synonym', r:[301,320]},
+  {g:'en', k:'Synonym', type:'syn', r:[340,350]},
+  {g:'en', k:'Idioms: page 12', type:'idiom', r:[185,200]},
+]},
+{date:'2026-08-25', items:[
+  {g:'en', k:'Synonym', type:'syn', r:[350,360]},
+  {g:'en', k:'Idioms: page 13', type:'idiom', r:[201,215]},
 ]},
 {date:'2026-08-26', items:[
-  {g:'en', type:'syn', k:'Synonym', r:[321,350]},
+  {g:'en', k:'Synonym', type:'syn', r:[360,380]},
+  {g:'en', k:'Idioms: page 14', type:'idiom', r:[216,229]},
 ]},
 {date:'2026-08-27', items:[
-  {g:'en', type:'syn', k:'Synonym', r:[351,360]},
+  {g:'en', k:'Synonym', type:'syn', r:[380,400]},
+  {g:'en', k:'Idioms: page 15', type:'idiom', r:[230,238]},
 ]},
 {date:'2026-08-30', items:[
-  {g:'en', type:'syn', k:'Synonym', r:[361,380]},
+  {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[1,50]},
 ]},
 {date:'2026-08-31', items:[
-  {g:'en', type:'syn', k:'Synonym', r:[381,400]},
-]},
-{date:'2026-09-20', items:[
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[241,260]},
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[240,260]},
   {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[41,60]},
-  {g:'en', type:'syn', k:'Synonym', r:[401,420]},
+  {g:'en', k:'Synonym', type:'syn', r:[400,420]},
+  {g:'en', k:'Idioms: page 16', type:'idiom', r:[239,253]},
 ]},
-{date:'2026-09-21', items:[
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[261,280]},
+{date:'2026-09-01', items:[
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[260,280]},
   {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[61,80]},
-  {g:'en', type:'syn', k:'Synonym', r:[421,440]},
+  {g:'en', k:'Synonym', type:'syn', r:[420,440]},
+  {g:'en', k:'Idioms: page 17', type:'idiom', r:[254,262]},
 ]},
-{date:'2026-09-22', items:[
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[281,300]},
-  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[81,100]},
-  {g:'en', type:'syn', k:'Synonym', r:[441,456]},
+{date:'2026-09-02', items:[
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[280,300]},
+  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[80,100]},
+  {g:'en', k:'Synonym', type:'syn', r:[440,456]},
+  {g:'en', k:'Idioms: page 18', type:'idiom', r:[263,271]},
 ]},
-{date:'2026-09-23', items:[
-  {g:'bn', type:'bagdhara', k:'বাগধারা', r:[301,325]},
-  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[101,120]},
-  {g:'en', type:'ant', k:'Antonym', r:[1,20]},
+{date:'2026-09-03', items:[
+  {g:'bn', k:'বাগধারা', type:'bagdhara', r:[300,325]},
+  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[100,120]},
+  {g:'en', k:'Antonym', type:'ant', r:[1,20]},
+  {g:'en', k:'Idioms: page 19', type:'idiom', r:[272,287]},
 ]},
-{date:'2026-09-24', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ (২য় cycle)', type:'poribhashik', r:[1,30]},
-  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[121,140]},
-  {g:'en', type:'ant', k:'Antonym', r:[21,40]},
+{date:'2026-09-06', items:[
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[1,30]},
+  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[120,140]},
+  {g:'en', k:'Antonym', type:'ant', r:[120,140]},
+  {g:'en', k:'Idioms: page 20', type:'idiom', r:[288,307]},
 ]},
-{date:'2026-09-27', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[31,60]},
-  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[141,160]},
-  {g:'en', type:'ant', k:'Antonym', r:[41,60]},
+{date:'2026-09-07', items:[
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[30,60]},
+  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[140,160]},
+  {g:'en', k:'Antonym', type:'ant', r:[40,60]},
+  {g:'en', k:'Idioms: page 21', type:'idiom', r:[308,320]},
 ]},
-{date:'2026-09-28', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[61,90]},
-  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[161,180]},
-  {g:'en', type:'ant', k:'Antonym', r:[61,80]},
+{date:'2026-09-08', items:[
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[60,90]},
+  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[160,180]},
+  {g:'en', k:'Antonym', type:'ant', r:[60,80]},
+  {g:'en', k:'Idioms: page 22', type:'idiom', r:[321,333]},
 ]},
-{date:'2026-09-29', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[91,120]},
-  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[181,200]},
-  {g:'en', type:'ant', k:'Antonym', r:[81,100]},
+{date:'2026-09-09', items:[
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[90,120]},
+  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[180,200]},
+  {g:'en', k:'Antonym', type:'ant', r:[80,100]},
+  {g:'en', k:'Idioms: page 23', type:'idiom', r:[334,348]},
 ]},
-{date:'2026-10-05', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[180,230], note:'gap আছে ১২০-১৮০, routine নিজেই skip করেছে'},
-  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[240,260], note:'gap আছে ২০০-২৪০'},
-  {g:'en', type:'ant', k:'Antonym', r:[140,160], note:'gap আছে ১০০-১৪০'},
+{date:'2026-09-10', items:[
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[180,230]},
+  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[240,260]},
+  {g:'en', k:'Antonym', type:'ant', r:[140,160]},
+  {g:'en', k:'Idioms: page 26', type:'idiom', r:[378,387]},
 ]},
-{date:'2026-10-08', items:[
-  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[290,320], note:'gap আছে ২৩০-২৯০'},
-  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[300,320], note:'gap আছে ২৬০-৩০০'},
-  {g:'en', type:'ant', k:'Antonym', r:[200,220], note:'gap আছে ১৬০-২০০'},
-]},
-{date:'2026-10-09', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[100,120], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-11', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[121,140], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-12', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[160,180], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-13', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[181,200], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-14', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[220,240], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-15', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[241,260], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-16', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[261,280], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-18', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[281,300], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-19', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[301,320], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-20', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[321,340], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-21', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[341,360], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-22', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[361,380], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-23', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[381,400], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-25', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[401,420], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-26', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[421,440], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-27', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[441,460], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-28', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[461,480], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-29', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[481,500], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
-]},
-{date:'2026-10-30', items:[
-  {g:'en', type:'ant', k:'Antonym', r:[501,510], note:'gap-fill: Antonym_List.docx থেকে যোগ করা হলো'},
+{date:'2026-09-13', items:[
+  {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[290,320]},
+  {g:'bn', k:'শব্দের অর্থ', type:'shobdartho', r:[300,320]},
+  {g:'en', k:'Antonym', type:'ant', r:[200,220]},
 ]},
 ];
 
@@ -737,8 +740,9 @@ const BNANT_LIST = [{"no": 1, "word": "নিন্দিত", "bn": "", "meanin
 const SHOBDARTHO_LIST = [{"no": 1, "word": "অভ্র", "bn": "", "meaning": "মেঘ"}, {"no": 2, "word": "অভ্রভেদী", "bn": "", "meaning": "আকাশচুম্বী"}, {"no": 3, "word": "অস্থি", "bn": "", "meaning": "হাড়"}, {"no": 4, "word": "শ্বেবনীলা", "bn": "", "meaning": "স্বাচ্ছন্দ্য  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 5, "word": "আয়ন", "bn": "", "meaning": "পথ"}, {"no": 6, "word": "অবক্রদ", "bn": "", "meaning": "মর্মান্তিক  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 7, "word": "অযোময়", "bn": "", "meaning": "লৌহময়"}, {"no": 8, "word": "অবিহিত", "bn": "", "meaning": "অনুচিত / অন্যায়"}, {"no": 9, "word": "অগ্র", "bn": "", "meaning": "প্রধান  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 10, "word": "অবিমিশ্র", "bn": "", "meaning": "বিশুদ্ধ"}, {"no": 11, "word": "অপভ্রংশ", "bn": "", "meaning": "বিকৃত"}, {"no": 12, "word": "অনেক", "bn": "", "meaning": "প্রচুর  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 13, "word": "অহঙ্গু", "bn": "", "meaning": "প্রভু  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 14, "word": "অপলাপ", "bn": "", "meaning": "অস্বীকার"}, {"no": 15, "word": "অপসংস্কৃতি", "bn": "", "meaning": "নেতিবাচক সংস্কৃতি"}, {"no": 16, "word": "অর্বাচীন", "bn": "", "meaning": "মূর্খ"}, {"no": 17, "word": "অলীক", "bn": "", "meaning": "মিথ্যা"}, {"no": 18, "word": "অস্থিরস্থা", "bn": "", "meaning": "ফাঁকি / বিছুই না  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 19, "word": "অনন্তঃ", "bn": "", "meaning": "অতঃপর  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 20, "word": "অনক", "bn": "", "meaning": "ছত্রতুল  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 21, "word": "অনন্য", "bn": "", "meaning": "শ্রেষ্ঠ, অনন্য  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 22, "word": "অনিন্দ্য", "bn": "", "meaning": "নন্দিত / নিন্দার অযোগ্য"}, {"no": 23, "word": "অম্বু", "bn": "", "meaning": "পানি / জল"}, {"no": 24, "word": "অগ্নিমান্দ্য", "bn": "", "meaning": "অজীর্ণতা"}, {"no": 25, "word": "অগ্নি অগ্নি-সহ", "bn": "", "meaning": "যা আগুনে পোড়ে না  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 26, "word": "অধিমর্ষ", "bn": "", "meaning": "ধ্বনি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 27, "word": "অনীক", "bn": "", "meaning": "সৈনিক / সৈন্যদল"}, {"no": 28, "word": "অভিরাম", "bn": "", "meaning": "সুন্দর"}, {"no": 29, "word": "অছি", "bn": "", "meaning": "অভিভাবক"}, {"no": 30, "word": "অনিল", "bn": "", "meaning": "বাতাস"}, {"no": 31, "word": "অভিনিবেশ", "bn": "", "meaning": "মনোযোগ"}, {"no": 32, "word": "অম্বরা", "bn": "", "meaning": "স্বর্গ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 33, "word": "অর্ক", "bn": "", "meaning": "সূর্য"}, {"no": 34, "word": "অলখ", "bn": "", "meaning": "অলক্ষ্য  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 35, "word": "অর্ণব", "bn": "", "meaning": "সমুদ্র"}, {"no": 36, "word": "অনুকূল", "bn": "", "meaning": "অনুকূল  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 37, "word": "অপ্রতুল", "bn": "", "meaning": "অপর্যাপ্ত"}, {"no": 38, "word": "এক অক্ষৌহিণী সমান", "bn": "", "meaning": "২১৮৭০০ চতুরঙ্গ সৈন্য/হাতি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 39, "word": "অত্যহিত", "bn": "", "meaning": "অতি অনিষ্ট"}, {"no": 40, "word": "অকিঞ্চন", "bn": "", "meaning": "নিঃস্ব"}, {"no": 41, "word": "অভিলাষ", "bn": "", "meaning": "ইচ্ছা"}, {"no": 42, "word": "অপাঙ্গ", "bn": "", "meaning": "দৃষ্টিকোণ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 43, "word": "অপোগণ্ড", "bn": "", "meaning": "অপ্রাপ্তবয়স্ক / নাবালক"}, {"no": 44, "word": "অবদান", "bn": "", "meaning": "সৎকর্ম  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 45, "word": "অবধান", "bn": "", "meaning": "মনোযোগ"}, {"no": 46, "word": "অক্ষ", "bn": "", "meaning": "কণ্ঠ / স্কন্ধ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 47, "word": "অংশ", "bn": "", "meaning": "ভোগ"}, {"no": 48, "word": "অশীতিপর", "bn": "", "meaning": "আশি বছরের বেশি বয়সের ব্যক্তি"}, {"no": 49, "word": "আশী", "bn": "", "meaning": "সাপের বিষদাঁত"}, {"no": 50, "word": "আশীবিষ", "bn": "", "meaning": "ভুজঙ্গ / সাপ"}, {"no": 51, "word": "আর্থিক", "bn": "", "meaning": "আর্থিক  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 52, "word": "অবুঢ়", "bn": "", "meaning": "অবিবাহিত"}, {"no": 53, "word": "আষার", "bn": "", "meaning": "প্রবল ও বৃষ্টিপাত / জলকণা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 54, "word": "আদাঙ্গতি", "bn": "", "meaning": "বিদ্বেষ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 55, "word": "আভাস্ব", "bn": "", "meaning": "দ্বিত্রিত  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 56, "word": "আভাস", "bn": "", "meaning": "ইশারা"}, {"no": 57, "word": "আঁজল", "bn": "", "meaning": "অঞ্জলি"}, {"no": 58, "word": "আভরণ", "bn": "", "meaning": "অলংকার"}, {"no": 59, "word": "আদ্যোপান্ত", "bn": "", "meaning": "আষ্টাগোড়া"}, {"no": 60, "word": "আস্থাল", "bn": "", "meaning": "গোয়াল"}, {"no": 61, "word": "আহব", "bn": "", "meaning": "যুদ্ধ"}, {"no": 62, "word": "আড়ৎ", "bn": "", "meaning": "গদি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 63, "word": "আল্লাহ হাফেজ", "bn": "", "meaning": "আল্লাহ আপনাকে রক্ষা করুন"}, {"no": 64, "word": "অটিদৌরে", "bn": "", "meaning": "সর্বদা ব্যবহারের উপযুক্ত  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 65, "word": "আবিল", "bn": "", "meaning": "কলুষিত"}, {"no": 66, "word": "আত্মানত", "bn": "", "meaning": "গচ্ছিত  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 67, "word": "আপন", "bn": "", "meaning": "দোকান  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 68, "word": "আশ্রয়", "bn": "", "meaning": "আশ্রয়  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 69, "word": "ইনকিলাব", "bn": "", "meaning": "বিপ্লব / আন্দোলন"}, {"no": 70, "word": "ইত্তেফাক", "bn": "", "meaning": "সম্প্রীতি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 71, "word": "ইতিকথা", "bn": "", "meaning": "কাহিনী"}, {"no": 72, "word": "ইষ্ট", "bn": "", "meaning": "প্রধান  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 73, "word": "উচ্ছিষ্ট", "bn": "", "meaning": "উদ্বৃত্ত"}, {"no": 74, "word": "উপক্রম", "bn": "", "meaning": "সূত্রপাত"}, {"no": 75, "word": "উপায়ন", "bn": "", "meaning": "শুভ অনুবৃত্তি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 76, "word": "উৎকট", "bn": "", "meaning": "উগ্রতা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 77, "word": "উর্নাভ", "bn": "", "meaning": "মাকড়সা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 78, "word": "উপমান", "bn": "", "meaning": "তুলনীয় বস্তু"}, {"no": 79, "word": "উপক্ষয়", "bn": "", "meaning": "পাপড়ি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 80, "word": "উপাধান", "bn": "", "meaning": "বালিশ"}, {"no": 81, "word": "উর্মি", "bn": "", "meaning": "সমুদ্র"}, {"no": 82, "word": "উদীচী", "bn": "", "meaning": "উত্তর দিক"}, {"no": 83, "word": "উত্তরী", "bn": "", "meaning": "চাদর"}, {"no": 84, "word": "উদ্দীপন", "bn": "", "meaning": "উদ্দীপন  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 85, "word": "ঊর্ণাজাল", "bn": "", "meaning": "মাকড়সার জাল"}, {"no": 86, "word": "উলুক", "bn": "", "meaning": "আহাম্মক  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 87, "word": "উন্মনা", "bn": "", "meaning": "অনুৎসুক"}, {"no": 88, "word": "উদ্বাসন", "bn": "", "meaning": "বাসভূমি থেকে বিতাড়িত হওয়া"}, {"no": 89, "word": "ঋজু", "bn": "", "meaning": "সোজা"}, {"no": 90, "word": "ঋদ্ধিরূপ", "bn": "", "meaning": "সমাধি-লিপি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 91, "word": "ঋষ্ণী", "bn": "", "meaning": "নির্জন  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 92, "word": "ঋষিতান", "bn": "", "meaning": "সমস্বর  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 93, "word": "ওদন", "bn": "", "meaning": "ভাত"}, {"no": 94, "word": "কৌমুদী", "bn": "", "meaning": "জ্যোৎস্না"}, {"no": 95, "word": "কার্বলিত", "bn": "", "meaning": "কৃমিবর্ম  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 96, "word": "কিসলয়", "bn": "", "meaning": "কচি পাতা"}, {"no": 97, "word": "কল্লোল", "bn": "", "meaning": "ঢেউ"}, {"no": 98, "word": "কুশীলব", "bn": "", "meaning": "অভিনেতা"}, {"no": 99, "word": "কন্যা", "bn": "", "meaning": "দুহিতা / অলক  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 100, "word": "কাদম্বিনী", "bn": "", "meaning": "মেঘমালা"}, {"no": 101, "word": "কোকনদ", "bn": "", "meaning": "নীল বর্ণ পদ্ম"}, {"no": 102, "word": "কুঞ্জর", "bn": "", "meaning": "হাতি"}, {"no": 103, "word": "করোতল", "bn": "", "meaning": "গল্পতল  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 104, "word": "কুশপুত্তলি", "bn": "", "meaning": "কোনো ব্যক্তির প্রতীক মূর্তি"}, {"no": 105, "word": "কৃমি", "bn": "", "meaning": "কৃমি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 106, "word": "কুটুম্ব", "bn": "", "meaning": "আত্মীয়"}, {"no": 107, "word": "কিঞ্চিনি", "bn": "", "meaning": "নূপুর  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 108, "word": "কালাকাল", "bn": "", "meaning": "সুসময় ও দুঃসময়"}, {"no": 109, "word": "কুজন", "bn": "", "meaning": "খারাপ লোক"}, {"no": 110, "word": "করন্ড", "bn": "", "meaning": "ঝাঁপি"}, {"no": 111, "word": "সুজন", "bn": "", "meaning": "ভালো লোক  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 112, "word": "তৈল্লি", "bn": "", "meaning": "চিরুনি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 113, "word": "কচি", "bn": "", "meaning": "নতুন"}, {"no": 114, "word": "কুহেলিকা", "bn": "", "meaning": "কুয়াশা"}, {"no": 115, "word": "কোন্দল", "bn": "", "meaning": "বিবাদ"}, {"no": 116, "word": "কর্তুর", "bn": "", "meaning": "ব্রহ্ম  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 117, "word": "কমল", "bn": "", "meaning": "পুষ্কর  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 118, "word": "কোষ্ঠী", "bn": "", "meaning": "জন্মপত্রিকা"}, {"no": 119, "word": "ঝুন্ঝুনি", "bn": "", "meaning": "ঝুনঝুনি পালন  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 120, "word": "কোন্দা", "bn": "", "meaning": "তালগাছের নৌকা"}, {"no": 121, "word": "কেন্দুয়ার/কেন্দুয়াড়/কেন্দুয়াটি", "bn": "", "meaning": "দরজা / কপাট"}, {"no": 122, "word": "কুশ্মিলক", "bn": "", "meaning": "তক্ষক  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 123, "word": "কম্পোত", "bn": "", "meaning": "কবুতর  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 124, "word": "কস্মিনকালে", "bn": "", "meaning": "কোনো সময়ে"}, {"no": 125, "word": "কিন্নর", "bn": "", "meaning": "দেবতা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 126, "word": "কোষী", "bn": "", "meaning": "জন্মপত্রিকা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 127, "word": "বগলকুট", "bn": "", "meaning": "তীব্র বিষ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 128, "word": "খেরোটি", "bn": "", "meaning": "মাথার খুলি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 129, "word": "বিশ্রী", "bn": "", "meaning": "কুৎসিত  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 130, "word": "কেন্দ্য", "bn": "", "meaning": "তালগাছের নৌকা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 131, "word": "কিরাত", "bn": "", "meaning": "জাতি বিশেষ"}, {"no": 132, "word": "কার্তিক", "bn": "", "meaning": "রূপবান"}, {"no": 133, "word": "কপর্দকহীন", "bn": "", "meaning": "নিঃস্ব"}, {"no": 134, "word": "ক্ষুধাজীবী", "bn": "", "meaning": "মুদখোর  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 135, "word": "কিংবদন্তী", "bn": "", "meaning": "জনশ্রুতি"}, {"no": 136, "word": "স্বর্গের অর্থ", "bn": "", "meaning": "আকাশ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 137, "word": "এড়া", "bn": "", "meaning": "পাণ্ডি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 138, "word": "মেসচর", "bn": "", "meaning": "আবাসচারী  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 139, "word": "এরোপ্লেন", "bn": "", "meaning": "আকাশযান / বিমান"}, {"no": 140, "word": "খদ্যোত", "bn": "", "meaning": "জোনাকি"}, {"no": 141, "word": "সাদির", "bn": "", "meaning": "সাধ্যের  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 142, "word": "গা (শব্দের অর্থ)", "bn": "", "meaning": "শুক্ল  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 143, "word": "গুবাক", "bn": "", "meaning": "সুপারি গাছ"}, {"no": 144, "word": "গুবাক খায়", "bn": "", "meaning": "চিবিয়ে  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 145, "word": "গৃধ্র", "bn": "", "meaning": "শকুন"}, {"no": 146, "word": "গিরি সংকট", "bn": "", "meaning": "পার্বত্য দুর্গমতা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 147, "word": "গহ্বর", "bn": "", "meaning": "বিবর"}, {"no": 148, "word": "গুলতানি", "bn": "", "meaning": "গল্পগুজব"}, {"no": 149, "word": "গাড়ল", "bn": "", "meaning": "বোকা"}, {"no": 150, "word": "গাড়ল (২)", "bn": "", "meaning": "ভেড়া  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 151, "word": "গুপ্তিবেশ", "bn": "", "meaning": "প্রহরী স্বাধীনতার জন্য ছোট বর্শা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 152, "word": "গণগ্রাম", "bn": "", "meaning": "বৃহৎ গ্রাম"}, {"no": 153, "word": "গ্যাঞ্জাম", "bn": "", "meaning": "অশান্তি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 154, "word": "দর্শন", "bn": "", "meaning": "পরিমল / সুগন্ধ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 155, "word": "চিলু", "bn": "", "meaning": "মগজ / মস্তিষ্ক / বুদ্ধি"}, {"no": 156, "word": "খেদিক", "bn": "", "meaning": "খোঁড়া  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 157, "word": "চক্ষু", "bn": "", "meaning": "চোখ"}, {"no": 158, "word": "চারপাই", "bn": "", "meaning": "খাটিয়া"}, {"no": 159, "word": "চারকোল", "bn": "", "meaning": "কাঠকয়লা"}, {"no": 160, "word": "চন্দ্রিমা", "bn": "", "meaning": "জ্যোৎস্না"}, {"no": 161, "word": "চুনকালি", "bn": "", "meaning": "কলঙ্ক"}, {"no": 162, "word": "চয়ন", "bn": "", "meaning": "সংগ্রহ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 163, "word": "চলিষ্ণু", "bn": "", "meaning": "গতিশীল"}, {"no": 164, "word": "জবরজং", "bn": "", "meaning": "পরিপাটিহীন"}, {"no": 165, "word": "জব", "bn": "", "meaning": "জবান  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 166, "word": "জীবাত্মেন্দু", "bn": "", "meaning": "মেঘের ডাক  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 167, "word": "জুলমাত", "bn": "", "meaning": "অন্ধকার  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 168, "word": "জিঞ্জির", "bn": "", "meaning": "শিকল"}, {"no": 169, "word": "জ্যাফরি", "bn": "", "meaning": "চোঙ ছিদ্রের বেড়া  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 170, "word": "জাহান্নুম", "bn": "", "meaning": "জাহান্নামের হাসি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 171, "word": "জোড় ও", "bn": "", "meaning": "যুগল  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 172, "word": "জোর", "bn": "", "meaning": "শক্তি"}, {"no": 173, "word": "জুলুম", "bn": "", "meaning": "অত্যাচার"}, {"no": 174, "word": "ঝাণ্ডা", "bn": "", "meaning": "প্রতাপ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 175, "word": "টীকা", "bn": "", "meaning": "ব্যাখ্যা বিশ্লেষণ"}, {"no": 176, "word": "ট্যাবু", "bn": "", "meaning": "নিষিদ্ধ"}, {"no": 177, "word": "তয়স্মানা", "bn": "", "meaning": "গুরুত্বপূর্ণ কক্ষ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 178, "word": "তটিনী", "bn": "", "meaning": "নদী"}, {"no": 179, "word": "তুবড়ি", "bn": "", "meaning": "বাতি"}, {"no": 180, "word": "তিত্তির", "bn": "", "meaning": "পাখিবিশেষ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 181, "word": "হুড়ি", "bn": "", "meaning": "বাতি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 182, "word": "তল", "bn": "", "meaning": "চাল"}, {"no": 183, "word": "তন্নিধি", "bn": "", "meaning": "অনুষঙ্গ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 184, "word": "তক্ষক", "bn": "", "meaning": "ছুতার"}, {"no": 185, "word": "তাত", "bn": "", "meaning": "বাবা"}, {"no": 186, "word": "তন্ডুল", "bn": "", "meaning": "চাল"}, {"no": 187, "word": "তাম্বুল", "bn": "", "meaning": "পান"}, {"no": 188, "word": "দৌবারিক", "bn": "", "meaning": "দারোয়ান"}, {"no": 189, "word": "দামিনা", "bn": "", "meaning": "গ্লানির কল্মিদ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 190, "word": "দাহুরী", "bn": "", "meaning": "কন্যার পুত্র  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 191, "word": "ডিউড়ি", "bn": "", "meaning": "সিংহদ্বার / সদর প্রবেশদ্বার"}, {"no": 192, "word": "দফতরি", "bn": "", "meaning": "বাঁধাইকর্মী  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 193, "word": "দামিনী", "bn": "", "meaning": "বিদ্যুৎ"}, {"no": 194, "word": "দহ", "bn": "", "meaning": "জলাধার / হ্রদ"}, {"no": 195, "word": "দ্যালোক", "bn": "", "meaning": "আকাশ"}, {"no": 196, "word": "দ্বিজরাজ", "bn": "", "meaning": "চাঁদ"}, {"no": 197, "word": "দ্বিপ", "bn": "", "meaning": "হাতি"}, {"no": 198, "word": "দ্বীপ", "bn": "", "meaning": "জলবেষ্টিত স্থান"}, {"no": 199, "word": "দুর্জোশনন্দিনী", "bn": "", "meaning": "দুষ্ট প্রধানের কন্যা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 200, "word": "দুর্ধর্ষ", "bn": "", "meaning": "বশ করা সহজ নয়"}, {"no": 201, "word": "দ্বেষ", "bn": "", "meaning": "হিংসা"}, {"no": 202, "word": "দাচুরী", "bn": "", "meaning": "ভেষজ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 203, "word": "ধীমান", "bn": "", "meaning": "বুদ্ধিমান"}, {"no": 204, "word": "নির্বিঘ্ন", "bn": "", "meaning": "বিঘ্নহীন"}, {"no": 205, "word": "নিতি", "bn": "", "meaning": "রোজ"}, {"no": 206, "word": "নরসুন্দর", "bn": "", "meaning": "নাপিত"}, {"no": 207, "word": "নীপ", "bn": "", "meaning": "কদম"}, {"no": 208, "word": "নিরাশ", "bn": "", "meaning": "হাওয়াশূন্য  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 209, "word": "নিবিদ", "bn": "", "meaning": "বৈদিক মন্ত্র"}, {"no": 210, "word": "নিশ্চিত", "bn": "", "meaning": "ঠারালো  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 211, "word": "সদাব্রত", "bn": "", "meaning": "অন্নসত্র  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 212, "word": "নিকুঞ্জ", "bn": "", "meaning": "বাগান"}, {"no": 213, "word": "নান্দী", "bn": "", "meaning": "স্তুতি"}, {"no": 214, "word": "নীর", "bn": "", "meaning": "পানি"}, {"no": 215, "word": "নীড়", "bn": "", "meaning": "পাখির বাসা"}, {"no": 216, "word": "নির্নিমেষ", "bn": "", "meaning": "অপলক"}, {"no": 217, "word": "নিগড়", "bn": "", "meaning": "বেড়ি"}, {"no": 218, "word": "নবাব", "bn": "", "meaning": "স্থানের নাম  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 219, "word": "পরিজম্ভা", "bn": "", "meaning": "সংক্ষেপার্থ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 220, "word": "পাণি", "bn": "", "meaning": "হাত"}, {"no": 221, "word": "পনস", "bn": "", "meaning": "কাঁঠাল"}, {"no": 222, "word": "প্রথিত", "bn": "", "meaning": "বিখ্যাত"}, {"no": 223, "word": "পাংশু", "bn": "", "meaning": "দীর্ঘকায়  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 224, "word": "প্রতীকর্মী", "bn": "", "meaning": "নিদর্শন ভোজন  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 225, "word": "প্রত্যপনতি", "bn": "", "meaning": "উপস্থিত বুদ্ধি আছে যার  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 226, "word": "পুষ্পার্তি", "bn": "", "meaning": "ফুলের নিবেদন  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 227, "word": "প্রীণন", "bn": "", "meaning": "প্রীতিসম্পাদন"}, {"no": 228, "word": "পাঁচুটে", "bn": "", "meaning": "ফ্যাকাশে"}, {"no": 229, "word": "পঙ্কল", "bn": "", "meaning": "ভোগ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 230, "word": "প্রাহ্ন", "bn": "", "meaning": "প্রাত্যহিক / জনসাধারণের কথা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 231, "word": "প্রকৃত", "bn": "", "meaning": "যথার্থ"}, {"no": 232, "word": "পেলব", "bn": "", "meaning": "কোমল / সূক্ষ্ম"}, {"no": 233, "word": "পোষবাত", "bn": "", "meaning": "মণিবিশেষ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 234, "word": "পরার্থ", "bn": "", "meaning": "পরোপকার"}, {"no": 235, "word": "পুরু", "bn": "", "meaning": "স্থূল  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 236, "word": "প্রক্ষালন", "bn": "", "meaning": "পরিষ্কার করা"}, {"no": 237, "word": "পাতক", "bn": "", "meaning": "পাপ"}, {"no": 238, "word": "প্রদোষ", "bn": "", "meaning": "সন্ধ্যা"}, {"no": 239, "word": "প্রাতিস্বিক", "bn": "", "meaning": "স্বকীয়"}, {"no": 240, "word": "পরশু", "bn": "", "meaning": "আগামীকালের পরের দিন"}, {"no": 241, "word": "পঞ্চস্বর", "bn": "", "meaning": "কোকিলের মুরলহরী  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 242, "word": "প্রকর্ষ", "bn": "", "meaning": "উৎকর্ষ"}, {"no": 243, "word": "প্রশমন", "bn": "", "meaning": "বরণ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 244, "word": "প্রাকার", "bn": "", "meaning": "প্রাচীর / দেয়াল"}, {"no": 245, "word": "প্রতীতি", "bn": "", "meaning": "বিশ্বাস"}, {"no": 246, "word": "পল্লব গ্রাহিতা", "bn": "", "meaning": "আধা আধা জ্ঞান  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 247, "word": "প্রাচীন", "bn": "", "meaning": "অভিজ্ঞতাসম্পন্ন বয়স্ক ব্যক্তি"}, {"no": 248, "word": "পারি", "bn": "", "meaning": "পারাপার  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 249, "word": "পরিধ", "bn": "", "meaning": "বৃক্ক  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 250, "word": "পরভৃত", "bn": "", "meaning": "কোকিল"}, {"no": 251, "word": "পাথার", "bn": "", "meaning": "সমুদ্র"}, {"no": 252, "word": "পেটোয়া", "bn": "", "meaning": "অনুগত"}, {"no": 253, "word": "প্রমাদ", "bn": "", "meaning": "বিপদ"}, {"no": 254, "word": "প্রেক্ষিত", "bn": "", "meaning": "যে প্রেক্ষাপটে দর্শন করা হয়েছে  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 255, "word": "ফরমান", "bn": "", "meaning": "আদেশ / সংবাদ / খবর"}, {"no": 256, "word": "বিহঙ্গ", "bn": "", "meaning": "পাখি"}, {"no": 257, "word": "বায়ু", "bn": "", "meaning": "সমীরণ"}, {"no": 258, "word": "বেমাত", "bn": "", "meaning": "বেমানান  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 259, "word": "বিরাগী", "bn": "", "meaning": "উদাসীন"}, {"no": 260, "word": "বামেতর", "bn": "", "meaning": "ডান  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 261, "word": "বিভাবরী", "bn": "", "meaning": "রাত"}, {"no": 262, "word": "বলাহক", "bn": "", "meaning": "মেঘ"}, {"no": 263, "word": "বৈরুথ", "bn": "", "meaning": "বিষ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 264, "word": "বজ্রবাসমর্তী", "bn": "", "meaning": "বজ্রের মূর্তি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 265, "word": "বকনা", "bn": "", "meaning": "গাই-বাছুর  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 266, "word": "ব্যায়াম", "bn": "", "meaning": "কসরত"}, {"no": 267, "word": "ব্রীহি", "bn": "", "meaning": "ধান"}, {"no": 268, "word": "বহুব্রীহি", "bn": "", "meaning": "বহু ধান  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 269, "word": "বদান্যতা", "bn": "", "meaning": "দানশীলতা"}, {"no": 270, "word": "প্রাত্য", "bn": "", "meaning": "পতিত  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 271, "word": "তানি", "bn": "", "meaning": "সুরকারের মজুরি  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 272, "word": "প্রশস্তি", "bn": "", "meaning": "স্তুতি"}, {"no": 273, "word": "বারজ্যারি", "bn": "", "meaning": "সর্বজনীন  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 274, "word": "বল্লকী", "bn": "", "meaning": "বীণা জাতীয় বাদ্যযন্ত্রবিশেষ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 275, "word": "তিতিক্ষা", "bn": "", "meaning": "ক্ষমাপরায়ণতা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 276, "word": "বিবর", "bn": "", "meaning": "গর্ত"}, {"no": 277, "word": "বীজন", "bn": "", "meaning": "পাখা"}, {"no": 278, "word": "ভ্রমর", "bn": "", "meaning": "ভ্রমর  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 279, "word": "ভিষক", "bn": "", "meaning": "চিকিৎসক"}, {"no": 280, "word": "তুরিষ্ঠ", "bn": "", "meaning": "প্রচুর  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 281, "word": "ভার্যা", "bn": "", "meaning": "স্ত্রী"}, {"no": 282, "word": "মৃগরাজ", "bn": "", "meaning": "সিংহ"}, {"no": 283, "word": "মন্ডা", "bn": "", "meaning": "দুর্মূল্য  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 284, "word": "মুরাল", "bn": "", "meaning": "দেয়াল / দেয়ালচিত্র"}, {"no": 285, "word": "মৃগাঙ্ক", "bn": "", "meaning": "চন্দ্র"}, {"no": 286, "word": "মথা অগ্নি তমিস্রা", "bn": "", "meaning": "গাঢ় অন্ধকার / ঘোর অমাবস্যা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 287, "word": "ম্রিয়মাণ", "bn": "", "meaning": "অনভিপ্রেত  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 288, "word": "মার্গ", "bn": "", "meaning": "পথ"}, {"no": 289, "word": "মন্ডুক", "bn": "", "meaning": "ব্যাঙ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 290, "word": "মরুৎ", "bn": "", "meaning": "বায়ু"}, {"no": 291, "word": "মাধবী", "bn": "", "meaning": "বাসন্তী ফুল"}, {"no": 292, "word": "মার্তণ্ড", "bn": "", "meaning": "সূর্য"}, {"no": 293, "word": "মার্সিয়া", "bn": "", "meaning": "শোক বা আহাজারি"}, {"no": 294, "word": "মরুত", "bn": "", "meaning": "বায়ু"}, {"no": 295, "word": "মহী", "bn": "", "meaning": "ধরা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 296, "word": "মৃগয়া", "bn": "", "meaning": "বন্য পশুপাখি শিকার"}, {"no": 297, "word": "মন্থরী", "bn": "", "meaning": "শুকনো  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 298, "word": "যামিনী", "bn": "", "meaning": "রাত্রি"}, {"no": 299, "word": "যশ বা খ্যাতি", "bn": "", "meaning": "কীর্তি"}, {"no": 300, "word": "স্বল্পাল্প", "bn": "", "meaning": "একটি সময়ে  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 301, "word": "রসাতল", "bn": "", "meaning": "ধ্বংস  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 302, "word": "রম্ভার তাঁদি", "bn": "", "meaning": "কলার ছড়া  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 303, "word": "রোজনামচা", "bn": "", "meaning": "দিনলিপি"}, {"no": 304, "word": "রাঙুল", "bn": "", "meaning": "লাল  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 305, "word": "রামত", "bn": "", "meaning": "গাধা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 306, "word": "রুধির", "bn": "", "meaning": "রক্ত"}, {"no": 307, "word": "লোহিত", "bn": "", "meaning": "লাল রং"}, {"no": 308, "word": "লেশ", "bn": "", "meaning": "অল্প"}, {"no": 309, "word": "লেফাফা", "bn": "", "meaning": "মোড়ক"}, {"no": 310, "word": "লহরী", "bn": "", "meaning": "ঢেউ"}, {"no": 311, "word": "লাঙ্গুল", "bn": "", "meaning": "লেজ"}, {"no": 312, "word": "লুব্ধ", "bn": "", "meaning": "লোভুক  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 313, "word": "লিপি", "bn": "", "meaning": "লেখা"}, {"no": 314, "word": "স্রোতস্বিনী", "bn": "", "meaning": "নদী"}, {"no": 315, "word": "সমীর", "bn": "", "meaning": "বাতাস"}, {"no": 316, "word": "আর্তব্য", "bn": "", "meaning": "বরণীয়  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 317, "word": "সদ্যোজাত", "bn": "", "meaning": "সদ্য জন্ম নেওয়া শিশু  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 318, "word": "সম্মার্জনা", "bn": "", "meaning": "পরিষ্কার করা"}, {"no": 319, "word": "সম্মার্জনী", "bn": "", "meaning": "ঝাড়ু"}, {"no": 320, "word": "সংসর্গ", "bn": "", "meaning": "আঁকড়ানো  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 321, "word": "সংহারক", "bn": "", "meaning": "বিনাশকারী / সংহারকারী"}, {"no": 322, "word": "সায়ঙ্কন", "bn": "", "meaning": "সন্ধ্যা  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 323, "word": "সেতারা", "bn": "", "meaning": "তারকা"}, {"no": 324, "word": "মুক্ত", "bn": "", "meaning": "নির্দিষ্ট  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 325, "word": "স্বাক্ষর", "bn": "", "meaning": "দস্তখত"}, {"no": 326, "word": "সার্ধ", "bn": "", "meaning": "দেড়"}, {"no": 327, "word": "সার্ধশত", "bn": "", "meaning": "১৫০"}, {"no": 328, "word": "সপ্তসুর", "bn": "", "meaning": "সাতটি সুর"}, {"no": 329, "word": "সহসা", "bn": "", "meaning": "হঠাৎ"}, {"no": 330, "word": "সারমেয়", "bn": "", "meaning": "কুকুর"}, {"no": 331, "word": "সম্বোধন", "bn": "", "meaning": "আহ্বান"}, {"no": 332, "word": "স্রবণ", "bn": "", "meaning": "ক্ষরণ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 333, "word": "সুধাকর", "bn": "", "meaning": "চন্দ্র"}, {"no": 334, "word": "সিধুর", "bn": "", "meaning": "চোখ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 335, "word": "সদন", "bn": "", "meaning": "বাড়ি"}, {"no": 336, "word": "সিঁধেল", "bn": "", "meaning": "চোর"}, {"no": 337, "word": "স্মারক", "bn": "", "meaning": "স্মৃতিচিহ্ন  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 338, "word": "সমীরণ", "bn": "", "meaning": "বাতাস"}, {"no": 339, "word": "সনাতন", "bn": "", "meaning": "চিরন্তন / প্রাচীন"}, {"no": 340, "word": "সংশপ্তক", "bn": "", "meaning": "যুদ্ধে জয়লাভ অথবা প্রাণত্যাগ — এরূপ শপথকারী সৈন্য"}, {"no": 341, "word": "সম্ভ্রম", "bn": "", "meaning": "ভদ্রতা / সম্ভ্রম  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 342, "word": "সম্ভার", "bn": "", "meaning": "উপহার"}, {"no": 343, "word": "সায়েন্স ফিকশন", "bn": "", "meaning": "বৈজ্ঞানিক কল্পকাহিনী"}, {"no": 344, "word": "স্কেচ", "bn": "", "meaning": "পেনসিলে আঁকা ছবি"}, {"no": 345, "word": "সম্মান", "bn": "", "meaning": "সম্মান  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 346, "word": "সম্পৃক্ত", "bn": "", "meaning": "সংযুক্ত"}, {"no": 347, "word": "সপ্তব্যাহারে", "bn": "", "meaning": "একযোগে  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 348, "word": "শকট", "bn": "", "meaning": "গাড়ি"}, {"no": 349, "word": "শামাদান", "bn": "", "meaning": "মোমদানি"}, {"no": 350, "word": "শ্লাঘা", "bn": "", "meaning": "গৌরব"}, {"no": 351, "word": "শর্বরী", "bn": "", "meaning": "রাত"}, {"no": 352, "word": "শিখন্ডী", "bn": "", "meaning": "ময়ূর"}, {"no": 353, "word": "শ্রীঘর", "bn": "", "meaning": "জেলখানা"}, {"no": 354, "word": "শ্মশ্রু", "bn": "", "meaning": "দাড়ি-গোঁফ"}, {"no": 355, "word": "শম", "bn": "", "meaning": "শান্তি"}, {"no": 356, "word": "শীকর", "bn": "", "meaning": "জলকণা"}, {"no": 357, "word": "শবল", "bn": "", "meaning": "বহুবর্ণিল  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 358, "word": "শরণ", "bn": "", "meaning": "আশ্রয়"}, {"no": 359, "word": "শৈথরি", "bn": "", "meaning": "দেহ  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 360, "word": "শম্বর", "bn": "", "meaning": "হরিণ"}, {"no": 361, "word": "শঙ্খি", "bn": "", "meaning": "ঝিনুক  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 362, "word": "শ্বাপদ", "bn": "", "meaning": "হিংস্র পশু  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 363, "word": "শশাঙ্ক", "bn": "", "meaning": "চাঁদ"}, {"no": 364, "word": "হিল্লোল", "bn": "", "meaning": "তরঙ্গ"}, {"no": 365, "word": "হরিৎ", "bn": "", "meaning": "সবুজ"}, {"no": 366, "word": "হর্ষ", "bn": "", "meaning": "আনন্দ"}, {"no": 367, "word": "ক্লিন্তল", "bn": "", "meaning": "শীতল  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}];
 const PORIBHASHIK_LIST = [{"no": 1, "word": "A to Z", "bn": "", "meaning": "সম্পূর্ণভাবে"}, {"no": 2, "word": "Aboriginal", "bn": "", "meaning": "আদিবাসী"}, {"no": 3, "word": "Abide by", "bn": "", "meaning": "মেনে চলা"}, {"no": 4, "word": "Accidental", "bn": "", "meaning": "আপতিক"}, {"no": 5, "word": "Ad hoc", "bn": "", "meaning": "অস্থায়ী ভিত্তিক"}, {"no": 6, "word": "Adjournment", "bn": "", "meaning": "মুলতবি"}, {"no": 7, "word": "Adam's apple", "bn": "", "meaning": "কণ্ঠমণি"}, {"no": 8, "word": "Adult education", "bn": "", "meaning": "বয়স্ক শিক্ষা"}, {"no": 9, "word": "Aeronautics", "bn": "", "meaning": "বিমান চালনবিদ্যা"}, {"no": 10, "word": "Aesthetic", "bn": "", "meaning": "নন্দনতত্ত্ব"}, {"no": 11, "word": "Affidavit", "bn": "", "meaning": "হলফনামা"}, {"no": 12, "word": "Agenda", "bn": "", "meaning": "আলোচ্য সূচি"}, {"no": 13, "word": "Agora", "bn": "", "meaning": "মুক্তাঞ্চল"}, {"no": 14, "word": "Alibi", "bn": "", "meaning": "উজর"}, {"no": 15, "word": "Alias", "bn": "", "meaning": "ওরফে"}, {"no": 16, "word": "Alien", "bn": "", "meaning": "বহিরাগত"}, {"no": 17, "word": "Allegory", "bn": "", "meaning": "রূপক"}, {"no": 18, "word": "Amicus Curiae", "bn": "", "meaning": "আদালতের বন্ধু"}, {"no": 19, "word": "Ambiguous", "bn": "", "meaning": "দ্ব্যর্থক"}, {"no": 20, "word": "Amplification", "bn": "", "meaning": "পরিবর্ধন"}, {"no": 21, "word": "Amplitude", "bn": "", "meaning": "বিস্তার"}, {"no": 22, "word": "Anticipation", "bn": "", "meaning": "প্রাক্‌চিন্তা"}, {"no": 23, "word": "Anatomy", "bn": "", "meaning": "শরীরবিদ্যা"}, {"no": 24, "word": "Annex", "bn": "", "meaning": "পরিশিষ্ট"}, {"no": 25, "word": "Annotation", "bn": "", "meaning": "টীকা"}, {"no": 26, "word": "Ancestor", "bn": "", "meaning": "পূর্বপুরুষ"}, {"no": 27, "word": "Appendix", "bn": "", "meaning": "পরিশিষ্ট"}, {"no": 28, "word": "Archetype", "bn": "", "meaning": "আদিরূপ"}, {"no": 29, "word": "Article", "bn": "", "meaning": "অনুচ্ছেদ"}, {"no": 30, "word": "Artisan", "bn": "", "meaning": "কারিগর"}, {"no": 31, "word": "Architect", "bn": "", "meaning": "প্রকৌশলী"}, {"no": 32, "word": "Archives", "bn": "", "meaning": "মহাফেজখানা"}, {"no": 33, "word": "Armour", "bn": "", "meaning": "বর্ম"}, {"no": 34, "word": "As it were", "bn": "", "meaning": "যেন"}, {"no": 35, "word": "Attested", "bn": "", "meaning": "সত্যায়িত"}, {"no": 36, "word": "Audio", "bn": "", "meaning": "শ্রাব্য"}, {"no": 37, "word": "Autonomous", "bn": "", "meaning": "স্বায়ত্তশাসিত"}, {"no": 38, "word": "Bad blood", "bn": "", "meaning": "মনোমালিন্য"}, {"no": 39, "word": "Ballad", "bn": "", "meaning": "লোকগীতি"}, {"no": 40, "word": "Barren", "bn": "", "meaning": "ঊষর"}, {"no": 41, "word": "Basin", "bn": "", "meaning": "বৈবাহিক"}, {"no": 42, "word": "Beauty sleep", "bn": "", "meaning": "প্রথম রাত্রির ঘুম"}, {"no": 43, "word": "Bear market", "bn": "", "meaning": "মন্দা বাজার"}, {"no": 44, "word": "Bill", "bn": "", "meaning": "মূল্যপত্র"}, {"no": 45, "word": "Biography", "bn": "", "meaning": "জীবনচরিত"}, {"no": 46, "word": "Black sheep", "bn": "", "meaning": "কুলাঙ্গার"}, {"no": 47, "word": "Black and blue", "bn": "", "meaning": "উত্তম মধ্যম"}, {"no": 48, "word": "Black and white", "bn": "", "meaning": "লিখিতভাবে"}, {"no": 49, "word": "Blank verse", "bn": "", "meaning": "অমিত্রাক্ষর"}, {"no": 50, "word": "Bloc", "bn": "", "meaning": "শক্তিজোট"}, {"no": 51, "word": "Blockade", "bn": "", "meaning": "অবরোধ"}, {"no": 52, "word": "Blue print", "bn": "", "meaning": "প্রতিচিত্র"}, {"no": 53, "word": "Bottom of the line", "bn": "", "meaning": "চূড়ান্ত ফলাফল"}, {"no": 54, "word": "Booklet", "bn": "", "meaning": "পুস্তিকা"}, {"no": 55, "word": "Bribe", "bn": "", "meaning": "ঘুষ"}, {"no": 56, "word": "Bugger", "bn": "", "meaning": "জঘন্য ব্যক্তি"}, {"no": 57, "word": "Call a spade a spade", "bn": "", "meaning": "যা সত্য তাই বলা"}, {"no": 58, "word": "Call it a day", "bn": "", "meaning": "আজকের কাজ শেষ করা"}, {"no": 59, "word": "Canto", "bn": "", "meaning": "মহাকাব্যের বিভাগ"}, {"no": 60, "word": "Canvas", "bn": "", "meaning": "ক্যানভাস কাপড়"}, {"no": 61, "word": "Catalogue", "bn": "", "meaning": "তালিকা"}, {"no": 62, "word": "Campaign", "bn": "", "meaning": "প্রচারাভিযান"}, {"no": 63, "word": "Carbohydrate", "bn": "", "meaning": "শ্বেতসার / শর্করা"}, {"no": 64, "word": "Cess", "bn": "", "meaning": "উপকর"}, {"no": 65, "word": "Cease fire", "bn": "", "meaning": "অস্ত্র-সংবরণ"}, {"no": 66, "word": "Chancellor", "bn": "", "meaning": "আচার্য"}, {"no": 67, "word": "Charter", "bn": "", "meaning": "সনদ"}, {"no": 68, "word": "Chew the cud", "bn": "", "meaning": "গভীরভাবে চিন্তা করা"}, {"no": 69, "word": "Civil Surgeon", "bn": "", "meaning": "সিভিল চিকিৎসক"}, {"no": 70, "word": "Civil society", "bn": "", "meaning": "সুশীল সমাজ"}, {"no": 71, "word": "Civil war", "bn": "", "meaning": "গৃহযুদ্ধ"}, {"no": 72, "word": "Circular", "bn": "", "meaning": "পরিপত্র"}, {"no": 73, "word": "Climax", "bn": "", "meaning": "চরম মুহূর্ত"}, {"no": 74, "word": "Code", "bn": "", "meaning": "সংকেত / বিধি"}, {"no": 75, "word": "Coating", "bn": "", "meaning": "আবরণ"}, {"no": 76, "word": "Constipation", "bn": "", "meaning": "কোষ্ঠকাঠিন্য"}, {"no": 77, "word": "Corporal", "bn": "", "meaning": "শারীরিক"}, {"no": 78, "word": "Coup", "bn": "", "meaning": "অভ্যুত্থান"}, {"no": 79, "word": "Covenant", "bn": "", "meaning": "চুক্তিপত্র"}, {"no": 80, "word": "Cognizable", "bn": "", "meaning": "আমলযোগ্য"}, {"no": 81, "word": "Colleague", "bn": "", "meaning": "সহকর্মী"}, {"no": 82, "word": "Context", "bn": "", "meaning": "প্রসঙ্গ"}, {"no": 83, "word": "Comma", "bn": "", "meaning": "পাদচ্ছেদ"}, {"no": 84, "word": "Compound interest", "bn": "", "meaning": "চক্রবৃদ্ধি সুদ"}, {"no": 85, "word": "Comparative", "bn": "", "meaning": "তুলনামূলক"}, {"no": 86, "word": "Commercial entrepreneur", "bn": "", "meaning": "বাণিজ্যিক উদ্যোক্তা"}, {"no": 87, "word": "Constituency", "bn": "", "meaning": "নির্বাচনী এলাকা"}, {"no": 88, "word": "Co-opted", "bn": "", "meaning": "সহযোজিত"}, {"no": 89, "word": "Consumer goods", "bn": "", "meaning": "ভোগ্যপণ্য"}, {"no": 90, "word": "Cosmic", "bn": "", "meaning": "মহাজাগতিক"}, {"no": 91, "word": "Consultant", "bn": "", "meaning": "উপদেষ্টা"}, {"no": 92, "word": "Copy", "bn": "", "meaning": "নকল / অনুলিপি / প্রতিলিপি"}, {"no": 93, "word": "Cosmic Ray", "bn": "", "meaning": "মহাজাগতিক রশ্মি"}, {"no": 94, "word": "Colony", "bn": "", "meaning": "উপনিবেশ"}, {"no": 95, "word": "Curtail", "bn": "", "meaning": "সংক্ষিপ্ত করা"}, {"no": 96, "word": "Current account", "bn": "", "meaning": "চলতি হিসাব"}, {"no": 97, "word": "Corrigendum", "bn": "", "meaning": "শুদ্ধিপত্র"}, {"no": 98, "word": "Custom", "bn": "", "meaning": "প্রথা"}, {"no": 99, "word": "Curriculum", "bn": "", "meaning": "পাঠ্যক্রম"}, {"no": 100, "word": "Dash", "bn": "", "meaning": "বাক্যসঙ্গতি চিহ্ন"}, {"no": 101, "word": "Deadlock", "bn": "", "meaning": "অচলাবস্থা"}, {"no": 102, "word": "Dead of Night", "bn": "", "meaning": "মধ্যরাত্রি"}, {"no": 103, "word": "Deed", "bn": "", "meaning": "দলিল"}, {"no": 104, "word": "Defendant", "bn": "", "meaning": "বিবাদী"}, {"no": 105, "word": "Deputation", "bn": "", "meaning": "প্রেষণ"}, {"no": 106, "word": "Design", "bn": "", "meaning": "নকশা"}, {"no": 107, "word": "Depreciation", "bn": "", "meaning": "অবচয়"}, {"no": 108, "word": "Dilly Dally", "bn": "", "meaning": "খেয়ালখুশি করা / দীর্ঘসূত্রিতা করা / সময়ক্ষেপণ করা"}, {"no": 109, "word": "Dialect", "bn": "", "meaning": "উপভাষা"}, {"no": 110, "word": "Dilemma", "bn": "", "meaning": "উভয় সংকট"}, {"no": 111, "word": "Discriminatory", "bn": "", "meaning": "বৈষম্যমূলক"}, {"no": 112, "word": "Directorate", "bn": "", "meaning": "পরিদপ্তর"}, {"no": 113, "word": "Die-hard supporter", "bn": "", "meaning": "নিবেদিতপ্রাণ সমর্থক / কট্টর সমর্থক"}, {"no": 114, "word": "Divulge", "bn": "", "meaning": "প্রকাশ করা"}, {"no": 115, "word": "Dividend", "bn": "", "meaning": "লভ্যাংশ"}, {"no": 116, "word": "Drop-scene", "bn": "", "meaning": "দৃশ্যান্তর"}, {"no": 117, "word": "Dog's meat", "bn": "", "meaning": "কুকুরের খাদ্য"}, {"no": 118, "word": "Duty", "bn": "", "meaning": "শুল্ক"}, {"no": 119, "word": "Dynamic", "bn": "", "meaning": "গতিশীল"}, {"no": 120, "word": "Ecstasy of happiness", "bn": "", "meaning": "পরমানন্দ"}, {"no": 121, "word": "Edition", "bn": "", "meaning": "সংস্করণ"}, {"no": 122, "word": "Editor", "bn": "", "meaning": "সম্পাদক"}, {"no": 123, "word": "Educationist", "bn": "", "meaning": "শিক্ষাবিদ"}, {"no": 124, "word": "Epicurism", "bn": "", "meaning": "ভোগবাদ"}, {"no": 125, "word": "Epic", "bn": "", "meaning": "মহাকাব্য"}, {"no": 126, "word": "Episode", "bn": "", "meaning": "উপাখ্যান"}, {"no": 127, "word": "Epitaph", "bn": "", "meaning": "সমাধিলিপি"}, {"no": 128, "word": "Epenthesis", "bn": "", "meaning": "অপিনিহিতি"}, {"no": 129, "word": "Eradication", "bn": "", "meaning": "উচ্ছেদ"}, {"no": 130, "word": "Etiquette", "bn": "", "meaning": "শিষ্টাচার"}, {"no": 131, "word": "Excise duty", "bn": "", "meaning": "আবগারী শুল্ক"}, {"no": 132, "word": "Executive", "bn": "", "meaning": "নির্বাহী"}, {"no": 133, "word": "Fallow land", "bn": "", "meaning": "পতিত জমি"}, {"no": 134, "word": "Filing", "bn": "", "meaning": "নথিভুক্তি"}, {"no": 135, "word": "Fiction", "bn": "", "meaning": "কথাসাহিত্য"}, {"no": 136, "word": "Financial capital", "bn": "", "meaning": "ব্যবসায়িক মূলধন"}, {"no": 137, "word": "Folk art", "bn": "", "meaning": "লোকশিল্প"}, {"no": 138, "word": "For Good", "bn": "", "meaning": "চিরতরে"}, {"no": 139, "word": "Forgery", "bn": "", "meaning": "জালিয়াতি"}, {"no": 140, "word": "Foster father", "bn": "", "meaning": "পালক পিতা"}, {"no": 141, "word": "Folio", "bn": "", "meaning": "পাতা"}, {"no": 142, "word": "Friend and Foes", "bn": "", "meaning": "শত্রু-মিত্র"}, {"no": 143, "word": "Galaxy", "bn": "", "meaning": "নক্ষত্রবীথি / ছায়াপথ"}, {"no": 144, "word": "Genocide", "bn": "", "meaning": "গণহত্যা"}, {"no": 145, "word": "Glossary", "bn": "", "meaning": "টীকাপঞ্জি"}, {"no": 146, "word": "Gratuity", "bn": "", "meaning": "পারিতোষিক / আনুতোষিক"}, {"no": 147, "word": "Graphic", "bn": "", "meaning": "রৈখিক"}, {"no": 148, "word": "Greek to", "bn": "", "meaning": "অজানা"}, {"no": 149, "word": "Green room", "bn": "", "meaning": "সাজঘর"}, {"no": 150, "word": "Hand out", "bn": "", "meaning": "জ্ঞাপনপত্র"}, {"no": 151, "word": "Hand bill", "bn": "", "meaning": "ইশতেহার"}, {"no": 152, "word": "Hard and fixed", "bn": "", "meaning": "যাচাইকৃত  ⚠️ (হাতের লেখা অস্পষ্ট ছিল, original-এর সাথে যাচাই করো)"}, {"no": 153, "word": "Heavenly body", "bn": "", "meaning": "জ্যোতিষ্ক"}, {"no": 154, "word": "High tide", "bn": "", "meaning": "জোয়ার"}, {"no": 155, "word": "Hierarchy", "bn": "", "meaning": "আধিপত্য পরম্পরা / পদসোপান"}, {"no": 156, "word": "Horizontal", "bn": "", "meaning": "অনুভূমিক"}, {"no": 157, "word": "Honorary", "bn": "", "meaning": "অবৈতনিক"}, {"no": 158, "word": "Housing", "bn": "", "meaning": "আবাসন"}, {"no": 159, "word": "Hush money", "bn": "", "meaning": "ঘুষ"}, {"no": 160, "word": "Human values", "bn": "", "meaning": "মানবিক মূল্যবোধ"}, {"no": 161, "word": "Hypothesis", "bn": "", "meaning": "অনুমান"}, {"no": 162, "word": "Hybrid", "bn": "", "meaning": "সংকর"}, {"no": 163, "word": "Hydrologist", "bn": "", "meaning": "পানিবিজ্ঞানী"}, {"no": 164, "word": "Intellectual", "bn": "", "meaning": "বুদ্ধিজীবী"}, {"no": 165, "word": "Incumbent", "bn": "", "meaning": "পদধারী"}, {"no": 166, "word": "Indigenous", "bn": "", "meaning": "স্বদেশী"}, {"no": 167, "word": "In cold blood", "bn": "", "meaning": "ঠান্ডা মাথায়"}, {"no": 168, "word": "In deep water", "bn": "", "meaning": "সমস্যাগ্রস্ত"}, {"no": 169, "word": "Industrious", "bn": "", "meaning": "পরিশ্রমী"}, {"no": 170, "word": "Index", "bn": "", "meaning": "সূচক / নির্ঘণ্ট"}, {"no": 171, "word": "Infantry", "bn": "", "meaning": "পদাতিক বাহিনী"}, {"no": 172, "word": "Ingredient", "bn": "", "meaning": "উপাদান"}, {"no": 173, "word": "Initial", "bn": "", "meaning": "প্রারম্ভিক"}, {"no": 174, "word": "Insomnia", "bn": "", "meaning": "অনিদ্রা"}, {"no": 175, "word": "In Vogue", "bn": "", "meaning": "প্রচলিত"}, {"no": 176, "word": "Invoice", "bn": "", "meaning": "চালান"}, {"no": 177, "word": "Information Technology", "bn": "", "meaning": "তথ্যপ্রযুক্তি"}, {"no": 178, "word": "Jingling of anklet", "bn": "", "meaning": "নূপুরের ধ্বনি"}, {"no": 179, "word": "Justification for", "bn": "", "meaning": "সমর্থন"}, {"no": 180, "word": "Key-note", "bn": "", "meaning": "মূলভাব / মূলভাব"}, {"no": 181, "word": "Kith and kin", "bn": "", "meaning": "আত্মীয় স্বজন"}, {"no": 182, "word": "Lame", "bn": "", "meaning": "খোঁড়া"}, {"no": 183, "word": "Lass", "bn": "", "meaning": "বালিকা"}, {"no": 184, "word": "Ladies finger", "bn": "", "meaning": "ঢেঁড়স"}, {"no": 185, "word": "Lease", "bn": "", "meaning": "ইজারা"}, {"no": 186, "word": "Lexicography", "bn": "", "meaning": "অভি অভিধানতত্ত্ব"}, {"no": 187, "word": "Legal statement", "bn": "", "meaning": "জবানবন্দি"}, {"no": 188, "word": "Licence", "bn": "", "meaning": "অনুজ্ঞাপত্র"}, {"no": 189, "word": "Liberation", "bn": "", "meaning": "মুক্তি"}, {"no": 190, "word": "Like cures like", "bn": "", "meaning": "বিষে বিষক্ষয়"}, {"no": 191, "word": "Littoral", "bn": "", "meaning": "উপকূলবর্তী"}, {"no": 192, "word": "Loggerheads", "bn": "", "meaning": "দা-কুমড়া সম্পর্ক"}, {"no": 193, "word": "Lyric", "bn": "", "meaning": "গীতিকবিতা"}, {"no": 194, "word": "Make-up", "bn": "", "meaning": "রূপসজ্জা"}, {"no": 195, "word": "Manifesto", "bn": "", "meaning": "ইশতেহার"}, {"no": 196, "word": "Manuscript", "bn": "", "meaning": "পাণ্ডুলিপি"}, {"no": 197, "word": "Marketing", "bn": "", "meaning": "বিপণন"}, {"no": 198, "word": "Memorandum", "bn": "", "meaning": "স্মারকলিপি"}, {"no": 199, "word": "Microbiology", "bn": "", "meaning": "অণুজীব বিজ্ঞান"}, {"no": 200, "word": "Migration", "bn": "", "meaning": "প্রব্রজন"}, {"no": 201, "word": "Morphology", "bn": "", "meaning": "রূপতত্ত্ব / শব্দতত্ত্ব"}, {"no": 202, "word": "Monitoring", "bn": "", "meaning": "পরিবীক্ষণ"}, {"no": 203, "word": "Mobile court", "bn": "", "meaning": "ভ্রাম্যমাণ আদালত"}, {"no": 204, "word": "Myth", "bn": "", "meaning": "পুরাণ"}, {"no": 205, "word": "Nationalism", "bn": "", "meaning": "জাতীয়তাবাদ"}, {"no": 206, "word": "Nebula", "bn": "", "meaning": "নীহারিকা"}, {"no": 207, "word": "Notification", "bn": "", "meaning": "প্রজ্ঞাপন"}, {"no": 208, "word": "Null and void", "bn": "", "meaning": "বাতিল / অকেজো"}, {"no": 209, "word": "Obligatory", "bn": "", "meaning": "বাধ্যতামূলক"}, {"no": 210, "word": "Odds and ends", "bn": "", "meaning": "এটা-ওটা"}, {"no": 211, "word": "Ode", "bn": "", "meaning": "গীতিকবিতা"}, {"no": 212, "word": "Ordinance", "bn": "", "meaning": "অধ্যাদেশ"}, {"no": 213, "word": "Ordnance", "bn": "", "meaning": "সমরাস্ত্র"}, {"no": 214, "word": "Ombudsman", "bn": "", "meaning": "ন্যায়পাল"}, {"no": 215, "word": "Osmosis", "bn": "", "meaning": "অভিস্রবণ / আস্রবণ"}, {"no": 216, "word": "Optimist", "bn": "", "meaning": "প্রত্যাশাবাদী"}, {"no": 217, "word": "Overrule", "bn": "", "meaning": "বাতিল করা"}, {"no": 218, "word": "Out of one's wits", "bn": "", "meaning": "বিহ্বলকর্তব্যবিমূঢ়"}, {"no": 219, "word": "Oxygen", "bn": "", "meaning": "অম্লযান"}, {"no": 220, "word": "Oath", "bn": "", "meaning": "হলফনামা / শপথবাক্য"}, {"no": 221, "word": "Parasite", "bn": "", "meaning": "পরগাছা"}, {"no": 222, "word": "Parole", "bn": "", "meaning": "শাস্ত্রীয় মুক্তি"}, {"no": 223, "word": "Payer", "bn": "", "meaning": "দাতা"}, {"no": 224, "word": "Parson", "bn": "", "meaning": "ধর্মযাজক"}, {"no": 225, "word": "Pension", "bn": "", "meaning": "অবসর ভাতা"}, {"no": 226, "word": "Penology", "bn": "", "meaning": "অপরাধবিজ্ঞান"}, {"no": 227, "word": "Periodical", "bn": "", "meaning": "সাময়িকপত্রিকা"}, {"no": 228, "word": "Philology", "bn": "", "meaning": "ভাষাতত্ত্ব"}, {"no": 229, "word": "Phonetics", "bn": "", "meaning": "ধ্বনিবিজ্ঞান"}, {"no": 230, "word": "Phoneme", "bn": "", "meaning": "ধ্বনিমূল"}, {"no": 231, "word": "Phonology", "bn": "", "meaning": "ভাষার ধ্বনিবিজ্ঞান"}, {"no": 232, "word": "Play truant", "bn": "", "meaning": "স্কুল থেকে পালানো"}, {"no": 233, "word": "Plaza", "bn": "", "meaning": "চত্বর"}, {"no": 234, "word": "Plebiscite", "bn": "", "meaning": "গণভোট"}, {"no": 235, "word": "Pleadings", "bn": "", "meaning": "আরজি ও লিখিত জবাব"}, {"no": 236, "word": "Postage", "bn": "", "meaning": "ডাকমাশুল"}, {"no": 237, "word": "Populous", "bn": "", "meaning": "জনবহুল"}, {"no": 238, "word": "Prefix", "bn": "", "meaning": "উপসর্গ"}, {"no": 239, "word": "Primitive", "bn": "", "meaning": "আদিম"}, {"no": 240, "word": "Prominent", "bn": "", "meaning": "উল্লেখযোগ্য"}, {"no": 241, "word": "Prosaic", "bn": "", "meaning": "গতানুগতিক"}, {"no": 242, "word": "Prothesis", "bn": "", "meaning": "আদি স্বরাগম"}, {"no": 243, "word": "Plagiarism", "bn": "", "meaning": "উচ্চবাচ্য না করে অন্যের রচনা নিজের বলে চালানো"}, {"no": 244, "word": "Puritanism", "bn": "", "meaning": "নৈতিকতাবাদ"}, {"no": 245, "word": "Quarterly", "bn": "", "meaning": "ত্রৈমাসিক"}, {"no": 246, "word": "Quack", "bn": "", "meaning": "হাতুড়ে"}, {"no": 247, "word": "Quotation", "bn": "", "meaning": "মূল্যতালিকা"}, {"no": 248, "word": "Quota", "bn": "", "meaning": "যথাংশ"}, {"no": 249, "word": "Register", "bn": "", "meaning": "নিবন্ধন"}, {"no": 250, "word": "Retail", "bn": "", "meaning": "খুচরা"}, {"no": 251, "word": "Review", "bn": "", "meaning": "পুনঃনিরীক্ষণ"}, {"no": 252, "word": "Referendum", "bn": "", "meaning": "গণভোট"}, {"no": 253, "word": "Retrospective", "bn": "", "meaning": "ভূতাপেক্ষ (পরবর্তী উপলব্ধি / পরে বোঝা)"}, {"no": 254, "word": "Relevant", "bn": "", "meaning": "প্রাসঙ্গিক"}, {"no": 255, "word": "Round the clock", "bn": "", "meaning": "সমস্ত দিন"}, {"no": 256, "word": "Rule Nisi", "bn": "", "meaning": "আদালতের অন্তর্বর্তী আদেশ"}, {"no": 257, "word": "Rural community", "bn": "", "meaning": "গ্রামীণ সম্পদ"}, {"no": 258, "word": "Sacrament", "bn": "", "meaning": "ধর্ম সংস্কার"}, {"no": 259, "word": "Scanner", "bn": "", "meaning": "মুদ্রা পরীক্ষা যন্ত্র"}, {"no": 260, "word": "Scarcity", "bn": "", "meaning": "স্বল্পতা"}, {"no": 261, "word": "Schedule", "bn": "", "meaning": "তফসিল"}, {"no": 262, "word": "Scroll", "bn": "", "meaning": "লিপি"}, {"no": 263, "word": "Semantics", "bn": "", "meaning": "অর্থতত্ত্ব"}, {"no": 264, "word": "Secretary", "bn": "", "meaning": "সচিব"}, {"no": 265, "word": "Secularism", "bn": "", "meaning": "ধর্মনিরপেক্ষতা"}, {"no": 266, "word": "Second Hand", "bn": "", "meaning": "পরোক্ষ"}, {"no": 267, "word": "Sleeping partner", "bn": "", "meaning": "নিষ্ক্রিয় অংশীদার"}, {"no": 268, "word": "Stakeholder", "bn": "", "meaning": "অংশীজন"}, {"no": 269, "word": "Subjudice", "bn": "", "meaning": "বিচারাধীন"}, {"no": 270, "word": "Subconscious", "bn": "", "meaning": "অবচেতন"}, {"no": 271, "word": "Superstition", "bn": "", "meaning": "কুসংস্কারাচ্ছন্ন"}, {"no": 272, "word": "Super power", "bn": "", "meaning": "পরাশক্তি"}, {"no": 273, "word": "Surgeon", "bn": "", "meaning": "শল্য চিকিৎসক"}, {"no": 274, "word": "Suite", "bn": "", "meaning": "প্রকোষ্ঠ"}, {"no": 275, "word": "Superintendent", "bn": "", "meaning": "তত্ত্বাবধায়ক"}, {"no": 276, "word": "Successor", "bn": "", "meaning": "উত্তরাধিকারী"}, {"no": 277, "word": "Syntax", "bn": "", "meaning": "শব্দ প্রকরণ"}, {"no": 278, "word": "Tariff", "bn": "", "meaning": "শুল্ক"}, {"no": 279, "word": "Tax", "bn": "", "meaning": "শুল্ক / কর"}, {"no": 280, "word": "Terracotta", "bn": "", "meaning": "পোড়ামাটি"}, {"no": 281, "word": "Thesaurus", "bn": "", "meaning": "সমার্থ শব্দকোষ"}, {"no": 282, "word": "Time and again", "bn": "", "meaning": "বার বার"}, {"no": 283, "word": "To keep up appearances", "bn": "", "meaning": "বাহিরের চিত্র বজায় রাখা"}, {"no": 284, "word": "To break the ice", "bn": "", "meaning": "নীরবতা ভেঙে কথা বলা"}, {"no": 285, "word": "To kick the bucket", "bn": "", "meaning": "মৃত্যু হওয়া"}, {"no": 286, "word": "Transparent", "bn": "", "meaning": "স্বচ্ছ"}, {"no": 287, "word": "Training", "bn": "", "meaning": "প্রশিক্ষণ"}, {"no": 288, "word": "Transparency", "bn": "", "meaning": "স্বচ্ছতা"}, {"no": 289, "word": "Treasurer", "bn": "", "meaning": "কোষাধ্যক্ষ"}, {"no": 290, "word": "Transliteration", "bn": "", "meaning": "প্রতিবর্ণীকরণ"}, {"no": 291, "word": "Trilogy", "bn": "", "meaning": "ত্রয়ী"}, {"no": 292, "word": "Turn down", "bn": "", "meaning": "প্রত্যাখ্যান করা"}, {"no": 293, "word": "Twilight", "bn": "", "meaning": "গোধূলি বেলা"}, {"no": 294, "word": "Typography", "bn": "", "meaning": "হরফ শিল্প"}, {"no": 295, "word": "Unattainable", "bn": "", "meaning": "অনর্জনযোগ্য"}, {"no": 296, "word": "Unanimous", "bn": "", "meaning": "সর্বসম্মত"}, {"no": 297, "word": "Unprecedented", "bn": "", "meaning": "অভূতপূর্ব"}, {"no": 298, "word": "Unbudgeted liability", "bn": "", "meaning": "বাজেট বহির্ভূত দায়"}, {"no": 299, "word": "Up to date", "bn": "", "meaning": "হালনাগাদ"}, {"no": 300, "word": "Veracious", "bn": "", "meaning": "সত্যবাদী"}, {"no": 301, "word": "Vertical", "bn": "", "meaning": "উলম্ব"}, {"no": 302, "word": "Vice-Principal", "bn": "", "meaning": "উপাধ্যক্ষ"}, {"no": 303, "word": "Vivid", "bn": "", "meaning": "প্রাণবন্ত"}, {"no": 304, "word": "Virile", "bn": "", "meaning": "পুরুষোচিত"}, {"no": 305, "word": "Vocation", "bn": "", "meaning": "বৃত্তি"}, {"no": 306, "word": "Vocabulary", "bn": "", "meaning": "শব্দভান্ডার"}, {"no": 307, "word": "Wash one's hand of", "bn": "", "meaning": "সম্পর্ক ছিন্ন করা"}, {"no": 308, "word": "Weep", "bn": "", "meaning": "কাঁদা"}, {"no": 309, "word": "Wild goose chase", "bn": "", "meaning": "পণ্ডশ্রম"}, {"no": 310, "word": "Wisdom", "bn": "", "meaning": "প্রজ্ঞা"}, {"no": 311, "word": "Whirlpool", "bn": "", "meaning": "ঘূর্ণি"}, {"no": 312, "word": "World view", "bn": "", "meaning": "জাগতিক দর্শন"}, {"no": 313, "word": "Yellow dog", "bn": "", "meaning": "হীন ব্যক্তি"}, {"no": 314, "word": "Clemency", "bn": "", "meaning": "অনুকম্পা"}, {"no": 315, "word": "Cry in wilderness", "bn": "", "meaning": "অরণ্যে রোদন"}, {"no": 316, "word": "Migratory Bird", "bn": "", "meaning": "অতিথি পাখি"}, {"no": 317, "word": "Zone", "bn": "", "meaning": "অঞ্চল"}, {"no": 318, "word": "Dysentery", "bn": "", "meaning": "আমাশয়"}, {"no": 319, "word": "Polemicist", "bn": "", "meaning": "তার্কিক"}, {"no": 320, "word": "North Westerlies", "bn": "", "meaning": "কালবৈশাখী"}, {"no": 321, "word": "Rhyme", "bn": "", "meaning": "ছন্দ"}, {"no": 322, "word": "Two-thirds", "bn": "", "meaning": "দুই-তৃতীয়াংশ"}, {"no": 323, "word": "Theatre", "bn": "", "meaning": "নাট্যকলা"}, {"no": 324, "word": "Ombudsman", "bn": "", "meaning": "ন্যায়পাল"}, {"no": 325, "word": "Addendum", "bn": "", "meaning": "পরিশিষ্ট"}, {"no": 326, "word": "Polycentric", "bn": "", "meaning": "বহুকেন্দ্রিক"}, {"no": 327, "word": "Folklore", "bn": "", "meaning": "লোকসংস্কৃতি"}, {"no": 328, "word": "Bring to Book", "bn": "", "meaning": "শাস্তি দেওয়া"}, {"no": 329, "word": "Break to study", "bn": "", "meaning": "শিক্ষা বিরতি"}, {"no": 330, "word": "Elegy", "bn": "", "meaning": "শোক-কবিতা"}];
 const GROUPVERB_LIST = [{"no": 1, "word": "Act on/upon", "bn": "নির্ভর করা", "meaning": "They should act on/upon their teacher's decision.", "verb": "Act"}, {"no": 2, "word": "Act for", "bn": "কারো হয়ে কিছু করা", "meaning": "The political party has acted for its student wing.", "verb": "Act"}, {"no": 3, "word": "Act on/upon", "bn": "ক্ষতি করা", "meaning": "Smoking will act on/upon our health.", "verb": "Act"}, {"no": 4, "word": "Act under", "bn": "আদেশ অনুসারে কাজ করা", "meaning": "This office will act under the commander-in-chief.", "verb": "Act"}, {"no": 5, "word": "Act up to", "bn": "আশানুরূপ কাজ করা", "meaning": "The decision has not acted up to our expectation.", "verb": "Act"}, {"no": 6, "word": "Bear down", "bn": "পেছনে ফেলে জয় করা", "meaning": "The boy will bear down all obstacles.", "verb": "Bear"}, {"no": 7, "word": "Bear on", "bn": "প্রাসঙ্গিকতা", "meaning": "Your attitude has no bearing on the present crisis.", "verb": "Bear"}, {"no": 8, "word": "Bear on", "bn": "সম্পর্কিত", "meaning": "The topic that he will discuss is not bore on the subject.", "verb": "Bear"}, {"no": 9, "word": "Bear up", "bn": "সতেজ রাখা", "meaning": "Achieving a new milestone has bore him up even in adversity.", "verb": "Bear"}, {"no": 10, "word": "Bear with", "bn": "সহ্য করা", "meaning": "If we don't like people, we should bear with them.", "verb": "Bear"}, {"no": 11, "word": "Bear out", "bn": "সমর্থন করা", "meaning": "The government has bore out the demand of the mass.", "verb": "Bear"}, {"no": 12, "word": "Blow away", "bn": "উড়িয়ে নিয়ে যাওয়া", "meaning": "Many trees have been blown away by the storm.", "verb": "Blow"}, {"no": 13, "word": "Blow up", "bn": "বিস্ফোরণ দ্বারা উড়িয়ে দেওয়া", "meaning": "Many houses have been blown up by the military attack.", "verb": "Blow"}, {"no": 14, "word": "Blow off", "bn": "নির্গত করা", "meaning": "Almost all engines blow off many polluted gases in the environment.", "verb": "Blow"}, {"no": 15, "word": "Blow out", "bn": "নিভানো", "meaning": "Please, blow out the candle as soon as you can.", "verb": "Blow"}, {"no": 16, "word": "Blow over", "bn": "থেমে যাওয়া", "meaning": "The anti-govt movement will blow over soon.", "verb": "Blow"}, {"no": 17, "word": "Break into", "bn": "ভেঙে প্রবেশ করা", "meaning": "The protesters have broken into the gate and entered the government office.", "verb": "Break"}, {"no": 18, "word": "Break away", "bn": "ভেঙে বের হয়ে আসা", "meaning": "The prisoner has broken away the prison and came.", "verb": "Break"}, {"no": 19, "word": "Break up", "bn": "বন্ধ হওয়া", "meaning": "My friend will break up the relation with Nasrin as soon as possible.", "verb": "Break"}, {"no": 20, "word": "Break off", "bn": "হঠাৎ থামা", "meaning": "Ruhama has broken off her speech.", "verb": "Break"}, {"no": 21, "word": "Break down", "bn": "ভেঙে পড়া, বিকল হওয়া", "meaning": "He works so hard that his health has been broken down.", "verb": "Break"}, {"no": 22, "word": "Break forth", "bn": "হঠাৎ প্রকাশ করা", "meaning": "The sun broke forth from the clouds.", "verb": "Break"}, {"no": 23, "word": "Break with", "bn": "ঝগড়া করা", "meaning": "The boy has broken with his friends.", "verb": "Break"}, {"no": 24, "word": "Break through", "bn": "জোর করে সরানো", "meaning": "The party chairman broke through the leader.", "verb": "Break"}, {"no": 25, "word": "Break out", "bn": "প্রাদুর্ভাব ঘটা", "meaning": "Many diseases break out after the flood.", "verb": "Break"}, {"no": 26, "word": "Bring about", "bn": "ঘটানো", "meaning": "The farmers have brought about a radical change in our economy.", "verb": "Bring"}, {"no": 27, "word": "Bring down", "bn": "নিম্নমুখী করা", "meaning": "The government has brought down the price of necessary products.", "verb": "Bring"}, {"no": 28, "word": "Bring in", "bn": "দেওয়া", "meaning": "The writer has brought in a lot of examples in the book.", "verb": "Bring"}, {"no": 29, "word": "Bring forth", "bn": "উৎপাদন করা", "meaning": "We will bring forth huge rice in this year.", "verb": "Bring"}, {"no": 30, "word": "Bring through", "bn": "আরোগ্য লাভ করা", "meaning": "Finally, my father brought through the disease.", "verb": "Bring"}, {"no": 31, "word": "Bring out", "bn": "দৃষ্টিগোচর করা", "meaning": "We should bring the issue out to the legal authority.", "verb": "Bring"}, {"no": 32, "word": "Bring out", "bn": "প্রকাশ করা", "meaning": "The authority brought out a lot of new grammar books.", "verb": "Bring"}, {"no": 33, "word": "Bring off", "bn": "উদ্ধার করা", "meaning": "The police officer has brought off a lot of refugees.", "verb": "Bring"}, {"no": 34, "word": "Bring up", "bn": "প্রতিপালন করা", "meaning": "My grandfather has brought me up.", "verb": "Bring"}, {"no": 35, "word": "Call at", "bn": "কোথাও গিয়ে দেখা করা", "meaning": "The president of the political party has called at me.", "verb": "Call"}, {"no": 36, "word": "Call over", "bn": "ডাকা", "meaning": "The class teacher has called over the students.", "verb": "Call"}, {"no": 37, "word": "Call up", "bn": "কাউকে ফোন করা", "meaning": "You should not call up me at midnight.", "verb": "Call"}, {"no": 38, "word": "Call out", "bn": "চিৎকার করা", "meaning": "The children were calling out for help.", "verb": "Call"}, {"no": 39, "word": "Call on/upon", "bn": "সাথে দেখা করা", "meaning": "The patients will call on/upon the doctor.", "verb": "Call"}, {"no": 40, "word": "Call up", "bn": "স্মরণ করা", "meaning": "I always call up the words of my father.", "verb": "Call"}, {"no": 41, "word": "Call for", "bn": "চাওয়া", "meaning": "The media called for a new law for the sustainable development of the sector.", "verb": "Call"}, {"no": 42, "word": "Call in", "bn": "ডেকে পাঠানো", "meaning": "The court has called in one of my uncles.", "verb": "Call"}, {"no": 43, "word": "Call off", "bn": "বাতিল করা", "meaning": "The authority has called off the match.", "verb": "Call"}, {"no": 44, "word": "Carry away", "bn": "স্থানান্তরিত হওয়া / মৃত্যু ঘটানো", "meaning": "Soon the wounded has been carried away to the hospital.", "verb": "Carry"}, {"no": 45, "word": "Carry off", "bn": "জিতে লওয়া", "meaning": "The home team carried off India.", "verb": "Carry"}, {"no": 46, "word": "Carry on", "bn": "চালিয়ে যাওয়া", "meaning": "The speaker has to carry on till 5 pm.", "verb": "Carry"}, {"no": 47, "word": "Carry with", "bn": "সহমত করা", "meaning": "The president has carried with the headmaster.", "verb": "Carry"}, {"no": 48, "word": "Carry through", "bn": "ফলপ্রসূ হওয়া", "meaning": "The meeting has been carried through with the foreign country.", "verb": "Carry"}, {"no": 49, "word": "Carry off", "bn": "মৃত্যু ঘটানো", "meaning": "Cholera has carried off thousands of people.", "verb": "Carry"}, {"no": 50, "word": "Carry out", "bn": "পালন করা", "meaning": "The juniors must carry out the order of seniors.", "verb": "Carry"}, {"no": 51, "word": "Carry over", "bn": "হিসাবের জের পরবৎসরে টানা", "meaning": "The businessman carried over the amount to next year.", "verb": "Carry"}, {"no": 52, "word": "Come over", "bn": "প্রভাবিত হওয়া", "meaning": "The incidents have come over me and my life.", "verb": "Come"}, {"no": 53, "word": "Come after", "bn": "অনুসরণ করা", "meaning": "Ruhama has come after the suggestions of her father.", "verb": "Come"}, {"no": 54, "word": "Come down on", "bn": "ব্যাপক সমালোচনা করা", "meaning": "The opposition has come down on the activity of the government.", "verb": "Come"}, {"no": 55, "word": "Come along", "bn": "পৌঁছানো", "meaning": "They have come along within the shortest possible time.", "verb": "Come"}, {"no": 56, "word": "Come out", "bn": "প্রকাশিত হওয়া", "meaning": "The research has come out in a newspaper.", "verb": "Come"}, {"no": 57, "word": "Come at", "bn": "আক্রমণে উদ্যত হওয়া", "meaning": "The robbers have come at the innocent people.", "verb": "Come"}, {"no": 58, "word": "Come across", "bn": "হঠাৎ সাক্ষাত পাওয়া", "meaning": "Yesterday, I have come across one of my teachers.", "verb": "Come"}, {"no": 59, "word": "Come round", "bn": "আরোগ্য লাভ করা", "meaning": "May Allah help him to come round as soon as possible.", "verb": "Come"}, {"no": 60, "word": "Come of", "bn": "জন্মগ্রহণ করা", "meaning": "The stranger has come of a poor family.", "verb": "Come"}, {"no": 61, "word": "Come along", "bn": "তাড়াতাড়ি করা", "meaning": "The old man will come along to meet his sons.", "verb": "Come"}, {"no": 62, "word": "Come about", "bn": "ঘটা", "meaning": "The accident has come about in front of my eye.", "verb": "Come"}, {"no": 63, "word": "Come up", "bn": "সমান হওয়া", "meaning": "The proposal is coming up to my expectation.", "verb": "Come"}, {"no": 64, "word": "Come to", "bn": "পরিমাণ হওয়া", "meaning": "His income comes to very low this year.", "verb": "Come"}, {"no": 65, "word": "Come at", "bn": "নাগাল পাওয়া", "meaning": "They have come at our new house.", "verb": "Come"}, {"no": 66, "word": "Come down", "bn": "কমে যাওয়া", "meaning": "The inflation rate will come down soon.", "verb": "Come"}, {"no": 67, "word": "Come off", "bn": "সম্পন্ন হওয়া", "meaning": "They have come off all arrangements for the meeting.", "verb": "Come"}, {"no": 68, "word": "Come by", "bn": "পাওয়া", "meaning": "I have come by the affections of my parents.", "verb": "Come"}, {"no": 69, "word": "Do away with", "bn": "মুক্ত করা বা হওয়া / কোনো কিছুর সমাপ্তি ঘটানো", "meaning": "The victims were able to do away with the trap. / The teacher has finally done away with the lecture.", "verb": "Do away with"}, {"no": 70, "word": "Fall out", "bn": "কলহ করা", "meaning": "Mina is falling out with her brother.", "verb": "Fall"}, {"no": 71, "word": "Fall away", "bn": "সরে পড়া", "meaning": "Suddenly the criminal has fallen away.", "verb": "Fall"}, {"no": 72, "word": "Fall back on/upon", "bn": "শেষ অবলম্বন রূপে গ্রহণ করা", "meaning": "The old man falls back on his only child.", "verb": "Fall"}, {"no": 73, "word": "Fall among", "bn": "মধ্যে এসে পড়া", "meaning": "The man fell among a noisy activity.", "verb": "Fall"}, {"no": 74, "word": "Fall from", "bn": "বের হওয়া", "meaning": "He falls from saying anything.", "verb": "Fall"}, {"no": 75, "word": "Fall at", "bn": "হতাশার ভাব দেখানো", "meaning": "His face fell at the news.", "verb": "Fall"}, {"no": 76, "word": "Fall in with", "bn": "একমত হওয়া", "meaning": "The opposition leader will fall in with the proposal.", "verb": "Fall"}, {"no": 77, "word": "Fall on", "bn": "আক্রমণ করা", "meaning": "The king will fall on the rival groups.", "verb": "Fall"}, {"no": 78, "word": "Get at", "bn": "নাগাল পাওয়া", "meaning": "If I get at his address, I will write him.", "verb": "Get"}, {"no": 79, "word": "Get out", "bn": "বের হয়ে যাওয়া", "meaning": "They got out from the committee.", "verb": "Get"}, {"no": 80, "word": "Get on", "bn": "যানবাহনে উঠা", "meaning": "Munna has got on a bus to go to his native village.", "verb": "Get"}, {"no": 81, "word": "Get through", "bn": "উত্তীর্ণ হওয়া", "meaning": "The students have got through the test.", "verb": "Get"}, {"no": 82, "word": "Get off", "bn": "পলায়ন করা", "meaning": "Please, don't get off the study.", "verb": "Get"}, {"no": 83, "word": "Get away", "bn": "পলায়ন করা", "meaning": "The criminal has got away from the prison.", "verb": "Get"}, {"no": 84, "word": "Get up", "bn": "জেগে উঠা", "meaning": "He gets up early in the morning.", "verb": "Get"}, {"no": 85, "word": "Get over", "bn": "বিপর্যয় কাটিয়ে উঠা", "meaning": "Ruhama will get over soon.", "verb": "Get"}, {"no": 86, "word": "Get by", "bn": "পাশ দিয়ে যাওয়া", "meaning": "He will get by the road.", "verb": "Get"}, {"no": 87, "word": "Get off/Get down from", "bn": "যানবাহন থেকে নামা", "meaning": "They have got down from the train.", "verb": "Get"}, {"no": 88, "word": "Give away", "bn": "বিতরণ করা", "meaning": "The leader will give away necessary commodities to helpless people.", "verb": "Give"}, {"no": 89, "word": "Give in", "bn": "পরাজয় স্বীকার করা / রাজি হওয়া", "meaning": "The king has given in his failure. / The government has given in to public opinion.", "verb": "Give"}, {"no": 90, "word": "Give up", "bn": "পরিত্যাগ করা", "meaning": "You should give up your bad habits.", "verb": "Give"}, {"no": 91, "word": "Give over", "bn": "পরিত্যাগ করা", "meaning": "He should give over smoking.", "verb": "Give"}, {"no": 92, "word": "Give over", "bn": "হস্তান্তর করা", "meaning": "The property has been given over to a new company.", "verb": "Give"}, {"no": 93, "word": "Give in", "bn": "নতি স্বীকার করা", "meaning": "Finally the man has given in to his parents.", "verb": "Give"}, {"no": 94, "word": "Go away", "bn": "প্রস্থান করা", "meaning": "Go away from the place at once.", "verb": "Go"}, {"no": 95, "word": "Go without", "bn": "অভাবে কাটানো", "meaning": "He is going without his friends.", "verb": "Go"}, {"no": 96, "word": "Go beyond", "bn": "অতিক্রম করা", "meaning": "Don't go beyond your income.", "verb": "Go"}, {"no": 97, "word": "Go through", "bn": "পড়া / পর্যালোচনা করা", "meaning": "The jury has gone through the verdict. / Please go through the page and answer my questions.", "verb": "Go"}, {"no": 98, "word": "Go by", "bn": "মেনে চলা", "meaning": "The pupils should go by the advice of their teachers.", "verb": "Go"}, {"no": 99, "word": "Go forth", "bn": "বের হওয়া / জারি হওয়া", "meaning": "The prosecution will go forth the ordinance.", "verb": "Go"}, {"no": 100, "word": "Go in for", "bn": "প্রতিযোগিতা করা", "meaning": "The aspirants will go in for only a post.", "verb": "Go"}, {"no": 101, "word": "Go off", "bn": "ছুটে যাওয়া", "meaning": "The parts of his bike have gone off.", "verb": "Go"}, {"no": 102, "word": "Go against", "bn": "বিরুদ্ধে যাওয়া", "meaning": "Don't go against the law.", "verb": "Go"}, {"no": 103, "word": "Go on", "bn": "চালিয়ে যাওয়া", "meaning": "They are going on with their duty.", "verb": "Go"}, {"no": 104, "word": "Go back on", "bn": "প্রত্যাহার করা", "meaning": "The authority will go back on the controversial law.", "verb": "Go"}, {"no": 105, "word": "Go over", "bn": "পরীক্ষা করা", "meaning": "The authority will go over the issue.", "verb": "Go"}, {"no": 106, "word": "Go up", "bn": "বৃদ্ধি পাওয়া", "meaning": "The prices of necessary commodities are going up day by day.", "verb": "Go"}, {"no": 107, "word": "Go with", "bn": "একমত হওয়া", "meaning": "He didn't go with me yesterday.", "verb": "Go"}, {"no": 108, "word": "Look at", "bn": "তাকানো", "meaning": "Please, look at the desk.", "verb": "Look"}, {"no": 109, "word": "Look for", "bn": "খোঁজা", "meaning": "I am looking for new books in English.", "verb": "Look"}, {"no": 110, "word": "Look into", "bn": "তদন্ত করা", "meaning": "Police will look into the case.", "verb": "Look"}, {"no": 111, "word": "Look up", "bn": "দ্রব্যমূল্য বৃদ্ধি পাওয়া", "meaning": "The price of necessary commodities is looking up day by day.", "verb": "Look"}, {"no": 112, "word": "Look to", "bn": "মনোযোগ দেওয়া", "meaning": "The pupils will look to the teacher.", "verb": "Look"}, {"no": 113, "word": "Look down on", "bn": "ঘৃণা করা", "meaning": "You should not look down on the poor.", "verb": "Look"}, {"no": 114, "word": "Look out", "bn": "সতর্ক হওয়া", "meaning": "Look out! There is a car.", "verb": "Look"}, {"no": 115, "word": "Look up", "bn": "অভিধানে শব্দ খুঁজে বের করা", "meaning": "Please look up the word in the dictionary.", "verb": "Look"}, {"no": 116, "word": "Make for", "bn": "কোনো স্থানের উদ্দেশ্যে যাত্রা করা", "meaning": "They have made for going on a picnic.", "verb": "Make"}, {"no": 117, "word": "Make of", "bn": "তৈরি করা (পূর্বের গুণাগুণ অটুট থেকে)", "meaning": "The ring is made of platinum.", "verb": "Make"}, {"no": 118, "word": "Make up one's mind", "bn": "মনস্থির করা", "meaning": "He has made up his mind to do the work.", "verb": "Make"}, {"no": 119, "word": "Make off", "bn": "পালিয়ে যাওয়া", "meaning": "The thief has made off from the prison.", "verb": "Make"}, {"no": 120, "word": "Make up for", "bn": "ক্ষতিপূরণ দেওয়া", "meaning": "The insurance company will make up for the loss.", "verb": "Make"}, {"no": 121, "word": "Make away", "bn": "হত্যা করা", "meaning": "The king has made away a lot of innocent and poor people.", "verb": "Make"}, {"no": 122, "word": "Made up of", "bn": "কোনো কিছুর সমন্বয়ে গঠিত", "meaning": "The team is made up of eleven players.", "verb": "Make"}, {"no": 123, "word": "Make over", "bn": "হস্তান্তর করা", "meaning": "The file has been made over to another office.", "verb": "Make"}, {"no": 124, "word": "Make from", "bn": "উপাদান হতে বস্তু তৈরি (পূর্বের গুণাগুণ অটুট না থেকে)", "meaning": "Paper is made from bamboo.", "verb": "Make"}, {"no": 125, "word": "Make out", "bn": "বুঝতে পারা", "meaning": "The boy has made out his mistakes.", "verb": "Make"}, {"no": 126, "word": "Make up", "bn": "পরিপূর্ণ করা", "meaning": "She needs some opportunity to make up her losses.", "verb": "Make"}, {"no": 127, "word": "Put aside", "bn": "সঞ্চয় করে রাখা", "meaning": "The man will put aside some money.", "verb": "Put"}, {"no": 128, "word": "Put out", "bn": "নিভিয়ে ফেলা", "meaning": "The girl has put out the candle carefully.", "verb": "Put"}, {"no": 129, "word": "Put down", "bn": "দমিয়ে রাখা", "meaning": "The king will try to put down the rival groups.", "verb": "Put"}, {"no": 130, "word": "Put off", "bn": "স্থগিত করা / ফেলে রাখা", "meaning": "The court will be put off now. / They should put off the bad company. / The committee will put off the match.", "verb": "Put"}, {"no": 131, "word": "Put by", "bn": "সঞ্চয় করা", "meaning": "They will put by a lot of money for the future.", "verb": "Put"}, {"no": 132, "word": "Put on", "bn": "পরিধান করা / ভান করা", "meaning": "She has put on her dress. / He puts on as if he were a gentleman.", "verb": "Put"}, {"no": 133, "word": "Put up", "bn": "অস্থায়ীভাবে কোথাও থাকা", "meaning": "You should put up there.", "verb": "Put"}, {"no": 134, "word": "Put away", "bn": "ত্যাগ করা", "meaning": "You should put away the bad habits.", "verb": "Put"}, {"no": 135, "word": "Put up with", "bn": "সহ্য করা", "meaning": "We should put up with people even if we hate them.", "verb": "Put"}, {"no": 136, "word": "Run against", "bn": "যুদ্ধ করা", "meaning": "The government is running against terrorism.", "verb": "Run"}, {"no": 137, "word": "Run away with", "bn": "চুরি করে পালানো", "meaning": "They have run away with all the documents.", "verb": "Run"}, {"no": 138, "word": "Run at", "bn": "আক্রমণ করা", "meaning": "The country will run at the anti-social network.", "verb": "Run"}, {"no": 139, "word": "Run over", "bn": "গাড়ি চাপা পড়া", "meaning": "He was run over by a speedy car.", "verb": "Run"}, {"no": 140, "word": "Run away", "bn": "পালিয়ে যাওয়া", "meaning": "Some students run away from the heavy load of study.", "verb": "Run"}, {"no": 141, "word": "Run down", "bn": "নিন্দা করা", "meaning": "Don't run down others.", "verb": "Run"}, {"no": 142, "word": "Run into", "bn": "জড়িত হওয়া / হঠাৎ দেখা হওয়া", "meaning": "He has run into a lot of offices. / He has run into his uncle.", "verb": "Run"}, {"no": 143, "word": "Run off", "bn": "দৌড়ে পালানো", "meaning": "I saw a dog and quickly ran off.", "verb": "Run"}, {"no": 144, "word": "Run out", "bn": "শেষ হওয়া", "meaning": "His waiting was running out.", "verb": "Run"}, {"no": 145, "word": "Run across", "bn": "হঠাৎ সাক্ষাৎ করা", "meaning": "Yesterday, I ran across one of my close friends.", "verb": "Run"}, {"no": 146, "word": "Run after", "bn": "তাড়া করা", "meaning": "The villagers ran after the fox.", "verb": "Run"}, {"no": 147, "word": "Run on", "bn": "চলতে থাকা", "meaning": "The train was running on.", "verb": "Run"}, {"no": 148, "word": "Set upon/on", "bn": "আক্রমণে উদ্যত হওয়া", "meaning": "The robbers have set upon/on the innocent people.", "verb": "Set"}, {"no": 149, "word": "Set in", "bn": "শুরু হওয়া", "meaning": "The program has been set in.", "verb": "Set"}, {"no": 150, "word": "Set about", "bn": "শুরু করা", "meaning": "The authority will set about a new project.", "verb": "Set"}, {"no": 151, "word": "Set up", "bn": "প্রতিষ্ঠা করা", "meaning": "The man is trying to set up a new college.", "verb": "Set"}, {"no": 152, "word": "Set apart/aside", "bn": "পৃথক করা", "meaning": "He set aside some money for the future.", "verb": "Set"}, {"no": 153, "word": "Set against", "bn": "বিরুদ্ধে যাওয়া", "meaning": "Public sentiment set against the party chairman.", "verb": "Set"}, {"no": 154, "word": "Set by", "bn": "সঞ্চয় করা", "meaning": "The parents have set by a lot of money for their children.", "verb": "Set"}, {"no": 155, "word": "Set down", "bn": "লিখে নেওয়া", "meaning": "They will set down the date of my coming.", "verb": "Set"}, {"no": 156, "word": "Set off", "bn": "যাত্রা শুরু করা", "meaning": "The ship set off into the deep sea.", "verb": "Set"}, {"no": 157, "word": "Set forth", "bn": "যাত্রা করা", "meaning": "The ship has set forth to sea.", "verb": "Set"}, {"no": 158, "word": "Set back", "bn": "অগ্রগতি বন্ধ করা", "meaning": "The bill will set back the smooth growth of the project.", "verb": "Set"}, {"no": 159, "word": "Set aside", "bn": "অগ্রাহ্য করা", "meaning": "Nasrin has set aside her friend's proposal.", "verb": "Set"}, {"no": 160, "word": "Stand against", "bn": "বিরুদ্ধে দাঁড়ানো", "meaning": "The ordinary people have stood against the mutiny.", "verb": "Stand"}, {"no": 161, "word": "Stand up for", "bn": "পক্ষে দাঁড়ানো", "meaning": "The UN stands up for helpless people.", "verb": "Stand"}, {"no": 162, "word": "Stand for", "bn": "প্রার্থী রূপে দাঁড়ানো", "meaning": "One of my uncles will stand for the upcoming poll.", "verb": "Stand"}, {"no": 163, "word": "Stand for", "bn": "প্রতীক রূপে গণ্য হওয়া", "meaning": "The symbol will stand for the party.", "verb": "Stand"}, {"no": 164, "word": "Stand to", "bn": "লেগে থাকা", "meaning": "You have to stand to the new situation.", "verb": "Stand"}, {"no": 165, "word": "Stand by", "bn": "সমর্থন করা", "meaning": "Bangladesh stood by the government of Norway.", "verb": "Stand"}, {"no": 166, "word": "Stand over", "bn": "স্থগিত থাকা", "meaning": "The match will stand over for a long time.", "verb": "Stand"}, {"no": 167, "word": "Stand to", "bn": "মেনে চলা", "meaning": "They should stand to the rules and regulations of the organization.", "verb": "Stand"}, {"no": 168, "word": "Take after", "bn": "দেখতে এক রকম হওয়া", "meaning": "The boy takes after his father.", "verb": "Take"}, {"no": 169, "word": "Take up", "bn": "গ্রহণ করা", "meaning": "The authority will take up your proposal as soon as possible.", "verb": "Take"}, {"no": 170, "word": "Take back", "bn": "ফিরিয়ে লওয়া", "meaning": "The company will take back adulterated food.", "verb": "Take"}, {"no": 171, "word": "Take off", "bn": "উড্ডয়নের জন্য ভূমি ত্যাগ করা", "meaning": "The plane has taken off.", "verb": "Take"}, {"no": 172, "word": "Take by", "bn": "চেপে ধরা", "meaning": "The principal has taken me by the hand and led me there.", "verb": "Take"}, {"no": 173, "word": "Take up", "bn": "ব্যাপ্ত করা", "meaning": "The profession will take up much time.", "verb": "Take"}, {"no": 174, "word": "Take for", "bn": "গণ্য করা", "meaning": "He has been taken for a gentleman.", "verb": "Take"}, {"no": 175, "word": "Take in", "bn": "প্রতারিত করা", "meaning": "The man has taken in a lot of people.", "verb": "Take"}, {"no": 176, "word": "Take to", "bn": "অভ্যস্ত হওয়া", "meaning": "He is taking to smoking.", "verb": "Take"}, {"no": 177, "word": "Take away", "bn": "কিছু সরিয়ে নেওয়া", "meaning": "The officer has taken away some documents.", "verb": "Take"}, {"no": 178, "word": "Turn against", "bn": "শত্রু হয়ে ওঠা", "meaning": "Ruham has turned against my friend.", "verb": "Turn"}, {"no": 179, "word": "Turn out", "bn": "নিযুক্ত হওয়া", "meaning": "He has been turned out as a curator.", "verb": "Turn"}, {"no": 180, "word": "Turn out", "bn": "বিতাড়িত করা", "meaning": "He will be turned out from the place.", "verb": "Turn"}, {"no": 181, "word": "Turn down", "bn": "প্রত্যাখ্যান করা", "meaning": "The president has turned down the proposal of taking a lot of money for the project.", "verb": "Turn"}, {"no": 182, "word": "Turn in", "bn": "ফেরত দেওয়া", "meaning": "They have turned in the ticket at the station.", "verb": "Turn"}, {"no": 183, "word": "Turn into", "bn": "পরিবর্তিত হওয়া", "meaning": "When water is frozen, it will turn into ice.", "verb": "Turn"}, {"no": 184, "word": "Turn off", "bn": "বন্ধ করা", "meaning": "You have to turn off your bad habits.", "verb": "Turn"}, {"no": 185, "word": "Turn up", "bn": "উপস্থিত হওয়া", "meaning": "All members will turn up for the meeting.", "verb": "Turn"}, {"no": 186, "word": "Turn away", "bn": "অন্যদিকে ফিরিয়ে দেওয়া", "meaning": "He turned away in disguise.", "verb": "Turn"}, {"no": 187, "word": "Turn on", "bn": "চালু করা", "meaning": "Please turn the light on.", "verb": "Turn"}, {"no": 188, "word": "Turn aside", "bn": "বিচ্যুত হওয়া", "meaning": "He has turned aside from his friends.", "verb": "Turn"}];
-const LISTS = {wm: WM_LIST, syn: SYN_LIST, ant: ANT_LIST, bagdhara: BAGDHARA_LIST, proverb: PROVERB_LIST, ows: OWS_LIST, ekkotha: EKKOTHA_LIST, bnant: BNANT_LIST, shobdartho: SHOBDARTHO_LIST, poribhashik: PORIBHASHIK_LIST, groupverb: GROUPVERB_LIST};
-const VALKEY = {wm:'meaning', syn:'syn', ant:'ant', bagdhara:'meaning', proverb:'meaning', ows:'meaning', ekkotha:'meaning', bnant:'meaning', shobdartho:'meaning', poribhashik:'meaning', groupverb:'meaning'};
+const IDIOM_LIST = [{"no": 1, "word": "ABC", "bn": "প্রাথমিক জ্ঞান", "meaning": "Elementary knowledge", "page": 1}, {"no": 2, "word": "A bad egg", "bn": "যে লোকের নীতিবোধের উপর নির্ভর করা যায় না", "meaning": "An unreliable person", "page": 1}, {"no": 3, "word": "A baker's dozen", "bn": "তেরো", "meaning": "Thirteen", "page": 1}, {"no": 4, "word": "A bed of roses", "bn": "সুখকর অবস্থা", "meaning": "A life of joy and comfort", "page": 1}, {"no": 5, "word": "A best seller", "bn": "সবচেয়ে বেশি বিক্রি হওয়া বই", "meaning": "A book that sells in very large numbers", "page": 1}, {"no": 6, "word": "A big draw", "bn": "অত্যন্ত আকর্ষণের বিষয়", "meaning": "A huge attraction", "page": 1}, {"no": 7, "word": "A bird brain", "bn": "বোকা ব্যক্তি", "meaning": "A foolish man", "page": 1}, {"no": 8, "word": "Abode of God", "bn": "স্বর্গ", "meaning": "Heaven", "page": 1}, {"no": 9, "word": "A bolt from the blue", "bn": "বিনা মেঘে বজ্রপাত", "meaning": "An unexpected calamity", "page": 1}, {"no": 10, "word": "Absolute zero", "bn": "সর্বনিম্ন তাপমাত্রা", "meaning": "-273° Centigrade", "page": 1}, {"no": 11, "word": "Above board", "bn": "সহজ-সরল", "meaning": "Legal and honest", "page": 1}, {"no": 12, "word": "According to", "bn": "অনুসারে", "meaning": "As stated or reported by somebody/something", "page": 1}, {"no": 13, "word": "Acid test", "bn": "অগ্নিপরীক্ষা", "meaning": "Real test", "page": 1}, {"no": 14, "word": "Achilles' heel", "bn": "দুর্বলতম স্থান", "meaning": "A weak point that can cause a person's downfall", "page": 1}, {"no": 15, "word": "A cock and bull story", "bn": "আজগুবি গল্প", "meaning": "A false story", "page": 1}, {"no": 16, "word": "Across the board", "bn": "সবাই বা সবকিছু মিলিয়ে", "meaning": "Everyone or everything included", "page": 1}, {"no": 17, "word": "A fall guy", "bn": "বলির পাঁঠা", "meaning": "A scapegoat", "page": 1}, {"no": 18, "word": "A flying visit", "bn": "খুব কম সময়ের ভ্রমণ", "meaning": "A very short visit", "page": 1}, {"no": 19, "word": "After one's own heart", "bn": "নিজের পছন্দ অনুযায়ী", "meaning": "To one's own liking", "page": 1}, {"no": 20, "word": "A gala day", "bn": "আনন্দের দিন", "meaning": "A day of festivity", "page": 1}, {"no": 21, "word": "A great deal", "bn": "প্রচুর", "meaning": "A lot", "page": 1}, {"no": 22, "word": "A la mode", "bn": "আধুনিক রীতি অনুযায়ী", "meaning": "According to the current fashion", "page": 1}, {"no": 23, "word": "All at once", "bn": "হঠাৎ", "meaning": "Suddenly", "page": 2}, {"no": 24, "word": "All but", "bn": "প্রায়", "meaning": "Almost / Nearly", "page": 2}, {"no": 25, "word": "All in", "bn": "ক্লান্ত", "meaning": "Tired", "page": 2}, {"no": 26, "word": "All agog", "bn": "উদগ্রীব", "meaning": "Very eager/interested", "page": 2}, {"no": 27, "word": "All in all", "bn": "সর্বেসর্বা", "meaning": "All powerful", "page": 2}, {"no": 28, "word": "A lot of", "bn": "প্রচুর", "meaning": "A vast amount", "page": 2}, {"no": 29, "word": "A man of letters", "bn": "শিক্ষিত লোক", "meaning": "A scholar", "page": 2}, {"no": 30, "word": "A man of his word", "bn": "কথা রাখে এমন মানুষ / এক কথার মানুষ", "meaning": "A person who keeps his promise", "page": 2}, {"no": 31, "word": "An estimate of the value", "bn": "মূল্য নিরূপণ", "meaning": "An appraisal", "page": 2}, {"no": 32, "word": "An early bird", "bn": "প্রত্যূষে শয্যাত্যাগকারী ব্যক্তি", "meaning": "An early riser", "page": 2}, {"no": 33, "word": "A piece of cake", "bn": "খুব সহজে করা যায় এমন কাজ", "meaning": "A task that can be accomplished very easily", "page": 2}, {"no": 34, "word": "Apple of discord", "bn": "বিবাদের বিষয়", "meaning": "An object of dispute/quarrel", "page": 2}, {"no": 35, "word": "Apple of one's eye", "bn": "প্রিয় ব্যক্তি বা বস্তু", "meaning": "Extremely favourite", "page": 2}, {"no": 36, "word": "A round dozen", "bn": "পূর্ণ ডজন", "meaning": "A full dozen", "page": 2}, {"no": 37, "word": "A slip of the tongue", "bn": "অনিচ্ছাকৃতভাবে ভুল বলা", "meaning": "Unintentionally saying something wrong", "page": 2}, {"no": 38, "word": "A storm in a tea cup", "bn": "তুচ্ছ বিষয় নিয়ে হইচই", "meaning": "A lot of fuss over a trivial matter", "page": 2}, {"no": 39, "word": "A snake in the grass", "bn": "গোপন শত্রু", "meaning": "A hidden enemy", "page": 2}, {"no": 40, "word": "A tenure position", "bn": "স্থায়ী পদ", "meaning": "A permanent position", "page": 2}, {"no": 41, "word": "At any cost", "bn": "যেকোনো মূল্যে", "meaning": "Under any circumstances", "page": 2}, {"no": 42, "word": "At a glance", "bn": "এক পলকে", "meaning": "With only a quick look", "page": 2}, {"no": 43, "word": "At all costs", "bn": "যেকোনো প্রকারে", "meaning": "Regardless of the difficulty or cost", "page": 2}, {"no": 44, "word": "(Not) at all", "bn": "মোটেই না", "meaning": "Not at all", "page": 2}, {"no": 45, "word": "At loggerheads", "bn": "চরম মতানৈক্যে", "meaning": "In strong disagreement", "page": 2}, {"no": 46, "word": "At a fixed rate", "bn": "নির্ধারিত মূল্যে", "meaning": "At the fixed price", "page": 2}, {"no": 47, "word": "At a low ebb", "bn": "হ্রাসমান", "meaning": "Decreasing", "page": 2}, {"no": 48, "word": "At a stretch", "bn": "একটানা", "meaning": "Without break/stopping", "page": 2}, {"no": 49, "word": "At bottom", "bn": "প্রকৃতপক্ষে", "meaning": "In reality", "page": 2}, {"no": 50, "word": "At home", "bn": "দক্ষ/পরিচিত", "meaning": "Expert / Familiar with", "page": 2}, {"no": 51, "word": "At daggers drawn", "bn": "উদ্যত", "meaning": "On the point of fighting / In a state of violent hostility", "page": 3}, {"no": 52, "word": "At home with", "bn": "স্বচ্ছন্দে", "meaning": "At ease", "page": 3}, {"no": 53, "word": "At large", "bn": "স্বাধীনভাবে", "meaning": "Freely / At liberty", "page": 3}, {"no": 54, "word": "At length", "bn": "অবশেষে", "meaning": "After a long time / Finally", "page": 3}, {"no": 55, "word": "At odds", "bn": "দ্বিমত পোষণ", "meaning": "In disagreement", "page": 3}, {"no": 56, "word": "At one go", "bn": "এক প্রচেষ্টায়", "meaning": "In a single attempt", "page": 3}, {"no": 57, "word": "At random", "bn": "দৈবক্রমে", "meaning": "By chance", "page": 3}, {"no": 58, "word": "At snail's pace", "bn": "ধীরে ধীরে", "meaning": "Very slowly", "page": 3}, {"no": 59, "word": "At stake", "bn": "সংকটাপন্ন", "meaning": "Endangered", "page": 3}, {"no": 60, "word": "At a stone's throw", "bn": "নিকটে", "meaning": "At a short distance", "page": 3}, {"no": 61, "word": "At the eleventh hour", "bn": "শেষ মুহূর্তে", "meaning": "At the last moment", "page": 3}, {"no": 62, "word": "At the outset", "bn": "প্রারম্ভে", "meaning": "From the beginning", "page": 3}, {"no": 63, "word": "At times", "bn": "মাঝে মাঝে", "meaning": "Sometimes", "page": 3}, {"no": 64, "word": "Aware of contrary things", "bn": "একই সাথে দুটি বিপরীতধর্মী অনুভূতি বিদ্যমান এমন", "meaning": "Ambivalent", "page": 3}, {"no": 65, "word": "A whale of a time", "bn": "উত্তেজনাকর ও আনন্দময় সময়", "meaning": "An exciting and interesting time", "page": 3}, {"no": 66, "word": "A white lie", "bn": "ক্ষতিহীন মিথ্যা", "meaning": "A harmless lie", "page": 3}, {"no": 67, "word": "Backstairs influence", "bn": "গোপন ও অনৈতিক প্রভাব", "meaning": "Secret and unfair influence", "page": 3}, {"no": 68, "word": "Back up", "bn": "সমর্থন করা", "meaning": "To support", "page": 3}, {"no": 69, "word": "Bad blood", "bn": "শত্রুতা", "meaning": "Animosity / Enmity", "page": 3}, {"no": 70, "word": "Bag and baggage", "bn": "তল্পিতল্পাসহ", "meaning": "Leaving nothing behind (taking all belongings)", "page": 3}, {"no": 71, "word": "Bear the brunt of", "bn": "বিরক্তিকর অভিজ্ঞতার মুখোমুখি হওয়া", "meaning": "To receive the main force of something unpleasant", "page": 3}, {"no": 72, "word": "Bear market", "bn": "মন্দা বাজার", "meaning": "A market with falling prices", "page": 3}, {"no": 73, "word": "Bear with", "bn": "সহ্য করা", "meaning": "To tolerate", "page": 3}, {"no": 74, "word": "Bear out", "bn": "সমর্থন করা", "meaning": "To confirm", "page": 3}, {"no": 75, "word": "Beat around the bush", "bn": "গুরুত্বপূর্ণ বিষয় এড়িয়ে চলা", "meaning": "To avoid the main point", "page": 3}, {"no": 76, "word": "Behave oneself", "bn": "ভালো ব্যবহার দেখানো", "meaning": "To show good manners", "page": 3}, {"no": 77, "word": "Beggar description", "bn": "শব্দে বর্ণনা করা যায় না এমন ⚠️ (যাচাই করো)", "meaning": "Cannot be described in words / Indescribable", "page": 4}, {"no": 78, "word": "Between the devil and the deep sea", "bn": "দুই বিপদের মাঝে ⚠️ (যাচাই করো)", "meaning": "Caught in a difficult situation between two dangers", "page": 4}, {"no": 79, "word": "Beyond all question", "bn": "কোনো সন্দেহ ছাড়াই ⚠️ (যাচাই করো)", "meaning": "Without any doubt", "page": 4}, {"no": 80, "word": "Beyond reform", "bn": "সংশোধনের অতীত ⚠️ (যাচাই করো)", "meaning": "Cannot be corrected/improved", "page": 4}, {"no": 81, "word": "Big gun/Big fish", "bn": "গুরুত্বপূর্ণ ব্যক্তি", "meaning": "An important/influential person", "page": 4}, {"no": 82, "word": "Bill of fare", "bn": "খাবারের তালিকা", "meaning": "A list of dishes at a restaurant", "page": 4}, {"no": 83, "word": "Birds of the same feather", "bn": "একই স্বভাবের মানুষ", "meaning": "People of the same sort", "page": 4}, {"no": 84, "word": "Black sheep", "bn": "কুলাঙ্গার", "meaning": "A wicked/bad person in a group or family", "page": 4}, {"no": 85, "word": "Blow one's own trumpet", "bn": "নিজের গুণগান করা ⚠️ (যাচাই করো)", "meaning": "To boast/praise one's own ability", "page": 4}, {"no": 86, "word": "Blue blood", "bn": "অভিজাত বংশোদ্ভূত", "meaning": "Aristocratic/noble birth", "page": 4}, {"no": 87, "word": "Blue Book", "bn": "সরকারি প্রতিবেদন", "meaning": "A government publication", "page": 4}, {"no": 88, "word": "Blue chip firm", "bn": "নিরাপদ বিনিয়োগযোগ্য শিল্প প্রতিষ্ঠান", "meaning": "Industrial shares considered to be a safe investment", "page": 4}, {"no": 89, "word": "Bone of contention", "bn": "বিবাদের বিষয়", "meaning": "Subject of argument/matter of dispute", "page": 4}, {"no": 90, "word": "In the core of one's heart", "bn": "হৃদয়ের গভীরে ⚠️ (যাচাই করো)", "meaning": "In one's innermost feelings", "page": 4}, {"no": 91, "word": "Keep one's nose to the grindstone", "bn": "কঠোর পরিশ্রম করতে থাকা ⚠️ (যাচাই করো)", "meaning": "To work hard continuously", "page": 4}, {"no": 92, "word": "Bring to book", "bn": "শাস্তি দেওয়া / জবাবদিহি করানো", "meaning": "To punish/hold accountable", "page": 4}, {"no": 93, "word": "Break out", "bn": "হঠাৎ শুরু হওয়া ⚠️ (যাচাই করো)", "meaning": "Sudden start of something unpleasant / to break down", "page": 5}, {"no": 94, "word": "Break the record", "bn": "আগে কখনো করা হয়নি এমন কিছু করা", "meaning": "To do something that has not been done before", "page": 5}, {"no": 95, "word": "Break forth", "bn": "হঠাৎ প্রকাশ করা", "meaning": "To burst out", "page": 5}, {"no": 96, "word": "Brush up", "bn": "পূর্ব জ্ঞান ঝালিয়ে নেওয়া", "meaning": "To improve one's previous knowledge", "page": 5}, {"no": 97, "word": "Bursting with health", "bn": "স্বাস্থ্যে পরিপূর্ণ ⚠️ (যাচাই করো)", "meaning": "In very good health", "page": 5}, {"no": 98, "word": "Burning question", "bn": "গুরুত্বপূর্ণ প্রশ্ন", "meaning": "An important question/hot topic", "page": 5}, {"no": 99, "word": "Bury the hatchet", "bn": "ঝগড়া মিটিয়ে বন্ধুত্ব করা", "meaning": "To stop quarrelling and become friendly", "page": 5}, {"no": 100, "word": "Butterflies in one's stomach", "bn": "খুব নার্ভাস বোধ করা", "meaning": "To feel very nervous", "page": 5}, {"no": 101, "word": "By leaps and bounds", "bn": "দ্রুত গতিতে", "meaning": "Very rapidly", "page": 5}, {"no": 102, "word": "By and large", "bn": "মোটের উপর ⚠️ (যাচাই করো)", "meaning": "Generally/on the whole", "page": 5}, {"no": 103, "word": "By fair means or foul", "bn": "যেকোনো উপায়ে, সৎ বা অসৎ", "meaning": "In any way, honest or dishonest", "page": 5}, {"no": 104, "word": "By fits and starts", "bn": "অনিয়মিতভাবে", "meaning": "At irregular intervals", "page": 5}, {"no": 105, "word": "By way of", "bn": "উপায় হিসেবে ⚠️ (যাচাই করো)", "meaning": "As a means of", "page": 5}, {"no": 106, "word": "Call it a day", "bn": "আজকের মতো কাজ শেষ করা", "meaning": "To stop work since enough has been done", "page": 5}, {"no": 107, "word": "Call at", "bn": "সাক্ষাৎ করা", "meaning": "To meet/pay a visit", "page": 5}, {"no": 108, "word": "Call (someone) names", "bn": "কাউকে খারাপ নামে ডাকা", "meaning": "To call someone by an insulting name", "page": 5}, {"no": 109, "word": "Call in question", "bn": "সন্দেহ করা ⚠️ (যাচাই করো)", "meaning": "To doubt/challenge", "page": 6}, {"no": 110, "word": "Capital punishment", "bn": "মৃত্যুদণ্ড", "meaning": "Death penalty", "page": 6}, {"no": 111, "word": "Catch sight of", "bn": "হঠাৎ দেখতে পাওয়া", "meaning": "To see for a moment", "page": 6}, {"no": 112, "word": "Cat's paw", "bn": "অন্যের হাতিয়ার", "meaning": "A person used to serve the purposes of another; a tool", "page": 6}, {"no": 113, "word": "A cock and bull story", "bn": "আজগুবি গল্প", "meaning": "A silly story", "page": 6}, {"no": 114, "word": "Cold shoulder", "bn": "উপেক্ষা করা", "meaning": "To treat in an unfriendly way / to ignore someone", "page": 6}, {"no": 115, "word": "Come to light", "bn": "প্রকাশ পাওয়া", "meaning": "To be brought to light/become known", "page": 6}, {"no": 116, "word": "Concrete proposal", "bn": "সুনির্দিষ্ট প্রস্তাব ⚠️ (যাচাই করো)", "meaning": "A definite/clear proposal", "page": 6}, {"no": 117, "word": "Cry wolf", "bn": "মিথ্যা বিপদ সংকেত দেওয়া", "meaning": "To give a false alarm", "page": 6}, {"no": 118, "word": "Culpable homicide", "bn": "হত্যাকাণ্ডের চেয়ে লঘু অপরাধ", "meaning": "Not amounting to murder", "page": 7}, {"no": 119, "word": "Curry favour", "bn": "তোষামোদ করে সুবিধা আদায় করা ⚠️ (যাচাই করো)", "meaning": "To show excessive flattery to gain favour", "page": 7}, {"no": 120, "word": "Cut a poor figure", "bn": "খারাপ ছাপ ফেলা", "meaning": "To produce a poor impression", "page": 7}, {"no": 121, "word": "Dark horse", "bn": "অজানা যোগ্যতাসম্পন্ন ব্যক্তি", "meaning": "A person of unknown past/whose qualities are not known", "page": 7}, {"no": 122, "word": "Day dream", "bn": "দিবাস্বপ্ন", "meaning": "Pleasant, imaginative thoughts unrelated to reality", "page": 7}, {"no": 123, "word": "Dead letter", "bn": "অকার্যকর আইন", "meaning": "Existing but inactive / a law not in force", "page": 7}, {"no": 124, "word": "Die in harness", "bn": "কাজ করতে করতে মারা যাওয়া", "meaning": "To go on working till death", "page": 7}, {"no": 125, "word": "Die-hard", "bn": "কট্টর সমর্থক", "meaning": "A strong, unwavering supporter", "page": 7}, {"no": 126, "word": "Don't judge a book by its cover", "bn": "বাইরের রূপ দেখে বিচার করো না", "meaning": "Not to prejudge the value of something by its outward appearance alone", "page": 7}, {"no": 127, "word": "Double jeopardy", "bn": "একই অপরাধে দুইবার বিচার ⚠️ (যাচাই করো)", "meaning": "Being tried twice for the same offence", "page": 7}, {"no": 128, "word": "Down to earth", "bn": "বাস্তববাদী", "meaning": "Realistic/practical", "page": 7}, {"no": 129, "word": "Cut to the quick", "bn": "গভীরভাবে আহত করা ⚠️ (যাচাই করো)", "meaning": "To hurt someone's feelings deeply", "page": 8}, {"no": 130, "word": "Come to nothing", "bn": "ব্যর্থ হওয়া", "meaning": "To fail / end without result", "page": 8}, {"no": 131, "word": "End in fiasco", "bn": "সম্পূর্ণ ব্যর্থতায় শেষ হওয়া", "meaning": "To end in complete failure", "page": 8}, {"no": 132, "word": "Face to face", "bn": "মুখোমুখি", "meaning": "Looking at each other directly", "page": 8}, {"no": 133, "word": "Fall out (with)", "bn": "ঝগড়া হওয়া ⚠️ (যাচাই করো)", "meaning": "To quarrel with someone", "page": 8}, {"no": 134, "word": "Fall for", "bn": "প্রবলভাবে আকৃষ্ট হওয়া", "meaning": "To be strongly attracted to", "page": 8}, {"no": 135, "word": "Far and wide", "bn": "সর্বত্র", "meaning": "Over a large area", "page": 8}, {"no": 136, "word": "Far cry", "bn": "অনেক পার্থক্য", "meaning": "A long way off / very different", "page": 8}, {"no": 137, "word": "Feel at home", "bn": "স্বচ্ছন্দ বোধ করা", "meaning": "To feel free and easy", "page": 8}, {"no": 138, "word": "Feel like", "bn": "মনে হওয়া", "meaning": "To have an inclination/urge to", "page": 8}, {"no": 139, "word": "Fight shy", "bn": "এড়িয়ে চলা", "meaning": "To avoid", "page": 8}, {"no": 140, "word": "First language", "bn": "মাতৃভাষা", "meaning": "One's natural/native language", "page": 8}, {"no": 141, "word": "Fish out of water", "bn": "অস্বস্তিতে থাকা", "meaning": "Uneasy in an unfamiliar situation", "page": 8}, {"no": 142, "word": "Flying colours", "bn": "পূর্ণ সাফল্য", "meaning": "Complete success", "page": 8}, {"no": 143, "word": "Focus on", "bn": "মনোনিবেশ করা", "meaning": "To concentrate on", "page": 8}, {"no": 144, "word": "Foregone conclusion", "bn": "পূর্বানুমিত ফলাফল", "meaning": "An anticipated result", "page": 8}, {"no": 145, "word": "For good", "bn": "চিরতরে", "meaning": "Permanently", "page": 8}, {"no": 146, "word": "Fall into a brown study", "bn": "গভীর চিন্তায় মগ্ন হওয়া ⚠️ (যাচাই করো)", "meaning": "To think seriously and deeply", "page": 8}, {"no": 147, "word": "Free and easy", "bn": "অবাধ ও সহজ", "meaning": "Without restriction", "page": 9}, {"no": 148, "word": "Free hand", "bn": "পূর্ণ স্বাধীনতা", "meaning": "Full liberty to act as one wishes", "page": 9}, {"no": 149, "word": "Get along", "bn": "সামলে নেওয়া", "meaning": "To manage/cope", "page": 9}, {"no": 150, "word": "Get rid of", "bn": "মুক্ত হওয়া", "meaning": "To be free from", "page": 9}, {"no": 151, "word": "Get (something) across", "bn": "বুঝিয়ে বলা", "meaning": "To make someone understand an idea", "page": 9}, {"no": 152, "word": "Get over", "bn": "কাটিয়ে ওঠা", "meaning": "To deal with or gain control of something", "page": 9}, {"no": 153, "word": "Get the ball rolling", "bn": "কাজ শুরু করা", "meaning": "To start the work with vigour", "page": 9}, {"no": 154, "word": "Gift of the gab", "bn": "বাকপটুতা", "meaning": "The ability to speak fluently/persuasively", "page": 9}, {"no": 155, "word": "Give way", "bn": "ভেঙে পড়া", "meaning": "To break or fall down", "page": 9}, {"no": 156, "word": "Go back on one's promise", "bn": "প্রতিশ্রুতি থেকে সরে আসা", "meaning": "To withdraw from one's promise", "page": 9}, {"no": 157, "word": "Go down", "bn": "ভেঙে পড়া", "meaning": "To collapse", "page": 9}, {"no": 158, "word": "Go out", "bn": "বেরিয়ে যাওয়া", "meaning": "To go outside", "page": 9}, {"no": 159, "word": "Go to the dogs", "bn": "সর্বনাশ হওয়া", "meaning": "To be ruined", "page": 9}, {"no": 160, "word": "Go through", "bn": "পড়া/পর্যালোচনা করা", "meaning": "To read/review", "page": 9}, {"no": 161, "word": "Let the grass grow under one's feet", "bn": "দেরি করা", "meaning": "To delay and linger", "page": 9}, {"no": 162, "word": "Hang about", "bn": "ঘোরাঘুরি করা", "meaning": "To loiter about", "page": 9}, {"no": 163, "word": "Hard and fast", "bn": "কঠোর/অপরিবর্তনীয় ⚠️ (যাচাই করো)", "meaning": "Strict/fixed", "page": 10}, {"no": 164, "word": "A hard nut to crack", "bn": "কঠিন সমস্যা ⚠️ (যাচাই করো)", "meaning": "A difficult problem or person to deal with", "page": 10}, {"no": 165, "word": "At the earliest", "bn": "যত দ্রুত সম্ভব", "meaning": "As soon as possible", "page": 10}, {"no": 166, "word": "Hand in glove", "bn": "ঘনিষ্ঠ সম্পর্কে ⚠️ (যাচাই করো)", "meaning": "In very close association", "page": 10}, {"no": 167, "word": "Head over heels", "bn": "প্রবলভাবে", "meaning": "Madly (in love)", "page": 10}, {"no": 168, "word": "From the core of one's heart", "bn": "হৃদয়ের অন্তঃস্থল থেকে", "meaning": "From the innermost feelings", "page": 10}, {"no": 169, "word": "Cut-throat competition", "bn": "তীব্র প্রতিযোগিতা ⚠️ (যাচাই করো)", "meaning": "Intense, ruthless competition", "page": 10}, {"no": 170, "word": "Hold water", "bn": "যুক্তিসঙ্গত হওয়া", "meaning": "To bear examination / be valid and logical", "page": 10}, {"no": 171, "word": "On the horns of a dilemma", "bn": "উভয় সংকটে", "meaning": "In a state of perplexity between two difficult choices", "page": 11}, {"no": 172, "word": "In a fix", "bn": "বিপদে", "meaning": "In trouble", "page": 11}, {"no": 173, "word": "In contrast", "bn": "বিপরীতে", "meaning": "On the other hand", "page": 11}, {"no": 174, "word": "In connection with", "bn": "সম্পর্কে", "meaning": "Having to do with a particular thing", "page": 11}, {"no": 175, "word": "In good time", "bn": "যথাসময়ে ⚠️ (যাচাই করো)", "meaning": "Punctually", "page": 11}, {"no": 176, "word": "Instead of", "bn": "পরিবর্তে", "meaning": "In place of", "page": 11}, {"no": 177, "word": "In response to", "bn": "জবাবে", "meaning": "In regard to", "page": 11}, {"no": 178, "word": "In short", "bn": "সংক্ষেপে", "meaning": "Briefly", "page": 11}, {"no": 179, "word": "Into the bargain", "bn": "অতিরিক্ত হিসেবে", "meaning": "In addition", "page": 11}, {"no": 180, "word": "In the lap of the gods", "bn": "ভাগ্যের হাতে", "meaning": "Depending on fate/uncertain outcome", "page": 11}, {"no": 181, "word": "In the nick of time", "bn": "একদম শেষ মুহূর্তে", "meaning": "At the very last minute/at the right time", "page": 11}, {"no": 182, "word": "In the pipeline", "bn": "প্রস্তুত কিন্তু এখনো প্রকাশিত হয়নি", "meaning": "Prepared but not yet made public", "page": 11}, {"no": 183, "word": "In the wake of", "bn": "পরপরই", "meaning": "Coming immediately after", "page": 11}, {"no": 184, "word": "A rich harvest", "bn": "প্রচুর ফলাফল/সাফল্য ⚠️ (যাচাই করো)", "meaning": "An abundant result/success", "page": 11}, {"no": 185, "word": "Keep aloof from", "bn": "দূরে থাকা ⚠️ (যাচাই করো)", "meaning": "To stay away from", "page": 12}, {"no": 186, "word": "Keep in the dark", "bn": "অন্ধকারে রাখা", "meaning": "To keep someone uninformed", "page": 12}, {"no": 187, "word": "Keep one's chin up", "bn": "সাহস না হারানো", "meaning": "To remain cheerful in the face of difficulty", "page": 12}, {"no": 188, "word": "Keep one's nose out of something", "bn": "হস্তক্ষেপ না করা", "meaning": "To avoid interfering in something", "page": 12}, {"no": 189, "word": "Keep one's fingers crossed", "bn": "সৌভাগ্য কামনা করা", "meaning": "To hope for good luck", "page": 12}, {"no": 190, "word": "Keep the flag flying", "bn": "উৎসাহ ধরে রাখা", "meaning": "To maintain enthusiasm/pride", "page": 12}, {"no": 191, "word": "Kick", "bn": "পদাঘাত করা ⚠️ (যাচাই করো)", "meaning": "To hit with the foot", "page": 12}, {"no": 192, "word": "Kith and kin", "bn": "আত্মীয়স্বজন", "meaning": "Blood relations", "page": 12}, {"no": 193, "word": "Knock into shape", "bn": "সঠিক আকারে আনা ⚠️ (যাচাই করো)", "meaning": "To make something/someone fit for purpose", "page": 12}, {"no": 194, "word": "Lead story", "bn": "প্রধান সংবাদ", "meaning": "Important news featured in a newspaper", "page": 12}, {"no": 195, "word": "Leave no stone unturned", "bn": "সর্বাত্মক চেষ্টা করা", "meaning": "To try every possible means", "page": 12}, {"no": 196, "word": "Let the cat out of the bag", "bn": "গোপন কথা ফাঁস করা", "meaning": "To reveal a secret", "page": 12}, {"no": 197, "word": "Lion's share", "bn": "সিংহভাগ", "meaning": "The largest part", "page": 12}, {"no": 198, "word": "Loads of mistakes", "bn": "অনেক ভুল", "meaning": "Many mistakes", "page": 12}, {"no": 199, "word": "Look and feel", "bn": "বাহ্যিক রূপ ⚠️ (যাচাই করো)", "meaning": "Outward appearance", "page": 12}, {"no": 200, "word": "Live from hand to mouth", "bn": "টেনেটুনে সংসার চালানো", "meaning": "To live with barely enough to survive", "page": 12}, {"no": 201, "word": "Lose ground", "bn": "ক্ষমতা কমে যাওয়া", "meaning": "To become less powerful", "page": 13}, {"no": 202, "word": "Look before you leap", "bn": "চিন্তা করে কাজ করা", "meaning": "Think about the possible results before acting", "page": 13}, {"no": 203, "word": "Look forward to", "bn": "আগ্রহের সাথে অপেক্ষা করা", "meaning": "To expect with pleasure", "page": 13}, {"no": 204, "word": "Loud and clear", "bn": "স্পষ্টভাবে", "meaning": "Very evident", "page": 13}, {"no": 205, "word": "First century", "bn": "প্রথম শতরান ⚠️ (যাচাই করো)", "meaning": "First hundred runs (cricket)", "page": 13}, {"no": 206, "word": "Made for", "bn": "উপযুক্ত", "meaning": "Perfectly suited for", "page": 13}, {"no": 207, "word": "Make friends with (someone)", "bn": "কারো সাথে বন্ধুত্ব করা", "meaning": "To be friends with someone", "page": 13}, {"no": 208, "word": "Make a dash for", "bn": "দ্রুত ছুটে যাওয়া", "meaning": "To run quickly for someone or something", "page": 13}, {"no": 209, "word": "Make hay while the sun shines", "bn": "সুযোগের সদ্ব্যবহার করা", "meaning": "To make good use of the opportunity", "page": 13}, {"no": 210, "word": "Make headway", "bn": "অগ্রগতি করা", "meaning": "To make progress", "page": 13}, {"no": 211, "word": "Make up", "bn": "পুষিয়ে নেওয়া/মিটমাট করা ⚠️ (যাচাই করো)", "meaning": "To compensate/reconcile", "page": 13}, {"no": 212, "word": "Mend fences", "bn": "সম্পর্ক ঠিক করা ⚠️ (যাচাই করো)", "meaning": "To do something that corrects a bad situation", "page": 13}, {"no": 213, "word": "Man of straw", "bn": "অসার/দুর্বল ব্যক্তি ⚠️ (যাচাই করো)", "meaning": "A person of no substance, easily overcome", "page": 13}, {"no": 214, "word": "Man does not live by bread alone", "bn": "মানুষের শুধু জাগতিক চাহিদাই যথেষ্ট নয় ⚠️ (যাচাই করো)", "meaning": "Man needs more than material things", "page": 13}, {"no": 215, "word": "Modus operandi", "bn": "কার্যপদ্ধতি", "meaning": "Method of operation", "page": 13}, {"no": 216, "word": "Nip in the bud", "bn": "শুরুতেই ধ্বংস করা", "meaning": "To destroy something at the very beginning", "page": 14}, {"no": 217, "word": "Not playing with a full deck", "bn": "মানসিকভাবে সুস্থ নয় ⚠️ (যাচাই করো)", "meaning": "Not mentally stable", "page": 14}, {"no": 218, "word": "Off and on", "bn": "মাঝে মাঝে", "meaning": "Occasionally", "page": 14}, {"no": 219, "word": "Off the hook", "bn": "সমস্যামুক্ত", "meaning": "No longer in difficulty or trouble", "page": 14}, {"no": 220, "word": "Off the record", "bn": "গোপনীয়", "meaning": "Confidential, not for publication", "page": 14}, {"no": 221, "word": "On the cards", "bn": "সম্ভাব্য ⚠️ (যাচাই করো)", "meaning": "Possible/likely", "page": 14}, {"no": 222, "word": "One-eyed", "bn": "পক্ষপাতদুষ্ট ⚠️ (যাচাই করো)", "meaning": "Biased", "page": 14}, {"no": 223, "word": "On the increase", "bn": "বৃদ্ধি পাচ্ছে এমন", "meaning": "Increasing", "page": 14}, {"no": 224, "word": "On the sly", "bn": "গোপনে", "meaning": "Secretly", "page": 14}, {"no": 225, "word": "Open secret", "bn": "প্রকাশ্য গোপন কথা", "meaning": "Something not officially announced but widely known", "page": 14}, {"no": 226, "word": "On the spur of the moment", "bn": "পূর্ব পরিকল্পনা ছাড়াই", "meaning": "Without previous thought, spontaneously", "page": 14}, {"no": 227, "word": "Out of the blue", "bn": "হঠাৎ ও অপ্রত্যাশিতভাবে", "meaning": "Something completely unexpected", "page": 14}, {"no": 228, "word": "Out and out", "bn": "সম্পূর্ণরূপে", "meaning": "Thoroughly/completely", "page": 14}, {"no": 229, "word": "Outbreak", "bn": "আকস্মিক সূচনা", "meaning": "Sudden start of something unpleasant", "page": 14}, {"no": 230, "word": "Out of doors", "bn": "বাইরে", "meaning": "Outdoors, away from inside a place", "page": 15}, {"no": 231, "word": "Out of place", "bn": "অনুপযুক্ত স্থানে ⚠️ (যাচাই করো)", "meaning": "Not in the proper position", "page": 15}, {"no": 232, "word": "Out at elbows", "bn": "দরিদ্র/জীর্ণ ⚠️ (যাচাই করো)", "meaning": "In poverty / shabby", "page": 15}, {"no": 233, "word": "Out of the wood(s)", "bn": "বিপদমুক্ত", "meaning": "Free from difficulty or problem", "page": 15}, {"no": 234, "word": "Outward show", "bn": "বাহ্যিক জাঁকজমক", "meaning": "Superficially good but actually not", "page": 15}, {"no": 235, "word": "Patch (something) up", "bn": "মিটমাট করা", "meaning": "To end a quarrel and become friends again", "page": 15}, {"no": 236, "word": "Pin money", "bn": "সামান্য খরচের টাকা ⚠️ (যাচাই করো)", "meaning": "A small amount of extra money/allowance", "page": 15}, {"no": 237, "word": "Play truant", "bn": "স্কুল ফাঁকি দেওয়া", "meaning": "To stay away from school without permission", "page": 15}, {"no": 238, "word": "Police state", "bn": "পুলিশি রাষ্ট্র", "meaning": "A country where people's freedom is highly restricted by the government", "page": 15}, {"no": 239, "word": "Possession in fact", "bn": "প্রকৃত দখল ⚠️ (যাচাই করো)", "meaning": "Physical/actual possession", "page": 16}, {"no": 240, "word": "Play the game", "bn": "ন্যায্যভাবে খেলা ⚠️ (যাচাই করো)", "meaning": "To follow the rules, be fair", "page": 16}, {"no": 241, "word": "Good and evil", "bn": "ভালো ও মন্দ ⚠️ (যাচাই করো)", "meaning": "Moral opposites", "page": 16}, {"no": 242, "word": "Play second fiddle", "bn": "গৌণ ভূমিকা পালন করা ⚠️ (যাচাই করো)", "meaning": "To be in a subordinate position", "page": 16}, {"no": 243, "word": "Pull well with", "bn": "বন্ধুত্বপূর্ণ সম্পর্ক থাকা ⚠️ (যাচাই করো)", "meaning": "To get along well with", "page": 16}, {"no": 244, "word": "Pass the buck", "bn": "দোষ চাপিয়ে দেওয়া", "meaning": "To pass the blame to someone else", "page": 16}, {"no": 245, "word": "Put the cart before the horse", "bn": "স্বাভাবিক ক্রম উল্টে দেওয়া", "meaning": "To reverse the natural order of things", "page": 16}, {"no": 246, "word": "Put someone away", "bn": "বন্দি বা আটক করা ⚠️ (যাচাই করো)", "meaning": "To send somebody to prison/an asylum", "page": 16}, {"no": 247, "word": "Quote", "bn": "উদ্ধৃত করা ⚠️ (যাচাই করো)", "meaning": "To recite something that is written", "page": 16}, {"no": 248, "word": "Rack and ruin", "bn": "শোচনীয় অবস্থা ⚠️ (যাচাই করো)", "meaning": "A state of decay/ruin", "page": 16}, {"no": 249, "word": "Red-handed", "bn": "হাতেনাতে ধরা", "meaning": "Caught in the act of doing something wrong", "page": 16}, {"no": 250, "word": "Red-letter day", "bn": "স্মরণীয় দিন", "meaning": "A memorable day/day of celebration", "page": 16}, {"no": 251, "word": "Right and left", "bn": "যত্রতত্র", "meaning": "Indiscriminately, in all directions", "page": 16}, {"no": 252, "word": "Round table conference", "bn": "গোল টেবিল বৈঠক", "meaning": "A political or other discussion among equals", "page": 16}, {"no": 253, "word": "Rule of thumb", "bn": "অভিজ্ঞতাভিত্তিক পদ্ধতি", "meaning": "A method based on experience/practical approach", "page": 16}, {"no": 254, "word": "Rank and file", "bn": "সাধারণ সদস্যবৃন্দ ⚠️ (যাচাই করো)", "meaning": "Ordinary members of a group", "page": 17}, {"no": 255, "word": "Cream of the crop", "bn": "সেরাদের সেরা ⚠️ (যাচাই করো)", "meaning": "The ideal/best people", "page": 17}, {"no": 256, "word": "Something fishy", "bn": "সন্দেহজনক ⚠️ (যাচাই করো)", "meaning": "Something suspicious", "page": 17}, {"no": 257, "word": "Rank outsider", "bn": "ক্ষমতার বাইরে থাকা দল/ব্যক্তি ⚠️ (যাচাই করো)", "meaning": "A party or person not in power/not expected to win", "page": 17}, {"no": 258, "word": "Sinister", "bn": "অশুভ", "meaning": "Seeming evil or dangerous", "page": 17}, {"no": 259, "word": "Smell a rat", "bn": "কারচুপি সন্দেহ করা", "meaning": "To suspect a trick or deceit", "page": 17}, {"no": 260, "word": "Soft soap", "bn": "স্বার্থপর তোষামোদ", "meaning": "Flattery for selfish motives", "page": 17}, {"no": 261, "word": "Call bad names", "bn": "গালিগালাজ করা ⚠️ (যাচাই করো)", "meaning": "To call someone bad names", "page": 17}, {"no": 262, "word": "Spill the beans", "bn": "গোপন কথা ফাঁস করা", "meaning": "To reveal a secret", "page": 17}, {"no": 263, "word": "Square meal", "bn": "পরিতৃপ্তিদায়ক পূর্ণ খাবার ⚠️ (যাচাই করো)", "meaning": "A good, satisfying meal", "page": 18}, {"no": 264, "word": "Steal the show", "bn": "সবার দৃষ্টি আকর্ষণ করা", "meaning": "To attract the most attention/praise", "page": 18}, {"no": 265, "word": "Take after", "bn": "চেহারা বা স্বভাবে সাদৃশ্য থাকা", "meaning": "To resemble a parent in appearance or character", "page": 18}, {"no": 266, "word": "Take full advantage", "bn": "পুরোপুরি সুযোগ নেওয়া ⚠️ (যাচাই করো)", "meaning": "To make full use of an opportunity", "page": 18}, {"no": 267, "word": "Take into account", "bn": "বিবেচনা করা", "meaning": "To consider", "page": 18}, {"no": 268, "word": "Talk of", "bn": "আলোচনা করা", "meaning": "To discuss", "page": 18}, {"no": 269, "word": "Three times a week", "bn": "সপ্তাহে তিনবার ⚠️ (যাচাই করো)", "meaning": "Thrice a week", "page": 18}, {"no": 270, "word": "Tempest in a teapot", "bn": "তুচ্ছ বিষয়ে হইচই ⚠️ (যাচাই করো)", "meaning": "A lot of fuss over a trivial matter", "page": 18}, {"no": 271, "word": "Trifling", "bn": "গুরুত্বহীন ⚠️ (যাচাই করো)", "meaning": "Unimportant, trivial", "page": 18}, {"no": 272, "word": "To turn a deaf ear", "bn": "শুনেও না শোনার ভান করা ⚠️ (যাচাই করো)", "meaning": "To deliberately ignore or refuse to listen", "page": 19}, {"no": 273, "word": "To take to something", "bn": "পছন্দ করে ফেলা ⚠️ (যাচাই করো)", "meaning": "To show liking/support for something", "page": 19}, {"no": 274, "word": "To be at one's wit's end", "bn": "কী করবে বুঝতে না পারা", "meaning": "Not to know what to do / to be perplexed", "page": 19}, {"no": 275, "word": "To beg the question", "bn": "স্বতঃসিদ্ধ ধরে নেওয়া ⚠️ (যাচাই করো)", "meaning": "To take something for granted", "page": 19}, {"no": 276, "word": "To break the ice", "bn": "আড়ষ্টতা কাটানো", "meaning": "To say something at the beginning of a meeting to ease tension", "page": 19}, {"no": 277, "word": "Not mince matters", "bn": "স্পষ্টভাবে বলা ⚠️ (যাচাই করো)", "meaning": "To speak plainly, without hiding anything", "page": 19}, {"no": 278, "word": "To catch off guard", "bn": "অসতর্ক অবস্থায় ধরা", "meaning": "To surprise someone when they are careless", "page": 19}, {"no": 279, "word": "To come into view", "bn": "দৃশ্যমান হওয়া ⚠️ (যাচাই করো)", "meaning": "To become visible", "page": 19}, {"no": 280, "word": "To cope with", "bn": "সামলানো", "meaning": "To adjust/deal with", "page": 19}, {"no": 281, "word": "To cry for the moon", "bn": "অসম্ভব জিনিস চাওয়া", "meaning": "To want something that is impossible to get", "page": 19}, {"no": 282, "word": "To cut a fine figure", "bn": "চমৎকার ছাপ ফেলা", "meaning": "To give a fine impression of oneself", "page": 19}, {"no": 283, "word": "To dash someone's hope", "bn": "আশাভঙ্গ করা ⚠️ (যাচাই করো)", "meaning": "To spoil someone's hope suddenly", "page": 19}, {"no": 284, "word": "To do away with", "bn": "বাদ দেওয়া", "meaning": "To get rid of", "page": 19}, {"no": 285, "word": "To embrace a habit", "bn": "কোনো অভ্যাসে অভ্যস্ত হওয়া ⚠️ (যাচাই করো)", "meaning": "To eagerly engage in a habit", "page": 19}, {"no": 286, "word": "To fish in troubled waters", "bn": "গোলযোগের সুযোগ নেওয়া", "meaning": "To make a personal profit out of a disturbance", "page": 19}, {"no": 287, "word": "To flog a dead horse", "bn": "অচল বিষয়ে সময় নষ্ট করা ⚠️ (যাচাই করো)", "meaning": "To waste effort on something already settled/hopeless", "page": 19}, {"no": 288, "word": "From the best away from the door", "bn": "কাছেই থাকা ⚠️ (যাচাই করো)", "meaning": "Nearby/close at hand", "page": 20}, {"no": 289, "word": "Grass does not grow under one's feet", "bn": "কালক্ষেপণ না করা ⚠️ (যাচাই করো)", "meaning": "To act without delay", "page": 20}, {"no": 290, "word": "To lighten the atmosphere", "bn": "পরিবেশ হালকা করা ⚠️ (যাচাই করো)", "meaning": "To ease tension", "page": 20}, {"no": 291, "word": "To lose heart", "bn": "সাহস হারানো", "meaning": "To lose courage", "page": 20}, {"no": 292, "word": "To make a living", "bn": "জীবিকা নির্বাহ করা", "meaning": "To earn a living", "page": 20}, {"no": 293, "word": "To make a clean breast of", "bn": "সব স্বীকার করা", "meaning": "To confess without reservation", "page": 20}, {"no": 294, "word": "To meet one's Waterloo", "bn": "চূড়ান্ত পরাজয় বরণ করা ⚠️ (যাচাই করো)", "meaning": "To suffer a final, decisive defeat", "page": 20}, {"no": 295, "word": "To meet trouble halfway", "bn": "আগেভাগেই দুশ্চিন্তা করা ⚠️ (যাচাই করো)", "meaning": "To worry about a problem before it happens", "page": 20}, {"no": 296, "word": "To make oneself at home", "bn": "স্বচ্ছন্দ বোধ করা", "meaning": "To be comfortable", "page": 20}, {"no": 297, "word": "To nurse a grudge", "bn": "মনে ক্ষোভ পুষে রাখা", "meaning": "To bear ill will towards someone", "page": 20}, {"no": 298, "word": "Tooth and nail", "bn": "সর্বশক্তি দিয়ে", "meaning": "With utmost effort/strongly", "page": 20}, {"no": 299, "word": "To pay lip service", "bn": "শুধু মুখে সমর্থন করা", "meaning": "To show only outward respect, not genuine", "page": 20}, {"no": 300, "word": "To pay through the nose", "bn": "অত্যধিক দাম দেওয়া", "meaning": "To pay a very high price", "page": 20}, {"no": 301, "word": "To paddle one's own canoe", "bn": "নিজের চেষ্টায় কিছু করা", "meaning": "To do something by one's own effort", "page": 20}, {"no": 302, "word": "To play high", "bn": "ঝুঁকি নিয়ে খেলা ⚠️ (যাচাই করো)", "meaning": "To take a big risk", "page": 20}, {"no": 303, "word": "To fiddle while Rome burns", "bn": "গুরুত্বপূর্ণ বিষয়ে উদাসীন থেকে সময় নষ্ট করা ⚠️ (যাচাই করো)", "meaning": "To waste time on trivial things while a crisis unfolds", "page": 20}, {"no": 304, "word": "To pour oil on troubled water", "bn": "পরিস্থিতি শান্ত করা ⚠️ (যাচাই করো)", "meaning": "To calm down a difficult situation", "page": 20}, {"no": 305, "word": "To pull strings", "bn": "গোপন প্রভাব খাটানো", "meaning": "To exert hidden influence", "page": 20}, {"no": 306, "word": "To push somebody to the wall", "bn": "কাউকে কোণঠাসা করা ⚠️ (যাচাই করো)", "meaning": "To defeat/corner someone completely", "page": 20}, {"no": 307, "word": "To ride well", "bn": "স্বাচ্ছন্দ্যে চলা ⚠️ (যাচাই করো)", "meaning": "To enjoy a smooth ride", "page": 20}, {"no": 308, "word": "To read between the lines", "bn": "অন্তর্নিহিত অর্থ বোঝা", "meaning": "To grasp the hidden meaning", "page": 21}, {"no": 309, "word": "To side with", "bn": "পক্ষ নেওয়া ⚠️ (যাচাই করো)", "meaning": "To support one side in a dispute", "page": 21}, {"no": 310, "word": "To take a nap", "bn": "একটু ঘুমিয়ে নেওয়া", "meaning": "To take a short sleep", "page": 21}, {"no": 311, "word": "To take somebody for a ride", "bn": "প্রতারণা করা ⚠️ (যাচাই করো)", "meaning": "To deceive/cheat someone", "page": 21}, {"no": 312, "word": "Trial and error", "bn": "চেষ্টা-নিরীক্ষার মাধ্যমে", "meaning": "Process of solving a problem by trying various methods", "page": 21}, {"no": 313, "word": "Turn a deaf ear", "bn": "অগ্রাহ্য করা", "meaning": "To disregard", "page": 21}, {"no": 314, "word": "Upper hand", "bn": "প্রাধান্য", "meaning": "Advantage over somebody", "page": 21}, {"no": 315, "word": "Value judgement", "bn": "ব্যক্তিগত মতামতভিত্তিক বিচার", "meaning": "Judgement based on personal views", "page": 21}, {"no": 316, "word": "Vicious circle", "bn": "জটিল অবস্থার পুনরাবৃত্তি", "meaning": "An unchangeable, self-perpetuating difficult situation", "page": 21}, {"no": 317, "word": "Vice versa", "bn": "বিপরীতক্রমে", "meaning": "The other way round", "page": 21}, {"no": 318, "word": "Wash one's dirty linen in public", "bn": "ব্যক্তিগত সমস্যা প্রকাশ্যে আনা", "meaning": "To discuss private/unpleasant matters in public", "page": 21}, {"no": 319, "word": "Watch out for", "bn": "সতর্ক থাকা", "meaning": "To be cautious", "page": 21}, {"no": 320, "word": "Wear and tear", "bn": "ক্ষয়ক্ষতি", "meaning": "Depreciation due to use", "page": 21}, {"no": 321, "word": "Weal and woe", "bn": "সুখ-দুঃখ ⚠️ (যাচাই করো)", "meaning": "Happiness and sorrow", "page": 22}, {"no": 322, "word": "Well off", "bn": "সচ্ছল ⚠️ (যাচাই করো)", "meaning": "Wealthy/prosperous", "page": 22}, {"no": 323, "word": "White collar job", "bn": "মর্যাদাপূর্ণ ডেস্ক-জব", "meaning": "A job that does not involve manual labour", "page": 22}, {"no": 324, "word": "White elephant", "bn": "ব্যয়বহুল কিন্তু অপ্রয়োজনীয় সম্পত্তি", "meaning": "A costly but useless possession", "page": 22}, {"no": 325, "word": "With flying colours", "bn": "পূর্ণ সাফল্যের সাথে", "meaning": "With complete success", "page": 22}, {"no": 326, "word": "Word for word", "bn": "হুবহু", "meaning": "Exactly the same, verbatim", "page": 22}, {"no": 327, "word": "Work against the clock", "bn": "সময়ের বিরুদ্ধে কাজ করা ⚠️ (যাচাই করো)", "meaning": "To work in a great hurry to finish before a deadline", "page": 22}, {"no": 328, "word": "Worth his salt", "bn": "যোগ্যতাসম্পন্ন", "meaning": "A capable/valuable employee", "page": 22}, {"no": 329, "word": "Whole-heartedly", "bn": "আন্তরিকভাবে", "meaning": "With complete sincerity/support", "page": 22}, {"no": 330, "word": "Pay the debt of nature", "bn": "মৃত্যুবরণ করা ⚠️ (যাচাই করো)", "meaning": "To die", "page": 22}, {"no": 331, "word": "To buy the farm", "bn": "মৃত্যুবরণ করা ⚠️ (যাচাই করো)", "meaning": "To die", "page": 22}, {"no": 332, "word": "To bite the dust", "bn": "মৃত্যুবরণ করা ⚠️ (যাচাই করো)", "meaning": "To die", "page": 22}, {"no": 333, "word": "Kick the bucket", "bn": "মৃত্যুবরণ করা", "meaning": "To die", "page": 22}, {"no": 334, "word": "To cross the Styx", "bn": "মৃত্যুবরণ করা ⚠️ (যাচাই করো)", "meaning": "To die", "page": 23}, {"no": 335, "word": "To give up the ghost", "bn": "মৃত্যুবরণ করা", "meaning": "To die", "page": 23}, {"no": 336, "word": "To hop the twig", "bn": "মৃত্যুবরণ করা ⚠️ (যাচাই করো)", "meaning": "To die", "page": 23}, {"no": 337, "word": "To yield up the ghost", "bn": "মৃত্যুবরণ করা ⚠️ (যাচাই করো)", "meaning": "To die", "page": 23}, {"no": 338, "word": "From time to time", "bn": "মাঝে মাঝে", "meaning": "Occasionally", "page": 23}, {"no": 339, "word": "Ever and anon", "bn": "মাঝে মাঝে ⚠️ (যাচাই করো)", "meaning": "Occasionally", "page": 23}, {"no": 340, "word": "Every now and then", "bn": "মাঝে মাঝে", "meaning": "Occasionally, sometimes", "page": 23}, {"no": 341, "word": "Now and then", "bn": "মাঝে মাঝে", "meaning": "Occasionally", "page": 23}, {"no": 342, "word": "Ab initio", "bn": "শুরু থেকে", "meaning": "From the beginning", "page": 23}, {"no": 343, "word": "Ab ovo", "bn": "শুরু থেকে ⚠️ (যাচাই করো)", "meaning": "From the very beginning", "page": 23}, {"no": 344, "word": "Ad infinitum", "bn": "চিরকাল ধরে", "meaning": "Forever, endlessly", "page": 23}, {"no": 345, "word": "Ad interim", "bn": "এই মধ্যবর্তী সময়ে", "meaning": "In the meantime", "page": 23}, {"no": 346, "word": "Ad hominem", "bn": "ব্যক্তি আক্রমণমূলক", "meaning": "Attacking the person rather than the argument", "page": 23}, {"no": 347, "word": "Ad referendum", "bn": "ভবিষ্যৎ বিবেচনার জন্য", "meaning": "For further consideration", "page": 23}, {"no": 348, "word": "Ad rem", "bn": "মূল বিষয়ে", "meaning": "To the point", "page": 23}, {"no": 349, "word": "Ad valorem", "bn": "মূল্যের অনুপাতে", "meaning": "In proportion to the value", "page": 24}, {"no": 350, "word": "Affidavit", "bn": "হলফনামা", "meaning": "A written statement made under oath", "page": 24}, {"no": 351, "word": "Alma mater", "bn": "নিজের বিশ্ববিদ্যালয়", "meaning": "One's own school/university", "page": 24}, {"no": 352, "word": "Alter ego", "bn": "প্রাণের বন্ধু", "meaning": "A close, trusted friend / second self", "page": 24}, {"no": 353, "word": "Anno Domini", "bn": "খ্রিস্টাব্দে", "meaning": "In the year of Christ (A.D.)", "page": 24}, {"no": 354, "word": "Ante meridiem", "bn": "পূর্বাহ্ণে ⚠️ (যাচাই করো)", "meaning": "Before noon (A.M.)", "page": 24}, {"no": 355, "word": "A propos", "bn": "প্রসঙ্গক্রমে ⚠️ (যাচাই করো)", "meaning": "With regard to/regarding", "page": 24}, {"no": 356, "word": "Au revoir", "bn": "আবার দেখা হবে", "meaning": "Goodbye till we meet again", "page": 24}, {"no": 357, "word": "Bona fide", "bn": "সরল বিশ্বাসে", "meaning": "In good faith, genuine", "page": 24}, {"no": 358, "word": "Bona fides", "bn": "সরল বিশ্বাস", "meaning": "Good faith", "page": 24}, {"no": 359, "word": "Carpe diem", "bn": "বর্তমান মুহূর্তকে উপভোগ করো", "meaning": "Enjoy the present moment", "page": 24}, {"no": 360, "word": "Cul-de-sac", "bn": "বদ্ধ গলি", "meaning": "A dead end / a street closed at one end", "page": 24}, {"no": 361, "word": "De facto", "bn": "প্রকৃতপক্ষে", "meaning": "In fact/actual, though not officially recognized", "page": 25}, {"no": 362, "word": "De luxe", "bn": "জাঁকজমকপূর্ণ ও ব্যয়বহুল", "meaning": "Splendid and expensive", "page": 25}, {"no": 363, "word": "Edition de luxe", "bn": "জাঁকজমকপূর্ণ সংস্করণ", "meaning": "A splendid, expensive edition of a book", "page": 25}, {"no": 364, "word": "En masse", "bn": "দলবদ্ধভাবে", "meaning": "In a group, all together", "page": 25}, {"no": 365, "word": "E.g. (exempli gratia)", "bn": "উদাহরণস্বরূপ", "meaning": "For example", "page": 25}, {"no": 366, "word": "En passant", "bn": "পথিমধ্যে", "meaning": "By the way, in passing", "page": 25}, {"no": 367, "word": "En rapport", "bn": "সহমতে", "meaning": "In agreement/harmony", "page": 25}, {"no": 368, "word": "En route", "bn": "পথিমধ্যে", "meaning": "On the way", "page": 25}, {"no": 369, "word": "Ergo", "bn": "অতএব", "meaning": "Therefore", "page": 25}, {"no": 370, "word": "Etcetera (etc.)", "bn": "ইত্যাদি", "meaning": "And others / and so forth", "page": 25}, {"no": 371, "word": "Fait accompli", "bn": "সম্পন্ন হয়ে গেছে এমন কাজ", "meaning": "A thing that has been done and cannot be altered now", "page": 25}, {"no": 372, "word": "Functus officio", "bn": "আর কর্তৃত্ব নেই এমন", "meaning": "Having no further authority", "page": 25}, {"no": 373, "word": "Habeas corpus", "bn": "বন্দির উপস্থাপনার আদেশ ⚠️ (যাচাই করো)", "meaning": "A legal order requiring a prisoner to be brought before a court", "page": 25}, {"no": 374, "word": "Impasse", "bn": "অচলাবস্থা", "meaning": "A deadlock/insoluble difficulty", "page": 25}, {"no": 375, "word": "In toto", "bn": "সম্পূর্ণভাবে ⚠️ (যাচাই করো)", "meaning": "Entirely, completely", "page": 25}, {"no": 376, "word": "Inter alia", "bn": "অন্যান্যের মধ্যে", "meaning": "Among other things", "page": 25}, {"no": 377, "word": "Ipso facto", "bn": "সেই ঘটনার দ্বারাই", "meaning": "By that very fact", "page": 25}, {"no": 378, "word": "Lingua franca", "bn": "সাধারণ যোগাযোগের ভাষা", "meaning": "A common language used for communication among speakers of different languages", "page": 26}, {"no": 379, "word": "Magnum opus", "bn": "একজন লেখক বা শিল্পীর শ্রেষ্ঠ কীর্তি", "meaning": "A great work of art/literature; a masterpiece", "page": 26}, {"no": 380, "word": "Mala fide", "bn": "অসৎ উদ্দেশ্যে", "meaning": "With bad/dishonest intent", "page": 26}, {"no": 381, "word": "Modus operandi", "bn": "কার্যপদ্ধতি", "meaning": "Manner/method of working", "page": 26}, {"no": 382, "word": "Midas touch", "bn": "হাতে ছোঁয়ালেই সাফল্য আনার ক্ষমতা", "meaning": "The ability to make a financial success of everything one does", "page": 26}, {"no": 383, "word": "Nom de plume", "bn": "ছদ্মনাম ⚠️ (যাচাই করো)", "meaning": "A pen name", "page": 26}, {"no": 384, "word": "Nouveau riche", "bn": "নব্য ধনী", "meaning": "A newly rich person", "page": 26}, {"no": 385, "word": "Per capita", "bn": "মাথাপিছু", "meaning": "Per head/for each person", "page": 26}, {"no": 386, "word": "Pari passu", "bn": "সমান হারে/ন্যায্যভাবে", "meaning": "Without partiality, equally", "page": 26}, {"no": 387, "word": "Pro forma", "bn": "আনুষ্ঠানিকতা রক্ষার্থে", "meaning": "For the sake of form", "page": 26}, {"no": 388, "word": "Per se", "bn": "স্বাভাবিকভাবেই ⚠️ (যাচাই করো)", "meaning": "By itself/intrinsically", "page": 27}, {"no": 389, "word": "Post mortem", "bn": "মৃত্যুর পর পরীক্ষা", "meaning": "Examination of a body after death", "page": 27}, {"no": 390, "word": "Prior to", "bn": "পূর্বে", "meaning": "Before/previous", "page": 27}, {"no": 391, "word": "Pro rata", "bn": "আনুপাতিক হারে", "meaning": "In proportion", "page": 27}, {"no": 392, "word": "Pro bono", "bn": "বিনা পারিশ্রমিকে ⚠️ (যাচাই করো)", "meaning": "Without charge, for the public good", "page": 27}, {"no": 393, "word": "Status quo", "bn": "বিদ্যমান অবস্থা", "meaning": "The existing state of affairs", "page": 27}, {"no": 394, "word": "Sub judice", "bn": "বিচারাধীন", "meaning": "Under judicial consideration", "page": 27}, {"no": 395, "word": "Vice versa", "bn": "বিপরীতক্রমে ⚠️ (যাচাই করো)", "meaning": "The other way round", "page": 27}, {"no": 396, "word": "Videlicet (viz.)", "bn": "অর্থাৎ ⚠️ (যাচাই করো)", "meaning": "Namely, that is to say", "page": 27}];
+const LISTS = {wm: WM_LIST, syn: SYN_LIST, ant: ANT_LIST, bagdhara: BAGDHARA_LIST, proverb: PROVERB_LIST, ows: OWS_LIST, ekkotha: EKKOTHA_LIST, bnant: BNANT_LIST, shobdartho: SHOBDARTHO_LIST, poribhashik: PORIBHASHIK_LIST, groupverb: GROUPVERB_LIST, idiom: IDIOM_LIST};
+const VALKEY = {wm:'meaning', syn:'syn', ant:'ant', bagdhara:'meaning', proverb:'meaning', ows:'meaning', ekkotha:'meaning', bnant:'meaning', shobdartho:'meaning', poribhashik:'meaning', groupverb:'meaning', idiom:'meaning'};
 const WEEKDAYS_BN = {0:'Su',1:'Mo',2:'Tu',3:'We',4:'Th',5:'Fr',6:'Sa'};
 
 const STORE_KEY = 'mukhosto-checker-v3';
@@ -763,14 +767,14 @@ function applyOverride(type, w){
   return merged;
 }
 
-const TYPE_LABELS = {wm:'Word Meaning', syn:'Synonym', ant:'Antonym', bagdhara:'বাগধারা', proverb:'প্রবাদ', ows:'English One-Word Substitution', ekkotha:'এক কথায় প্রকাশ', bnant:'বিপরীত শব্দ', shobdartho:'শব্দের অর্থ', poribhashik:'পারিভাষিক শব্দ', groupverb:'Group Verb'};
+const TYPE_LABELS = {wm:'Word Meaning', syn:'Synonym', ant:'Antonym', bagdhara:'বাগধারা', proverb:'প্রবাদ', ows:'English One-Word Substitution', ekkotha:'এক কথায় প্রকাশ', bnant:'বিপরীত শব্দ', shobdartho:'শব্দের অর্থ', poribhashik:'পারিভাষিক শব্দ', groupverb:'Group Verb', idiom:'Idioms & Phrases'};
 
 // ============ SETTINGS (Pantry cloud sync + Gemini API keys) ============
 const SETTINGS_KEY = 'memoria-settings-v1';
 function defaultSettings(){
   return {
     pantryId: '',
-    fbProjectId: '',
+    fbDbUrl: '',
     fbApiKey: '',
     fbDocId: 'default',
     geminiModels: [
@@ -822,7 +826,7 @@ function renderApiKeyRows(){
 
 function openSettingsModal(){
   document.getElementById('pantryIdInput').value = settings.pantryId || '';
-  document.getElementById('fbProjectIdInput').value = settings.fbProjectId || '';
+  document.getElementById('fbDbUrlInput').value = settings.fbDbUrl || '';
   document.getElementById('fbApiKeyInput').value = settings.fbApiKey || '';
   document.getElementById('fbDocIdInput').value = settings.fbDocId || 'default';
   renderApiModelRows();
@@ -853,7 +857,7 @@ function collectSettingsFromForm(){
   }
   return {
     pantryId: document.getElementById('pantryIdInput').value.trim(),
-    fbProjectId: document.getElementById('fbProjectIdInput').value.trim(),
+    fbDbUrl: document.getElementById('fbDbUrlInput').value.trim(),
     fbApiKey: document.getElementById('fbApiKeyInput').value.trim(),
     fbDocId: document.getElementById('fbDocIdInput').value.trim() || 'default',
     geminiModels,
@@ -880,6 +884,12 @@ function setSyncStatus(msg, kind){
   el.textContent = msg;
   el.className = 'sync-status' + (kind ? ' '+kind : '');
 }
+document.getElementById('pantrySave').addEventListener('click', ()=>{
+  const pantryId = document.getElementById('pantryIdInput').value.trim();
+  if(!pantryId){ setSyncStatus('Pantry ID খালি — কিছু বসাও আগে।', 'err'); return; }
+  settings.pantryId = pantryId; saveSettings(settings);
+  setSyncStatus('✓ ID সংরক্ষিত হয়েছে — এখন যেকোনো সময় Upload/Restore চাপলেই এটা ব্যবহার হবে।', 'ok');
+});
 document.getElementById('pantryUpload').addEventListener('click', async ()=>{
   const pantryId = document.getElementById('pantryIdInput').value.trim();
   if(!pantryId){ setSyncStatus('আগে Pantry ID বসাও।', 'err'); return; }
@@ -916,57 +926,67 @@ document.getElementById('pantryDownload').addEventListener('click', async ()=>{
   }
 });
 
-// ---- Firebase Firestore sync (REST API, no SDK needed — needs Firestore rules set to allow read/write) ----
+// ---- Firebase Realtime Database sync (REST API, no SDK needed) ----
 function setFbStatus(msg, kind){
   const el = document.getElementById('fbStatus');
   if(!el) return;
   el.textContent = msg;
   el.className = 'sync-status' + (kind ? ' '+kind : '');
 }
-function fbDocUrl(projectId, docId, apiKey){
-  return `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/databases/(default)/documents/memoria/${encodeURIComponent(docId)}?key=${encodeURIComponent(apiKey)}`;
+// dbUrl looks like https://your-project-default-rtdb.firebaseio.com
+// RTDB REST convention: <dbUrl>/<path>.json[?auth=<token>]
+function fbRtdbUrl(dbUrl, docId, authToken){
+  const base = dbUrl.trim().replace(/\/+$/,'');
+  const path = `/memoria/${encodeURIComponent(docId)}.json`;
+  return base + path + (authToken ? ('?auth=' + encodeURIComponent(authToken)) : '');
 }
+function readFbFields(){
+  return {
+    dbUrl: document.getElementById('fbDbUrlInput').value.trim(),
+    apiKey: document.getElementById('fbApiKeyInput').value.trim(),
+    docId: document.getElementById('fbDocIdInput').value.trim() || 'default'
+  };
+}
+document.getElementById('fbSave').addEventListener('click', ()=>{
+  const {dbUrl, apiKey, docId} = readFbFields();
+  if(!dbUrl){ setFbStatus('আগে Firebase Database URL বসাও।', 'err'); return; }
+  settings.fbDbUrl = dbUrl; settings.fbApiKey = apiKey; settings.fbDocId = docId; saveSettings(settings);
+  setFbStatus('✓ তথ্য সংরক্ষিত হয়েছে — এখন যেকোনো সময় Upload/Restore চাপলেই এটা ব্যবহার হবে।', 'ok');
+});
 document.getElementById('fbUpload').addEventListener('click', async ()=>{
-  const projectId = document.getElementById('fbProjectIdInput').value.trim();
-  const apiKey = document.getElementById('fbApiKeyInput').value.trim();
-  const docId = document.getElementById('fbDocIdInput').value.trim() || 'default';
-  if(!projectId || !apiKey){ setFbStatus('আগে Project ID আর API Key বসাও।', 'err'); return; }
-  settings.fbProjectId = projectId; settings.fbApiKey = apiKey; settings.fbDocId = docId; saveSettings(settings);
+  const {dbUrl, apiKey, docId} = readFbFields();
+  if(!dbUrl){ setFbStatus('আগে Firebase Database URL বসাও।', 'err'); return; }
+  settings.fbDbUrl = dbUrl; settings.fbApiKey = apiKey; settings.fbDocId = docId; saveSettings(settings);
   setFbStatus('Upload হচ্ছে...', '');
   try{
-    const payload = JSON.stringify({ state, overrides, updatedAt: new Date().toISOString() });
-    const res = await fetch(fbDocUrl(projectId, docId, apiKey), {
-      method: 'PATCH',
+    const res = await fetch(fbRtdbUrl(dbUrl, docId, apiKey), {
+      method: 'PUT',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ fields: { data: { stringValue: payload } } })
+      body: JSON.stringify({ state, overrides, updatedAt: new Date().toISOString() })
     });
     if(!res.ok){ const t = await res.text(); throw new Error('HTTP ' + res.status + ' — ' + t.slice(0,150)); }
     setFbStatus('✓ Firebase-এ upload সম্পন্ন হয়েছে।', 'ok');
   }catch(err){
-    setFbStatus('Upload ব্যর্থ হয়েছে — Project ID / API Key / Firestore rules ঠিক আছে কিনা দেখো। (' + err.message + ')', 'err');
+    setFbStatus('Upload ব্যর্থ হয়েছে — Database URL / Auth / Rules ঠিক আছে কিনা দেখো। (' + err.message + ')', 'err');
   }
 });
 document.getElementById('fbDownload').addEventListener('click', async ()=>{
-  const projectId = document.getElementById('fbProjectIdInput').value.trim();
-  const apiKey = document.getElementById('fbApiKeyInput').value.trim();
-  const docId = document.getElementById('fbDocIdInput').value.trim() || 'default';
-  if(!projectId || !apiKey){ setFbStatus('আগে Project ID আর API Key বসাও।', 'err'); return; }
-  settings.fbProjectId = projectId; settings.fbApiKey = apiKey; settings.fbDocId = docId; saveSettings(settings);
+  const {dbUrl, apiKey, docId} = readFbFields();
+  if(!dbUrl){ setFbStatus('আগে Firebase Database URL বসাও।', 'err'); return; }
+  settings.fbDbUrl = dbUrl; settings.fbApiKey = apiKey; settings.fbDocId = docId; saveSettings(settings);
   setFbStatus('Restore হচ্ছে...', '');
   try{
-    const res = await fetch(fbDocUrl(projectId, docId, apiKey));
+    const res = await fetch(fbRtdbUrl(dbUrl, docId, apiKey));
     if(!res.ok){ const t = await res.text(); throw new Error('HTTP ' + res.status + ' — ' + t.slice(0,150)); }
-    const doc = await res.json();
-    const raw = doc && doc.fields && doc.fields.data && doc.fields.data.stringValue;
-    if(!raw) throw new Error('ডকুমেন্টে কোনো data পাওয়া যায়নি।');
-    const data = JSON.parse(raw);
+    const data = await res.json();
+    if(!data) throw new Error('ঐ Sync ID-তে এখনো কোনো data আপলোড করা হয়নি।');
     if(data.state) { state = data.state; saveState(state); }
     if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
     refreshAll();
     renderCoverage();
     setFbStatus('✓ Firebase থেকে progress restore হয়েছে।', 'ok');
   }catch(err){
-    setFbStatus('Restore ব্যর্থ হয়েছে — Project ID / API Key / Sync ID ঠিক আছে কিনা দেখো। (' + err.message + ')', 'err');
+    setFbStatus('Restore ব্যর্থ হয়েছে — Database URL / Sync ID ঠিক আছে কিনা দেখো। (' + err.message + ')', 'err');
   }
 });
 
@@ -982,34 +1002,44 @@ async function callGeminiText(prompt, onProgress){
     throw new Error('কোনো মডেল configure করা নেই — Settings থেকে অন্তত একটা মডেলের নাম দাও।');
   }
   let lastErr = null;
-  let attempted = false;
-  for(let ki=0; ki<keys.length; ki++){
-    const keyObj = keys[ki];
-    for(let mi=0; mi<models.length; mi++){
-      const modelObj = models[mi];
-      if(attempted){
-        if(onProgress) onProgress(`rate-limit এড়াতে ১ মিনিট অপেক্ষা করছি... (পরের চেষ্টা: key #${ki+1}, ${modelObj.model})`);
-        await sleep(60000);
+  const MAX_PASSES = 2; // 1st pass runs straight through (no waiting); only a failed full pass triggers one 1-min wait + retry pass
+  for(let pass=0; pass<MAX_PASSES; pass++){
+    if(pass > 0){
+      if(onProgress) onProgress(`সব key/model একবার চেষ্টা হয়ে গেছে — rate-limit এড়াতে ১ মিনিট অপেক্ষা করে আবার প্রথম থেকে চেষ্টা করছি...`);
+      await sleep(60000);
+    }
+    for(let ki=0; ki<keys.length; ki++){
+      const keyObj = keys[ki];
+      for(let mi=0; mi<models.length; mi++){
+        const modelObj = models[mi];
+        if(onProgress) onProgress(`চেষ্টা করছি: key #${ki+1}, মডেল ${modelObj.model}...`);
+        try{
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelObj.model)}:generateContent?key=${encodeURIComponent(keyObj.key)}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+          });
+          if(!res.ok){ lastErr = new Error('HTTP ' + res.status + ' (key #' + (ki+1) + ', ' + modelObj.model + ')'); continue; }
+          const data = await res.json();
+          const text = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
+          if(text) return text.trim();
+          lastErr = new Error('খালি উত্তর এসেছে (key #' + (ki+1) + ', ' + modelObj.model + ')');
+        }catch(err){ lastErr = err; }
       }
-      attempted = true;
-      if(onProgress) onProgress(`চেষ্টা করছি: key #${ki+1}, মডেল ${modelObj.model}...`);
-      try{
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelObj.model)}:generateContent?key=${encodeURIComponent(keyObj.key)}`;
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-        });
-        if(!res.ok){ lastErr = new Error('HTTP ' + res.status + ' (key #' + (ki+1) + ', ' + modelObj.model + ')'); continue; }
-        const data = await res.json();
-        const text = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
-        if(text) return text.trim();
-        lastErr = new Error('খালি উত্তর এসেছে (key #' + (ki+1) + ', ' + modelObj.model + ')');
-      }catch(err){ lastErr = err; }
     }
   }
   throw lastErr || new Error('AI সাহায্য আনা যায়নি।');
 }
+
+// ---- AI answer cache (per word), so a word's mnemonic/example is fetched from
+// Gemini only once ever — reused instantly afterwards, works fully offline,
+// and doesn't waste API tokens on repeat views ----
+const AI_CACHE_KEY = 'memoria_ai_cache_v1';
+function loadAiCache(){ try{ const raw = localStorage.getItem(AI_CACHE_KEY); return raw?JSON.parse(raw):{}; }catch(e){ return {}; } }
+function saveAiCache(c){ try{ localStorage.setItem(AI_CACHE_KEY, JSON.stringify(c)); }catch(e){} }
+let aiCache = loadAiCache();
+function aiCacheKey(w){ return (w.type || '?') + '-' + w.no + '-' + w.word; }
 
 // ============ Flashcard revision popup ============
 let fcDeck = [];
@@ -1047,15 +1077,26 @@ document.getElementById('fcClose').addEventListener('click', closeFlashcards);
 document.getElementById('fcOverlay').addEventListener('click', e=>{
   if(e.target.id === 'fcOverlay') closeFlashcards();
 });
-document.getElementById('fcPrev').addEventListener('click', ()=>{
+// pop animation so a tap always shows a visible "click registered" feedback,
+// even on quick mobile taps where :active barely renders
+function pulseBtn(btn){
+  if(!btn) return;
+  btn.classList.remove('fc-btn-pop');
+  void btn.offsetWidth; // force reflow so the animation can restart on rapid re-clicks
+  btn.classList.add('fc-btn-pop');
+}
+document.getElementById('fcPrev').addEventListener('click', (e)=>{
+  pulseBtn(e.currentTarget);
   fcIndex = (fcIndex - 1 + fcDeck.length) % fcDeck.length;
   renderFlashcard();
 });
-document.getElementById('fcNext').addEventListener('click', ()=>{
+document.getElementById('fcNext').addEventListener('click', (e)=>{
+  pulseBtn(e.currentTarget);
   fcIndex = (fcIndex + 1) % fcDeck.length;
   renderFlashcard();
 });
-document.getElementById('fcShuffle').addEventListener('click', ()=>{
+document.getElementById('fcShuffle').addEventListener('click', (e)=>{
+  pulseBtn(e.currentTarget);
   for(let i=fcDeck.length-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
     [fcDeck[i], fcDeck[j]] = [fcDeck[j], fcDeck[i]];
@@ -1063,17 +1104,53 @@ document.getElementById('fcShuffle').addEventListener('click', ()=>{
   fcIndex = 0;
   renderFlashcard();
 });
-document.getElementById('fcAi').addEventListener('click', async ()=>{
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+// Parses the AI's labelled reply (মনে রাখার কৌশল: / উদাহরণ বাক্য:) into a small
+// two-block card instead of one plain-text blob.
+function renderAiAnswer(aiBox, raw){
+  const memMatch = raw.match(/মনে রাখার কৌশল:\s*([\s\S]*?)(?=উদাহরণ বাক্য:|$)/);
+  const exMatch = raw.match(/উদাহরণ বাক্য:\s*([\s\S]*)/);
+  if(memMatch || exMatch){
+    let html = '';
+    if(memMatch && memMatch[1].trim()) html += `<div class="fc-ai-block"><span class="fc-ai-label">💡 মনে রাখার কৌশল</span><p>${escapeHtml(memMatch[1].trim())}</p></div>`;
+    if(exMatch && exMatch[1].trim()) html += `<div class="fc-ai-block"><span class="fc-ai-label">✍️ উদাহরণ বাক্য</span><p>${escapeHtml(exMatch[1].trim())}</p></div>`;
+    aiBox.innerHTML = html || `<p>${escapeHtml(raw)}</p>`;
+  } else {
+    aiBox.innerHTML = `<p>${escapeHtml(raw)}</p>`;
+  }
+}
+document.getElementById('fcAi').addEventListener('click', async (e)=>{
+  pulseBtn(e.currentTarget);
   const w = fcDeck[fcIndex];
   const aiBox = document.getElementById('fcAiBox');
   aiBox.classList.add('show');
-  aiBox.textContent = 'AI ভাবছে...';
-  const prompt = `তুমি একজন বাংলাদেশের সরকারি চাকরির পরীক্ষার প্রস্তুতি সহায়ক। শব্দ/বিষয়: "${w.word}"${w.bn ? ' ('+w.bn+')' : ''}, অর্থ/মান: "${w.val || ''}"। এটা মনে রাখার জন্য ২-৩ লাইনে একটা সহজ স্মৃতিসহায়ক (mnemonic) কৌশল অথবা একটা ছোট উদাহরণ বাক্য বাংলায় দাও। শুধু উত্তরটুকু দাও, ভূমিকা ছাড়া।`;
+
+  const cacheKey = aiCacheKey(w);
+  const cached = aiCache[cacheKey];
+  if(cached){
+    renderAiAnswer(aiBox, cached);
+    return; // already fetched before — no API call, works offline too
+  }
+
+  aiBox.innerHTML = '<p class="fc-ai-loading">AI ভাবছে...</p>';
+  // Explicit job for the AI: a BCS/bank-exam vocabulary coach, output in two
+  // clearly labelled parts so the app can render them as separate blocks.
+  const prompt = `তুমি একজন বাংলাদেশের সরকারি চাকরির (BCS/Bank/৯ম গ্রেড) পরীক্ষার ভোকাবুলারি কোচ। একজন শিক্ষার্থী নিচের শব্দ/টার্মটা ফ্ল্যাশকার্ডে মুখস্থ করছে:
+শব্দ/টার্ম: "${w.word}"${w.bn ? ' ('+w.bn+')' : ''}
+অর্থ: "${w.val || ''}"
+
+তোমার কাজ, ঠিক এই ফরম্যাটে বাংলায় উত্তর দাও (হেডিং দুইটা হুবহু রাখো, ভূমিকা বা অতিরিক্ত কিছু লিখো না):
+মনে রাখার কৌশল: (১-২ লাইনের সহজ, মজার mnemonic বা association, যা এই শব্দ আর অর্থটাকে জোড়া লাগিয়ে মনে রাখতে সাহায্য করবে)
+উদাহরণ বাক্য: (এই শব্দটা ব্যবহার করে exam-এর উপযোগী একটা ছোট বাক্য, ইংরেজিতে যদি শব্দটা ইংরেজি হয়)`;
   try{
-    const answer = await callGeminiText(prompt, msg => { aiBox.textContent = msg; });
-    aiBox.textContent = answer;
+    const answer = await callGeminiText(prompt, msg => { aiBox.innerHTML = `<p class="fc-ai-loading">${escapeHtml(msg)}</p>`; });
+    aiCache[cacheKey] = answer;
+    saveAiCache(aiCache);
+    renderAiAnswer(aiBox, answer);
   }catch(err){
-    aiBox.textContent = '⚠️ ' + err.message;
+    aiBox.innerHTML = `<p class="fc-ai-error">⚠️ ${escapeHtml(err.message)}</p>`;
   }
 });
 
@@ -1095,7 +1172,13 @@ function closeEditModal(){
 }
 function refreshAll(){ render(); renderExtra(); }
 
-function todayISO(){ return new Date().toISOString().slice(0,10); }
+function todayISO(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return y + '-' + m + '-' + day;
+}
 const TODAY = todayISO();
 function nextDayISO(iso){
   const [y,m,d] = iso.split('-').map(Number);
@@ -1339,6 +1422,76 @@ function renderStreak(){
 }
 function toISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
+// ============ Auto revision days for gaps (off days) in SCHEDULE ============
+// Whenever there's a gap of N days between two consecutive SCHEDULE dates (i.e.
+// N off days in a row), this builds N virtual "revision" day-cards for those
+// exact calendar dates. The material revised is whatever was already covered
+// that same (Sun–Sat) calendar week before the gap started, and it's spread
+// round-robin across the off days rather than repeated in full on every one —
+// "সেই কয়দিন মিলিয়ে আগের পড়া রিভিশন" style.
+function dateToUTC(dateStr){
+  const [y,m,d] = dateStr.split('-').map(Number);
+  return Date.UTC(y, m-1, d);
+}
+function addDaysStr(dateStr, n){
+  const dt = new Date(dateToUTC(dateStr) + n*86400000);
+  return dt.getUTCFullYear()+'-'+String(dt.getUTCMonth()+1).padStart(2,'0')+'-'+String(dt.getUTCDate()).padStart(2,'0');
+}
+function weekStartOf(dateStr){
+  const dow = new Date(dateToUTC(dateStr)).getUTCDay(); // 0 = Sunday
+  return addDaysStr(dateStr, -dow);
+}
+let _revisionDaysCache = null;
+function buildRevisionDays(){
+  if(_revisionDaysCache) return _revisionDaysCache;
+  const revisionDays = [];
+  for(let i=0; i<SCHEDULE.length-1; i++){
+    const cur = SCHEDULE[i], nxt = SCHEDULE[i+1];
+    const gapDays = Math.round((dateToUTC(nxt.date) - dateToUTC(cur.date)) / 86400000) - 1;
+    if(gapDays <= 0) continue;
+    const offDates = [];
+    for(let g=1; g<=gapDays; g++) offDates.push(addDaysStr(cur.date, g));
+
+    // that week's lessons studied before the gap started
+    const wkStart = weekStartOf(cur.date);
+    const weekDays = SCHEDULE.filter(d => d.date <= cur.date && weekStartOf(d.date) === wkStart);
+    if(weekDays.length === 0) continue;
+
+    // merge every day's items by (group|type|label) into one combined range
+    const merged = {};
+    weekDays.forEach(d => d.items.forEach(it => {
+      if(!it.type || !it.r) return; // plain checklist items have no word-range to revise
+      const key = it.g+'|'+it.type+'|'+it.k;
+      if(!merged[key]) merged[key] = {g:it.g, type:it.type, k:it.k, r:[it.r[0], it.r[1]]};
+      else { merged[key].r[0] = Math.min(merged[key].r[0], it.r[0]); merged[key].r[1] = Math.max(merged[key].r[1], it.r[1]); }
+    }));
+    const mergedItems = Object.values(merged);
+    if(mergedItems.length === 0) continue;
+
+    // spread merged items round-robin across the off days
+    const perDay = offDates.map(()=>[]);
+    mergedItems.forEach((item, idx) => perDay[idx % offDates.length].push(item));
+    offDates.forEach((date, idx) => {
+      if(perDay[idx].length === 0) return; // more off-days than item-types: that day stays a genuine rest day
+      revisionDays.push({
+        date,
+        revision: true,
+        items: perDay[idx].map(it => ({...it, note: 'রিভিশন · এই সপ্তাহের আগের পড়া'}))
+      });
+    });
+  }
+  _revisionDaysCache = revisionDays;
+  return revisionDays;
+}
+// SCHEDULE + generated revision days, sorted by date, for display only
+// (progress stats / streak / trend still read raw SCHEDULE, untouched)
+let _displayScheduleCache = null;
+function getDisplaySchedule(){
+  if(_displayScheduleCache) return _displayScheduleCache;
+  _displayScheduleCache = SCHEDULE.concat(buildRevisionDays()).sort((a,b)=> a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  return _displayScheduleCache;
+}
+
 function render(){
   const units = allUnits();
   const goal = units.length;
@@ -1357,7 +1510,7 @@ function render(){
   renderWeeklyChecker();
 
   const wrap = document.getElementById('daysWrap');
-  let days = SCHEDULE;
+  let days = getDisplaySchedule();
   if(filter === 'today') days = days.filter(d=>d.date===TODAY || d.date===TOMORROW);
   if(filter === 'note') days = days.filter(d=>d.items.some(it=>it.note));
   if(filter === 'pending') days = days.filter(d=> d.items.some((it,idx)=>{
@@ -1423,11 +1576,12 @@ function render(){
     const dd = String(d).padStart(2,'0');
     const mm = String(m).padStart(2,'0');
     const missedTag = day.missed ? '<span class="missed-tag">Missed · পরে পড়বেন</span>' : '';
+    const revisionTag = day.revision ? '<span class="revision-tag">🔁 রিভিশন ডে</span>' : '';
     const tomorrowTag = isTomorrow ? '<span class="missed-tag" style="color:var(--gold);border-color:var(--gold-dim);">আগামীকাল</span>' : '';
     const dayHasWords = day.items.some(it=>it.type && getWords(it).length>0);
-    return `<div class="day-card ${isToday?'today':''} ${isTomorrow?'is-tomorrow':''} ${day.missed?'past-missed':''}">
+    return `<div class="day-card ${isToday?'today':''} ${isTomorrow?'is-tomorrow':''} ${day.missed?'past-missed':''} ${day.revision?'is-revision':''}">
       <div class="day-head">
-        <div><span class="day-date">${dd}/${mm}/${y}</span> <span class="day-weekday">${wd}</span>${missedTag}${tomorrowTag}</div>
+        <div><span class="day-date">${dd}/${mm}/${y}</span> <span class="day-weekday">${wd}</span>${missedTag}${revisionTag}${tomorrowTag}</div>
         ${dayHasWords ? `<button class="day-fc-btn" data-fcdayall="${day.date}">🎴 আজকের পড়া ঝালাই করো</button>` : ''}
       </div>
       ${rows}
@@ -1473,7 +1627,7 @@ function render(){
   wrap.querySelectorAll('.fc-trigger[data-fcday]').forEach(btn=>{
     btn.addEventListener('click', e=>{
       e.stopPropagation();
-      const day = SCHEDULE.find(d=>d.date === btn.dataset.fcday);
+      const day = getDisplaySchedule().find(d=>d.date === btn.dataset.fcday);
       const it = day.items[Number(btn.dataset.fcidx)];
       openFlashcards(normalizeWords(getWords(it), it.type), it.k);
     });
@@ -1481,7 +1635,7 @@ function render(){
   wrap.querySelectorAll('.day-fc-btn[data-fcdayall]').forEach(btn=>{
     btn.addEventListener('click', e=>{
       e.stopPropagation();
-      const day = SCHEDULE.find(d=>d.date === btn.dataset.fcdayall);
+      const day = getDisplaySchedule().find(d=>d.date === btn.dataset.fcdayall);
       let words = [];
       day.items.forEach(it=>{ if(it.type) words = words.concat(normalizeWords(getWords(it), it.type)); });
       openFlashcards(words, 'আজকের পড়া · ' + formatDMY(day.date));
@@ -1490,13 +1644,14 @@ function render(){
 }
 
 function normalizeWords(list, type){
-  return list.map(w => ({no:w.no, word:w.word, bn:w.bn, val: w[VALKEY[type]]}));
+  return list.map(w => ({no:w.no, word:w.word, bn:w.bn, val: w[VALKEY[type]], type}));
 }
 
 const EXTRA_LISTS = [
   {type:'proverb', label:'ইংরেজি প্রবাদ (Proverbs) — ২০৫টি, ক্যালেন্ডারে যুক্ত নয়'},
   {type:'ows', label:'English One-Word Substitution — ৩৯২টি, ক্যালেন্ডারে যুক্ত নয়'},
-  {type:'groupverb', label:'Group Verb — ১৮৮টি সম্পূর্ণ লিস্ট (Bring–Turn ক্যালেন্ডারে যুক্ত; Act/Bear/Blow/Break/Do away with রুটিনে নেই, এখান থেকে পড়ুন)'}
+  {type:'groupverb', label:'Group Verb — ১৮৮টি সম্পূর্ণ লিস্ট (Bring–Turn ক্যালেন্ডারে যুক্ত; Act/Bear/Blow/Break/Do away with রুটিনে নেই, এখান থেকে পড়ুন)'},
+  {type:'idiom', label:'Idioms & Phrases — ৩৯৬টি সম্পূর্ণ লিস্ট (page 1–23, 26 ক্যালেন্ডারে যুক্ত; page 24-25,27 এখনো রুটিনে আসেনি, এখান থেকে পড়ুন। ⚠️ scan থেকে OCR+manual করা, বাংলা অর্থ যাচাই করে নাও)'}
 ];
 
 function extraKey(type, no){ return 'std-' + type + '-' + no; }
