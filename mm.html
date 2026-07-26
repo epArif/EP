@@ -167,8 +167,14 @@
   .edit-btn{ background:none; border:1px solid var(--border); color:var(--text-muted); border-radius:6px; width:24px; height:24px; font-size:12px; cursor:pointer; line-height:1; flex-shrink:0; }
   .edit-btn:hover{ color:var(--gold); border-color:var(--gold-dim); }
 
-  .extra-section{ margin-top:26px; }
+  .extra-section{ margin-top:26px; border:1px solid var(--teal-dim); border-radius:var(--radius); padding:16px 14px; background:var(--panel); }
   .extra-section h2{ font-family:'Fraunces','Noto Sans Bengali',serif; font-weight:600; font-size:18px; color:var(--teal); margin:0 0 4px; }
+  .cov-header{ display:flex; align-items:center; justify-content:space-between; gap:8px; cursor:pointer; }
+  .cov-header h2{ margin:0; }
+  .cov-header .caret{ font-size:13px; color:var(--text-muted); transition:transform .15s; flex-shrink:0; }
+  .cov-header .caret.open{ transform:rotate(90deg); }
+  .cov-wrap{ display:none; overflow-x:auto; }
+  .cov-wrap.open{ display:block; }
 
   .cov-table{ width:100%; border-collapse:collapse; margin-top:10px; }
   .cov-table th{ text-align:left; font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.04em; text-transform:uppercase; color:var(--text-muted); padding:6px 8px; border-bottom:1px solid var(--border); }
@@ -226,9 +232,11 @@
   .fc-word{ font-family:'Fraunces','Noto Sans Bengali',serif; font-weight:700; font-size:27px; letter-spacing:0.01em; line-height:1.3; background:linear-gradient(135deg, #F3F1EC 35%, var(--gold)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
   .fc-sub{ font-size:13.5px; color:var(--text-muted); font-family:'Noto Sans Bengali',sans-serif; letter-spacing:0.01em; margin-top:1px; }
   .fc-meaning{ font-family:'Noto Sans Bengali','Inter',sans-serif; font-weight:500; font-size:18.5px; color:#F0DDB0; line-height:1.65; padding:0 8px; }
-  .fc-hint{ font-size:11px; color:var(--text-muted); font-family:'Noto Sans Bengali','IBM Plex Mono',monospace; letter-spacing:0.03em; opacity:0.72; margin-top:2px; }
+  .fc-hint{ font-size:11px; color:var(--text-muted); font-family:'Noto Sans Bengali','IBM Plex Mono',monospace; letter-spacing:0.03em; opacity:0.72; margin-top:2px; display:flex; align-items:center; justify-content:center; gap:5px; }
+  .fc-hint svg{ width:13px; height:13px; flex-shrink:0; color:var(--gold); }
   .fc-controls{ width:100%; display:flex; align-items:center; gap:8px; }
-  .fc-controls button{ flex:1; padding:10px 6px; border-radius:10px; border:1px solid var(--border); background:var(--panel); color:var(--text); font-size:12px; cursor:pointer; font-family:'IBM Plex Mono',monospace; transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease; }
+  .fc-controls button{ flex:1; padding:10px 6px; border-radius:10px; border:1px solid var(--border); background:var(--panel); color:var(--text); font-size:12px; cursor:pointer; font-family:'IBM Plex Mono',monospace; transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease; display:flex; align-items:center; justify-content:center; gap:6px; }
+  .fc-controls button svg{ width:14px; height:14px; flex-shrink:0; }
   .fc-controls button:hover{ border-color:var(--gold-dim); color:var(--gold); }
   .fc-controls button:active{ transform:scale(0.92); }
   .fc-controls button.fc-btn-pop{ animation: fcBtnPop .32s ease; }
@@ -267,6 +275,59 @@
   .fc-trigger:hover{ color:var(--teal); border-color:var(--teal-dim); }
   .day-fc-btn{ background:none; border:1px solid var(--gold-dim); color:var(--gold); border-radius:8px; font-size:10.5px; padding:4px 9px; cursor:pointer; font-family:'IBM Plex Mono',monospace; white-space:nowrap; }
   .day-fc-btn:hover{ background:rgba(217,168,78,0.12); }
+
+  /* ===== Practice tab ===== */
+  .px-tabs{ display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+  .px-tabs button{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; background:var(--panel); color:var(--text-muted); border:1px solid var(--border); padding:6px 11px; border-radius:999px; cursor:pointer; }
+  .px-tabs button.active{ color:var(--bg); background:var(--gold); border-color:var(--gold); }
+  .px-block{ margin-bottom:4px; }
+  .px-label{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--text-muted); letter-spacing:0.06em; text-transform:uppercase; margin:16px 0 8px; }
+  .px-block:first-child .px-label{ margin-top:0; }
+  .px-subwrap{ display:flex; flex-direction:column; gap:8px; margin-bottom:6px; }
+  .px-input{ background:var(--panel-2); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:9px 11px; font-family:'Inter','Noto Sans Bengali',sans-serif; font-size:13px; width:100%; }
+  .px-input:focus{ outline:none; border-color:var(--gold-dim); }
+  .px-range-row{ display:flex; gap:8px; }
+  .px-start-btn{ width:100%; margin-top:16px; padding:12px; border-radius:12px; border:none; background:linear-gradient(135deg, var(--gold), var(--teal)); color:var(--bg); font-weight:700; font-size:13.5px; font-family:'Fraunces','Noto Sans Bengali',serif; cursor:pointer; }
+  .px-start-btn:active{ transform:scale(0.97); }
+  .px-msg{ margin-top:8px; font-size:11.5px; color:var(--text-muted); min-height:14px; }
+  .px-msg.err{ color:var(--danger); }
+
+  .px-overlay{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82); z-index:120; align-items:center; justify-content:center; padding:16px; }
+  .px-overlay.open{ display:flex; }
+  .px-box{ width:100%; max-width:440px; display:flex; flex-direction:column; gap:14px; }
+  .px-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .px-title{ font-family:'Fraunces','Noto Sans Bengali',serif; color:var(--gold); font-size:14px; }
+  .px-progress{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-muted); }
+  .px-score{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--teal); }
+  .px-close{ background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer; padding:4px; line-height:1; }
+
+  .px-card{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:22px 18px; box-shadow:0 14px 34px rgba(0,0,0,0.4); }
+  .px-q-instr{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--teal); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px; }
+  .px-q-word{ font-family:'Fraunces','Noto Sans Bengali',serif; font-weight:600; font-size:25px; margin-bottom:16px; }
+  .px-options{ display:flex; flex-direction:column; gap:9px; }
+  .px-opt{ text-align:left; background:var(--panel-2); border:1px solid var(--border); color:var(--text); padding:11px 14px; border-radius:11px; font-size:13.5px; font-family:'Noto Sans Bengali','Inter',sans-serif; cursor:pointer; transition:border-color .15s ease, background .15s ease; }
+  .px-opt:active{ transform:scale(0.98); }
+  .px-opt.correct{ background:rgba(79,167,158,0.2); border-color:var(--teal); color:#DFF5F1; }
+  .px-opt.wrong{ background:rgba(196,99,79,0.2); border-color:var(--danger); color:#F7DCD4; }
+  .px-opt.disabled{ pointer-events:none; opacity:.9; }
+  .px-nextbtn{ display:none; margin-top:16px; width:100%; padding:11px; border-radius:11px; border:1px solid var(--border); background:var(--panel-2); color:var(--text); font-family:'IBM Plex Mono',monospace; font-size:12.5px; cursor:pointer; }
+  .px-nextbtn.show{ display:block; }
+  .px-loading{ text-align:center; color:var(--text-muted); font-size:12.5px; padding:34px 10px; line-height:1.6; }
+
+  .px-summary{ text-align:center; }
+  .px-summary .big{ font-family:'IBM Plex Mono',monospace; font-weight:800; font-size:34px; background:linear-gradient(135deg, #F3F1EC, var(--gold) 65%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .px-wronglist{ text-align:left; margin-top:16px; max-height:220px; overflow-y:auto; }
+  .px-wrong-row{ display:flex; justify-content:space-between; gap:10px; padding:8px 2px; border-bottom:1px solid var(--border); font-size:12.5px; }
+  .px-wrong-row .w{ font-weight:600; }
+  .px-wrong-row .w .sub2b{ display:block; font-size:10.5px; color:var(--text-muted); font-weight:400; }
+  .px-wrong-row .a{ color:var(--teal); text-align:right; max-width:48%; }
+  .px-summary-btns{ display:flex; gap:8px; margin-top:16px; }
+  .px-summary-btns button{ flex:1; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--panel-2); color:var(--text); font-size:11.5px; cursor:pointer; font-family:'IBM Plex Mono',monospace; }
+
+  .px-hist-row{ display:flex; justify-content:space-between; align-items:center; padding:9px 2px; border-bottom:1px solid var(--border); font-size:12px; gap:10px; }
+  .px-hist-row:last-child{ border-bottom:none; }
+  .px-hist-meta{ color:var(--text-muted); font-size:10.5px; }
+  .px-hist-score{ font-family:'IBM Plex Mono',monospace; font-weight:700; color:var(--gold); flex-shrink:0; }
 </style>
 </head>
 <body>
@@ -365,10 +426,10 @@
         <div class="fc-card" id="fcCard">
           <div class="fc-face front">
             <div class="fc-word" id="fcFrontWord"></div>
-            <div class="fc-sub" id="fcFrontSub"></div>
-            <div class="fc-hint">👆 ট্যাপ করো উল্টানোর জন্য</div>
+            <div class="fc-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="6.5" opacity="0.55"/><circle cx="12" cy="12" r="10" opacity="0.28"/></svg> ট্যাপ করো উল্টানোর জন্য</div>
           </div>
           <div class="fc-face back">
+            <div class="fc-sub" id="fcBackSub"></div>
             <div class="fc-meaning" id="fcBackMeaning"></div>
             <div class="fc-hint">↺ আবার ট্যাপ করো</div>
           </div>
@@ -376,17 +437,30 @@
       </div>
       <div class="fc-ai-box" id="fcAiBox"></div>
       <div class="fc-controls">
-        <button id="fcPrev">◂ আগের</button>
-        <button id="fcShuffle">🔀 এলোমেলো</button>
-        <button id="fcAi" class="fc-ai">🧠 AI সাহায্য</button>
-        <button id="fcNext">পরের ▸</button>
+        <button id="fcPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14 6 8 12 14 18"/></svg> আগের</button>
+        <button id="fcShuffle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> এলোমেলো</button>
+        <button id="fcAi" class="fc-ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5a2.5 2.5 0 0 0-2.45 2.03A2.5 2.5 0 0 0 5.5 8.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 2 4.42A2.5 2.5 0 0 0 9.5 20.5"/><path d="M9.5 3.5v17"/><path d="M9.5 8.5h-2"/><path d="M9.5 13.5h-2"/><path d="M14.5 3.5a2.5 2.5 0 0 1 2.45 2.03 2.5 2.5 0 0 1 1.55 2.97 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-2 4.42 2.5 2.5 0 0 1-2 2.58"/><path d="M14.5 3.5v17"/><path d="M14.5 8.5h2"/><path d="M14.5 13.5h2"/></svg> AI সাহায্য</button>
+        <button id="fcNext">পরের <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="10 6 16 12 10 18"/></svg></button>
       </div>
+    </div>
+  </div>
+
+  <div class="px-overlay" id="pxOverlay">
+    <div class="px-box">
+      <div class="px-top">
+        <div class="px-title" id="pxTitle">MCQ Quiz</div>
+        <div class="px-progress" id="pxProgress">1/1</div>
+        <div class="px-score" id="pxScoreLabel">✓0 · ✕0</div>
+        <button class="px-close" id="pxClose">✕</button>
+      </div>
+      <div id="pxBody"></div>
     </div>
   </div>
 
   <div class="main-tabs reveal d1">
     <button class="main-tab-btn active" data-tab="today">আজকের পড়া</button>
     <button class="main-tab-btn" data-tab="more">অগ্রগতি ও তালিকা</button>
+    <button class="main-tab-btn" data-tab="practice">অনুশীলন</button>
   </div>
 
   <div id="tabPane-today" class="tab-pane active">
@@ -412,7 +486,7 @@
 
     <div class="filters reveal d4">
       <button data-f="all">সব</button>
-      <button data-f="today" class="active">আজকে/আগামীকাল</button>
+      <button data-f="today" class="active">আজকে</button>
       <button data-f="pending">বাকি আছে</button>
       <button data-f="note">Notes</button>
     </div>
@@ -456,9 +530,12 @@
     </div>
 
     <div class="extra-section">
-      <h2>কভারেজ সারাংশ</h2>
-      <div class="sub" style="margin-bottom:10px;">প্রতিটা বিষয় কোন তারিখ থেকে কোন তারিখ পর্যন্ত, কত দিনে কভার হচ্ছে।</div>
-      <div class="cov-wrap">
+      <div class="cov-header" data-toggle="covWrap">
+        <h2>কভারেজ সারাংশ</h2>
+        <span class="caret" id="caret-covWrap">▸</span>
+      </div>
+      <div class="sub" style="margin-bottom:10px;">প্রতিটা বিষয় কোন তারিখ থেকে কোন তারিখ পর্যন্ত, কত দিনে কভার হচ্ছে। (বেশি দিন থেকে কম দিনের ক্রমে সাজানো)</div>
+      <div class="cov-wrap" id="covWrap">
         <table class="cov-table">
           <thead>
             <tr><th>বিষয়</th><th>শুরু</th><th>শেষ</th><th style="text-align:right;">দিন</th><th>নম্বর রেঞ্জ</th></tr>
@@ -467,6 +544,51 @@
         </table>
       </div>
     </div>
+
+  </div>
+
+  <div id="tabPane-practice" class="tab-pane">
+
+    <section class="panel reveal d1" id="pxSetupPanel">
+      <div class="panel-title">অনুশীলন <span class="tag">Practice</span></div>
+
+      <div class="px-block">
+        <div class="px-label">উৎস — কোন শব্দ নিয়ে অনুশীলন হবে</div>
+        <div class="px-tabs" id="pxSourceTabs">
+          <button data-src="today" class="active">আজকের পড়া</button>
+          <button data-src="date">নির্দিষ্ট তারিখ</button>
+          <button data-src="range">সিরিয়াল রেঞ্জ / টাইপ</button>
+        </div>
+      </div>
+
+      <div class="px-subwrap" id="pxDateWrap" style="display:none;">
+        <input type="date" id="pxDateInput" class="px-input">
+      </div>
+
+      <div class="px-subwrap" id="pxRangeWrap" style="display:none;">
+        <select id="pxTypeSelect" class="px-input"></select>
+        <div class="px-range-row">
+          <input type="number" id="pxFromInput" class="px-input" placeholder="থেকে (নম্বর, ফাঁকা = শুরু থেকে)">
+          <input type="number" id="pxToInput" class="px-input" placeholder="পর্যন্ত (নম্বর, ফাঁকা = শেষ পর্যন্ত)">
+        </div>
+      </div>
+
+      <div class="px-block">
+        <div class="px-label">মোড</div>
+        <div class="px-tabs" id="pxModeTabs">
+          <button data-mode="mcq" class="active">MCQ Quiz</button>
+          <button data-mode="weak">দুর্বল শব্দ ফোকাস</button>
+        </div>
+      </div>
+
+      <button id="pxStartBtn" class="px-start-btn">শুরু করো</button>
+      <div id="pxSetupMsg" class="px-msg"></div>
+    </section>
+
+    <section class="panel reveal d2" id="pxHistoryPanel">
+      <div class="panel-title">সাম্প্রতিক সেশন <span class="tag">History</span></div>
+      <div id="pxHistoryWrap"><div class="sub">এখনো কোনো সেশন হয়নি।</div></div>
+    </section>
 
   </div>
 
@@ -560,6 +682,7 @@ const SCHEDULE = [
   {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[241,260]},
   {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[20,40]},
   {g:'en', k:'Word Meaning', type:'wm', r:[355,375]},
+  {g:'en', k:'Synonym', type:'syn', r:[1,20]},
   {g:'en', k:'Group Verb: Run', type:'groupverb', r:[136,147]},
 ]},
 {date:'2026-08-03', items:[
@@ -836,9 +959,11 @@ function openSettingsModal(){
   document.getElementById('fbStatus').textContent = '';
   document.getElementById('fbStatus').className = 'sync-status';
   document.getElementById('settingsModalOverlay').classList.add('open');
+  lockBodyScroll();
 }
 function closeSettingsModal(){
   document.getElementById('settingsModalOverlay').classList.remove('open');
+  unlockBodyScroll();
 }
 function collectSettingsFromForm(){
   const modelsWrap = document.getElementById('apiModelsWrap');
@@ -1041,6 +1166,34 @@ function saveAiCache(c){ try{ localStorage.setItem(AI_CACHE_KEY, JSON.stringify(
 let aiCache = loadAiCache();
 function aiCacheKey(w){ return (w.type || '?') + '-' + w.no + '-' + w.word; }
 
+// ---- body scroll lock (prevents the page behind a modal/overlay from
+// scrolling while it's open — reference-counted so nested/overlapping
+// modals don't unlock each other early) ----
+let __scrollLockCount = 0;
+let __scrollLockY = 0;
+function lockBodyScroll(){
+  if(__scrollLockCount === 0){
+    __scrollLockY = window.scrollY || window.pageYOffset || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = (-__scrollLockY) + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+  }
+  __scrollLockCount++;
+}
+function unlockBodyScroll(){
+  __scrollLockCount = Math.max(0, __scrollLockCount - 1);
+  if(__scrollLockCount === 0){
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, __scrollLockY);
+  }
+}
+
 // ============ Flashcard revision popup ============
 let fcDeck = [];
 let fcIndex = 0;
@@ -1052,16 +1205,18 @@ function openFlashcards(words, title){
   fcFlipped = false;
   document.getElementById('fcTitle').textContent = title || 'ফ্ল্যাশকার্ড';
   document.getElementById('fcOverlay').classList.add('open');
+  lockBodyScroll();
   renderFlashcard();
 }
 function closeFlashcards(){
   document.getElementById('fcOverlay').classList.remove('open');
+  unlockBodyScroll();
 }
 function renderFlashcard(){
   const w = fcDeck[fcIndex];
   document.getElementById('fcProgress').textContent = (fcIndex+1) + '/' + fcDeck.length;
   document.getElementById('fcFrontWord').textContent = w.word;
-  document.getElementById('fcFrontSub').textContent = w.bn || '';
+  document.getElementById('fcBackSub').textContent = w.bn || '';
   document.getElementById('fcBackMeaning').textContent = w.val || '';
   document.getElementById('fcCard').classList.remove('flipped');
   fcFlipped = false;
@@ -1137,13 +1292,34 @@ document.getElementById('fcAi').addEventListener('click', async (e)=>{
   aiBox.innerHTML = '<p class="fc-ai-loading">AI ভাবছে...</p>';
   // Explicit job for the AI: a BCS/bank-exam vocabulary coach, output in two
   // clearly labelled parts so the app can render them as separate blocks.
+  // The label/instructions are type-aware: what "val" actually represents
+  // (meaning vs synonym vs antonym vs an idiom's sense) differs by list type,
+  // so we must not always call it "অর্থ" (meaning) — e.g. for an antonym card
+  // the val is the OPPOSITE word, not the meaning, and telling the AI
+  // otherwise produces a confusing/wrong mnemonic.
+  const AI_TYPE_META = {
+    wm:        { label: 'অর্থ',                 note: 'এটা মূল শব্দটার সরাসরি অর্থ।' },
+    syn:       { label: 'সমার্থক শব্দ (Synonym)', note: 'এটা মূল শব্দের কাছাকাছি/একই অর্থবোধক আরেকটা শব্দ, direct অর্থ না। mnemonic-এ স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ প্রায় একই রকম মানে বহন করে।' },
+    ant:       { label: 'বিপরীত শব্দ (Antonym)',  note: 'এটা মূল শব্দের বিপরীত/উল্টো অর্থের শব্দ, একই অর্থ না। mnemonic-এ অবশ্যই স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ একে অপরের বিপরীত।' },
+    bnant:     { label: 'বিপরীত শব্দ (Antonym)',  note: 'এটা মূল শব্দের বিপরীত/উল্টো অর্থের শব্দ, একই অর্থ না। mnemonic-এ অবশ্যই স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ একে অপরের বিপরীত।' },
+    bagdhara:  { label: 'বাগধারাটির অর্থ',        note: 'এটা একটা বাগধারা/idiom-এর ব্যাখ্যা।' },
+    proverb:   { label: 'প্রবাদটির অর্থ',         note: 'এটা একটা প্রবাদের ব্যাখ্যা।' },
+    idiom:     { label: 'Idiom/Phrase-টির অর্থ',  note: 'এটা একটা ইংরেজি idiom/phrase-এর ব্যাখ্যা।' },
+    ows:       { label: 'One-Word Substitution', note: 'এটা প্রশ্নের বর্ণনা অনুযায়ী সঠিক এক শব্দের উত্তর।' },
+    ekkotha:   { label: 'এক কথায় প্রকাশ',         note: 'এটা বাক্যাংশের এক কথায় প্রকাশ।' },
+    shobdartho:{ label: 'শব্দের অর্থ',            note: 'এটা মূল শব্দটার সরাসরি অর্থ।' },
+    poribhashik:{ label: 'পারিভাষিক শব্দ (English term)', note: 'এটা বাংলা টার্মের ইংরেজি পারিভাষিক প্রতিশব্দ, সরাসরি অনুবাদ না — mnemonic-এ বোঝাও যে এটা একটা স্বীকৃত পরিভাষা।' },
+    groupverb: { label: 'Group Verb-এর অর্থ',     note: 'এটা group verb (phrasal verb) টার অর্থ।' },
+  };
+  const meta = AI_TYPE_META[w.type] || AI_TYPE_META.wm;
   const prompt = `তুমি একজন বাংলাদেশের সরকারি চাকরির (BCS/Bank/৯ম গ্রেড) পরীক্ষার ভোকাবুলারি কোচ। একজন শিক্ষার্থী নিচের শব্দ/টার্মটা ফ্ল্যাশকার্ডে মুখস্থ করছে:
 শব্দ/টার্ম: "${w.word}"${w.bn ? ' ('+w.bn+')' : ''}
-অর্থ: "${w.val || ''}"
+${meta.label}: "${w.val || ''}"
+(লক্ষ্য করো: ${meta.note})
 
 তোমার কাজ, ঠিক এই ফরম্যাটে বাংলায় উত্তর দাও (হেডিং দুইটা হুবহু রাখো, ভূমিকা বা অতিরিক্ত কিছু লিখো না):
-মনে রাখার কৌশল: (১-২ লাইনের সহজ, মজার mnemonic বা association, যা এই শব্দ আর অর্থটাকে জোড়া লাগিয়ে মনে রাখতে সাহায্য করবে)
-উদাহরণ বাক্য: (এই শব্দটা ব্যবহার করে exam-এর উপযোগী একটা ছোট বাক্য, ইংরেজিতে যদি শব্দটা ইংরেজি হয়)`;
+মনে রাখার কৌশল: (১-২ লাইনের সহজ, মজার mnemonic বা association, যা উপরের সম্পর্কটা (${meta.label}) ঠিকভাবে মাথায় গেঁথে দেবে — উপরের নোটটা মাথায় রেখে)
+উদাহরণ বাক্য: (এই শব্দটা/টার্মটা ব্যবহার করে exam-এর উপযোগী একটা ছোট বাক্য, ইংরেজিতে যদি শব্দটা ইংরেজি হয়)`;
   try{
     const answer = await callGeminiText(prompt, msg => { aiBox.innerHTML = `<p class="fc-ai-loading">${escapeHtml(msg)}</p>`; });
     aiCache[cacheKey] = answer;
@@ -1165,9 +1341,11 @@ function openEditModal(type, no){
   document.getElementById('editBn').value = merged.bn || '';
   document.getElementById('editVal').value = merged[VALKEY[type]] || '';
   document.getElementById('editModalOverlay').classList.add('open');
+  lockBodyScroll();
 }
 function closeEditModal(){
   document.getElementById('editModalOverlay').classList.remove('open');
+  unlockBodyScroll();
   editCtx = null;
 }
 function refreshAll(){ render(); renderExtra(); }
@@ -1511,7 +1689,7 @@ function render(){
 
   const wrap = document.getElementById('daysWrap');
   let days = getDisplaySchedule();
-  if(filter === 'today') days = days.filter(d=>d.date===TODAY || d.date===TOMORROW);
+  if(filter === 'today') days = days.filter(d=>d.date===TODAY);
   if(filter === 'note') days = days.filter(d=>d.items.some(it=>it.note));
   if(filter === 'pending') days = days.filter(d=> d.items.some((it,idx)=>{
     if(it.type){ return getWords(it).some(w=>!state[wordKey(d.date,idx,w.no)]); }
@@ -1772,6 +1950,309 @@ document.querySelectorAll('.filters button').forEach(btn=>{
   });
 });
 
+// ============ Practice tab (MCQ Quiz + দুর্বল শব্দ ফোকাস) ============
+const PRACTICE_HISTORY_KEY = 'memoria-practice-history-v1';
+function loadPracticeHistory(){ try{ const raw = localStorage.getItem(PRACTICE_HISTORY_KEY); return raw?JSON.parse(raw):[]; }catch(e){ return []; } }
+function savePracticeHistory(h){ try{ localStorage.setItem(PRACTICE_HISTORY_KEY, JSON.stringify(h)); }catch(e){} }
+let practiceHistory = loadPracticeHistory();
+
+// separate from revision-progress `state` — tracks how many times each word has been missed in MCQ Quiz
+const WRONG_COUNTS_KEY = 'memoria-wrong-counts-v1';
+function loadWrongCounts(){ try{ const raw = localStorage.getItem(WRONG_COUNTS_KEY); return raw?JSON.parse(raw):{}; }catch(e){ return {}; } }
+function saveWrongCounts(w){ try{ localStorage.setItem(WRONG_COUNTS_KEY, JSON.stringify(w)); }catch(e){} }
+let wrongCounts = loadWrongCounts();
+function wrongKey(w){ return w.type + '-' + w.no; }
+
+let pxSource = 'today';
+let pxMode = 'mcq';
+let pxQueue = [];
+let pxIndex = 0;
+let pxScore = 0;
+let pxWrongThisSession = [];
+let pxSourceLabel = '';
+
+function pxBuildTypeSelect(){
+  const sel = document.getElementById('pxTypeSelect');
+  if(!sel) return;
+  sel.innerHTML = Object.keys(TYPE_LABELS).map(t => `<option value="${t}">${escapeHtml(TYPE_LABELS[t])}</option>`).join('');
+}
+pxBuildTypeSelect();
+
+document.querySelectorAll('#pxSourceTabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#pxSourceTabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    pxSource = btn.dataset.src;
+    document.getElementById('pxDateWrap').style.display = pxSource === 'date' ? 'flex' : 'none';
+    document.getElementById('pxRangeWrap').style.display = pxSource === 'range' ? 'flex' : 'none';
+    pxSetMsg('');
+  });
+});
+document.querySelectorAll('#pxModeTabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#pxModeTabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    pxMode = btn.dataset.mode;
+    pxSetMsg('');
+  });
+});
+
+function pxSetMsg(msg, isErr){
+  const el = document.getElementById('pxSetupMsg');
+  if(!el) return;
+  el.textContent = msg || '';
+  el.className = 'px-msg' + (isErr ? ' err' : '');
+}
+
+// gathers the word pool for the currently selected source, in the same
+// {no, word, bn, val, type} shape used everywhere else (normalizeWords)
+function pxGatherWords(){
+  if(pxSource === 'today'){
+    const day = getDisplaySchedule().find(d=>d.date === TODAY);
+    if(!day) return {words: [], error: 'আজকের জন্য কোনো শিডিউল পাওয়া যায়নি।'};
+    let words = [];
+    day.items.forEach(it=>{ if(it.type) words = words.concat(normalizeWords(getWords(it), it.type)); });
+    return {words, label: 'আজকের পড়া · ' + formatDMY(TODAY)};
+  }
+  if(pxSource === 'date'){
+    const dateVal = document.getElementById('pxDateInput').value;
+    if(!dateVal) return {words: [], error: 'একটা তারিখ বেছে নাও।'};
+    const day = getDisplaySchedule().find(d=>d.date === dateVal);
+    if(!day) return {words: [], error: 'এই তারিখে কোনো শিডিউল পাওয়া যায়নি।'};
+    let words = [];
+    day.items.forEach(it=>{ if(it.type) words = words.concat(normalizeWords(getWords(it), it.type)); });
+    return {words, label: formatDMY(dateVal) + ' তারিখের পড়া'};
+  }
+  // range / type
+  const type = document.getElementById('pxTypeSelect').value;
+  const list = LISTS[type];
+  if(!list || list.length===0) return {words: [], error: 'টাইপ বেছে নাও।'};
+  const fromVal = document.getElementById('pxFromInput').value;
+  const toVal = document.getElementById('pxToInput').value;
+  const from = fromVal ? Number(fromVal) : list[0].no;
+  const to = toVal ? Number(toVal) : list[list.length-1].no;
+  const words = normalizeWords(list.filter(w=>w.no>=from && w.no<=to).map(w=>applyOverride(type, w)), type);
+  return {words, label: (TYPE_LABELS[type]||type) + ' · #' + from + '–' + to};
+}
+
+function pxCacheKey(w){ return 'mcq::' + w.type + '-' + w.no; }
+
+// no-AI fallback: pick 3 other words' values from the same pool so the
+// quiz still works even without a configured Gemini key
+function pxFallbackDistractors(w, pool){
+  const others = pool.filter(o => o.val && o.val !== w.val);
+  for(let i=others.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [others[i],others[j]]=[others[j],others[i]]; }
+  const picked = [];
+  const used = new Set([w.val]);
+  for(const o of others){
+    if(picked.length>=3) break;
+    if(used.has(o.val)) continue;
+    used.add(o.val); picked.push(o.val);
+  }
+  while(picked.length<3) picked.push('—');
+  return picked;
+}
+
+// batch-generates exam-style distractors via Gemini (cached forever per word,
+// same aiCache store used by the flashcard AI panel, different key namespace)
+async function pxPrepareDistractors(words, onProgress){
+  const uncached = words.filter(w => !aiCache[pxCacheKey(w)]);
+  if(uncached.length === 0) return;
+  const CHUNK = 15;
+  for(let i=0;i<uncached.length;i+=CHUNK){
+    const chunk = uncached.slice(i, i+CHUNK);
+    if(onProgress) onProgress(`প্রশ্ন তৈরি হচ্ছে... (${Math.min(i+CHUNK, uncached.length)}/${uncached.length})`);
+    const payload = chunk.map(w => ({no: w.no, word: w.word, answer: w.val}));
+    const prompt = `তুমি বাংলাদেশ সরকারি চাকরি নিয়োগ পরীক্ষার (BCS / Bank Senior Officer পর্যায়ের) MCQ প্রশ্নকর্তা। নিচের প্রতিটি শব্দ ও তার সঠিক উত্তরের জন্য exam-মানের ৩টি বিভ্রান্তিকর (plausible wrong) option বানাও। Option গুলো আসল উত্তরের কাছাকাছি অর্থ, বিভাগ বা ধরনের ইংরেজি শব্দ/phrase হতে হবে, যাতে পরীক্ষার্থী confuse হয় — কিন্তু ভুল হতে হবে, খুব সহজ বা সম্পূর্ণ অপ্রাসঙ্গিক option দিও না।
+
+Input (JSON):
+${JSON.stringify(payload)}
+
+উত্তর অবশ্যই শুধু নিচের JSON array format-এ দাও, অন্য কোনো লেখা, ব্যাখ্যা বা markdown fence ছাড়া:
+[{"no": <number>, "distractors": ["...", "...", "..."]}]`;
+    try{
+      const raw = await callGeminiText(prompt, onProgress);
+      const cleaned = raw.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(cleaned);
+      const byNo = {};
+      parsed.forEach(p => { byNo[p.no] = p.distractors; });
+      chunk.forEach(w=>{
+        const d = byNo[w.no];
+        if(d && d.length>=3){ aiCache[pxCacheKey(w)] = JSON.stringify(d.slice(0,3)); }
+        else{ aiCache[pxCacheKey(w)] = JSON.stringify(pxFallbackDistractors(w, words)); }
+      });
+    }catch(err){
+      chunk.forEach(w=>{ aiCache[pxCacheKey(w)] = JSON.stringify(pxFallbackDistractors(w, words)); });
+    }
+    saveAiCache(aiCache);
+  }
+}
+
+function pxShuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+document.getElementById('pxStartBtn').addEventListener('click', async ()=>{
+  const gathered = pxGatherWords();
+  if(gathered.error){ pxSetMsg(gathered.error, true); return; }
+  if(!gathered.words || gathered.words.length === 0){ pxSetMsg('এই সোর্সে কোনো শব্দ পাওয়া যায়নি।', true); return; }
+  pxSetMsg('');
+
+  if(pxMode === 'weak'){
+    const weak = gathered.words.filter(w => (wrongCounts[wrongKey(w)]||0) > 0)
+      .sort((a,b)=> (wrongCounts[wrongKey(b)]||0) - (wrongCounts[wrongKey(a)]||0));
+    if(weak.length === 0){ pxSetMsg('এই সোর্সে এখনো কোনো দুর্বল শব্দ নেই — MCQ Quiz-এ ভুল হলে সেগুলো এখানে জমা হবে।', true); return; }
+    openFlashcards(weak, 'দুর্বল শব্দ ফোকাস · ' + weak.length + 'টি');
+    return;
+  }
+
+  let words = gathered.words;
+  let truncNote = '';
+  if(words.length > 20){
+    words = pxShuffle(words).slice(0, 20);
+    truncNote = ' (এলোমেলোভাবে বাছাই করা ২০টি)';
+  } else {
+    words = pxShuffle(words);
+  }
+  pxQueue = words;
+  pxIndex = 0; pxScore = 0; pxWrongThisSession = [];
+  pxSourceLabel = gathered.label + truncNote;
+
+  document.getElementById('pxTitle').textContent = 'MCQ Quiz';
+  document.getElementById('pxOverlay').classList.add('open');
+  lockBodyScroll();
+  document.getElementById('pxBody').innerHTML = '<div class="px-loading">প্রশ্ন তৈরি হচ্ছে...</div>';
+
+  try{
+    await pxPrepareDistractors(pxQueue, msg=>{
+      const body = document.getElementById('pxBody');
+      if(body) body.innerHTML = `<div class="px-loading">${escapeHtml(msg)}</div>`;
+    });
+  }catch(e){ /* per-word fallback already applied inside pxPrepareDistractors */ }
+
+  pxRenderQuestion();
+});
+
+function pxCloseOverlay(){
+  document.getElementById('pxOverlay').classList.remove('open');
+  unlockBodyScroll();
+}
+document.getElementById('pxClose').addEventListener('click', pxCloseOverlay);
+document.getElementById('pxOverlay').addEventListener('click', e=>{
+  if(e.target.id === 'pxOverlay') pxCloseOverlay();
+});
+
+function pxRenderQuestion(){
+  const w = pxQueue[pxIndex];
+  document.getElementById('pxProgress').textContent = (pxIndex+1) + '/' + pxQueue.length;
+  document.getElementById('pxScoreLabel').textContent = '✓' + pxScore + ' · ✕' + pxWrongThisSession.length;
+
+  let distractors = [];
+  try{ distractors = JSON.parse(aiCache[pxCacheKey(w)] || '[]'); }catch(e){ distractors = []; }
+  if(distractors.length < 3){
+    const fill = pxFallbackDistractors(w, pxQueue);
+    while(distractors.length < 3) distractors.push(fill[distractors.length]);
+  }
+  const options = pxShuffle([w.val].concat(distractors.slice(0,3)));
+  const correctIndex = options.indexOf(w.val);
+
+  const instr = TYPE_LABELS[w.type] ? ('সঠিক ' + TYPE_LABELS[w.type] + ' বেছে নাও') : 'সঠিক উত্তর বেছে নাও';
+
+  document.getElementById('pxBody').innerHTML = `
+    <div class="px-card">
+      <div class="px-q-instr">${escapeHtml(instr)}</div>
+      <div class="px-q-word">${escapeHtml(w.word)}</div>
+      <div class="px-options" id="pxOptionsWrap">
+        ${options.map((opt,i)=>`<button class="px-opt" data-i="${i}">${escapeHtml(opt)}</button>`).join('')}
+      </div>
+      <button class="px-nextbtn" id="pxNextBtn">পরের প্রশ্ন →</button>
+    </div>
+  `;
+
+  document.querySelectorAll('#pxOptionsWrap .px-opt').forEach(btn=>{
+    btn.addEventListener('click', ()=> pxAnswer(Number(btn.dataset.i), correctIndex, w));
+  });
+  document.getElementById('pxNextBtn').addEventListener('click', pxNext);
+}
+
+function pxAnswer(selIdx, correctIdx, w){
+  document.querySelectorAll('#pxOptionsWrap .px-opt').forEach((btn,i)=>{
+    btn.classList.add('disabled');
+    if(i===correctIdx) btn.classList.add('correct');
+    else if(i===selIdx) btn.classList.add('wrong');
+  });
+  if(selIdx === correctIdx){
+    pxScore++;
+  } else {
+    pxWrongThisSession.push({type:w.type, no:w.no, word:w.word, bn:w.bn, val:w.val});
+    wrongCounts[wrongKey(w)] = (wrongCounts[wrongKey(w)]||0) + 1;
+    saveWrongCounts(wrongCounts);
+  }
+  document.getElementById('pxScoreLabel').textContent = '✓' + pxScore + ' · ✕' + pxWrongThisSession.length;
+  document.getElementById('pxNextBtn').classList.add('show');
+}
+
+function pxNext(){
+  pxIndex++;
+  if(pxIndex >= pxQueue.length){ pxShowSummary(); return; }
+  pxRenderQuestion();
+}
+
+function pxShowSummary(){
+  const total = pxQueue.length;
+  const correct = pxScore;
+  practiceHistory.unshift({ date: todayISO(), source: pxSourceLabel, mode: 'MCQ Quiz', total, correct, wrongCount: pxWrongThisSession.length });
+  practiceHistory = practiceHistory.slice(0, 30);
+  savePracticeHistory(practiceHistory);
+  pxRenderHistory();
+
+  document.getElementById('pxTitle').textContent = 'সেশন শেষ';
+  document.getElementById('pxProgress').textContent = '';
+  document.getElementById('pxBody').innerHTML = `
+    <div class="px-card px-summary">
+      <div class="big">${correct}/${total}</div>
+      <div class="sub" style="margin-top:6px;">${escapeHtml(pxSourceLabel)}</div>
+      ${pxWrongThisSession.length ? `<div class="px-wronglist">${pxWrongThisSession.map(w=>`
+        <div class="px-wrong-row">
+          <div class="w">${escapeHtml(w.word)}<span class="sub2b">${escapeHtml(w.bn||'')}</span></div>
+          <div class="a">${escapeHtml(w.val)}</div>
+        </div>`).join('')}</div>` : `<div class="sub" style="margin-top:14px;">সব সঠিক — চমৎকার! 🎉</div>`}
+      <div class="px-summary-btns">
+        ${pxWrongThisSession.length ? `<button id="pxRetryWrong">শুধু ভুলগুলো আবার দাও</button>` : ''}
+        <button id="pxNewSession">নতুন সেশন</button>
+      </div>
+    </div>
+  `;
+  if(pxWrongThisSession.length){
+    document.getElementById('pxRetryWrong').addEventListener('click', ()=>{
+      pxQueue = pxWrongThisSession.map(w=>({type:w.type, no:w.no, word:w.word, bn:w.bn, val:w.val}));
+      pxIndex = 0; pxScore = 0; pxWrongThisSession = [];
+      pxSourceLabel = 'ভুল শব্দগুলোর পুনরাবৃত্তি';
+      document.getElementById('pxTitle').textContent = 'MCQ Quiz';
+      pxRenderQuestion();
+    });
+  }
+  document.getElementById('pxNewSession').addEventListener('click', pxCloseOverlay);
+}
+
+function pxRenderHistory(){
+  const wrap = document.getElementById('pxHistoryWrap');
+  if(!wrap) return;
+  if(practiceHistory.length === 0){ wrap.innerHTML = '<div class="sub">এখনো কোনো সেশন হয়নি।</div>'; return; }
+  wrap.innerHTML = practiceHistory.map(h=>`
+    <div class="px-hist-row">
+      <div>
+        <div>${escapeHtml(h.source)}</div>
+        <div class="px-hist-meta">${formatDMY(h.date)} · ${escapeHtml(h.mode)}</div>
+      </div>
+      <div class="px-hist-score">${h.correct}/${h.total}</div>
+    </div>
+  `).join('');
+}
+pxRenderHistory();
+
 function formatDMY(dateStr){
   const [y,m,d] = dateStr.split('-');
   return `${d}/${m}/${y}`;
@@ -1796,7 +2277,8 @@ function renderCoverage(){
       }
     });
   });
-  body.innerHTML = order.map(key=>{
+  const sortedOrder = order.slice().sort((a,b) => map[b].dates.length - map[a].dates.length);
+  body.innerHTML = sortedOrder.map(key=>{
     const d = map[key];
     const dates = d.dates.slice().sort();
     const first = dates[0];
@@ -1811,6 +2293,14 @@ function renderCoverage(){
     </tr>`;
   }).join('');
 }
+
+document.querySelectorAll('.cov-header[data-toggle]').forEach(head=>{
+  head.addEventListener('click', ()=>{
+    const id = head.dataset.toggle;
+    document.getElementById(id).classList.toggle('open');
+    document.getElementById('caret-'+id).classList.toggle('open');
+  });
+});
 
 document.getElementById('trendWeeklyBtn').addEventListener('click', ()=>{
   trendMode = 'weekly';
