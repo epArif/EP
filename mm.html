@@ -256,7 +256,8 @@
     .fc-controls button.fc-btn-pop, .fc-controls button.fc-ai.fc-btn-pop{ animation:none !important; }
   }
   .fc-controls-2{ margin-top:8px; }
-  .fc-controls-2 button.fc-ai-all{ width:100%; padding:11px 8px; font-size:11.5px; opacity:0.96; }
+  .fc-controls-2 button.fc-ai-all{ width:100%; padding:11px 8px; font-size:11.5px; opacity:0.96; background:var(--panel-2); color:var(--teal); font-weight:600; border:1px solid var(--teal-dim); box-shadow:none; }
+  .fc-controls-2 button.fc-ai-all:hover{ border-color:var(--teal); color:var(--teal); background:var(--panel); }
   .fc-controls-2 button.fc-ai-all:disabled{ opacity:0.6; cursor:default; }
   .fc-ai-box{ width:100%; background:var(--panel-2); border:1px solid var(--teal-dim); border-radius:12px; padding:12px 14px; font-size:12.5px; color:#B9E3DE; font-family:'Noto Sans Bengali','Inter',sans-serif; line-height:1.6; min-height:20px; display:none; box-shadow:0 6px 18px rgba(0,0,0,0.25); }
   .fc-ai-box.show{ display:block; }
@@ -469,7 +470,7 @@
         <button id="fcNext">পরের <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="10 6 16 12 10 18"/></svg></button>
       </div>
       <div class="fc-controls fc-controls-2">
-        <button id="fcAiAll" class="fc-ai fc-ai-all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5a2.5 2.5 0 0 0-2.45 2.03A2.5 2.5 0 0 0 5.5 8.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 2 4.42A2.5 2.5 0 0 0 9.5 20.5"/><path d="M9.5 3.5v17"/><path d="M9.5 8.5h-2"/><path d="M9.5 13.5h-2"/><path d="M14.5 3.5a2.5 2.5 0 0 1 2.45 2.03 2.5 2.5 0 0 1 1.55 2.97 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-2 4.42 2.5 2.5 0 0 1-2 2.58"/><path d="M14.5 3.5v17"/><path d="M14.5 8.5h2"/><path d="M14.5 13.5h2"/></svg> <span id="fcAiAllLabel">এই তালিকার সব শব্দের AI একসাথে আনো</span></button>
+        <button id="fcAiAll" class="fc-ai-all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5a2.5 2.5 0 0 0-2.45 2.03A2.5 2.5 0 0 0 5.5 8.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 2 4.42A2.5 2.5 0 0 0 9.5 20.5"/><path d="M9.5 3.5v17"/><path d="M9.5 8.5h-2"/><path d="M9.5 13.5h-2"/><path d="M14.5 3.5a2.5 2.5 0 0 1 2.45 2.03 2.5 2.5 0 0 1 1.55 2.97 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-2 4.42 2.5 2.5 0 0 1-2 2.58"/><path d="M14.5 3.5v17"/><path d="M14.5 8.5h2"/><path d="M14.5 13.5h2"/></svg> <span id="fcAiAllLabel">এই তালিকার সব শব্দের AI একসাথে আনো</span></button>
       </div>
     </div>
   </div>
