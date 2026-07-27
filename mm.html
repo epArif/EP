@@ -328,6 +328,20 @@
   .px-hist-row:last-child{ border-bottom:none; }
   .px-hist-meta{ color:var(--text-muted); font-size:10.5px; }
   .px-hist-score{ font-family:'IBM Plex Mono',monospace; font-weight:700; color:var(--gold); flex-shrink:0; }
+
+  .reorder-btn, .del-btn{ background:var(--panel-2); border:1px solid var(--border); color:var(--text-muted); border-radius:6px; width:22px; height:22px; font-size:11px; cursor:pointer; flex-shrink:0; line-height:1; }
+  .reorder-btn:disabled{ opacity:0.3; cursor:not-allowed; }
+  .del-btn{ color:#e0685f; }
+  .add-word-row{ padding:8px 2px 12px; border-bottom:1px dashed var(--border); margin-bottom:6px; }
+  .add-word-toggle{ background:none; border:1px dashed var(--border); color:var(--teal); border-radius:8px; padding:6px 10px; font-size:11.5px; cursor:pointer; width:100%; }
+  .add-word-form{ display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+  .add-word-save{ background:var(--teal); border:none; color:#0E0D12; border-radius:8px; padding:8px; font-size:12px; font-weight:700; cursor:pointer; }
+  .px-quicklinks{ display:flex; gap:6px; }
+  .px-quicklinks button{ background:var(--panel-2); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:5px 10px; font-size:11.5px; cursor:pointer; white-space:nowrap; }
+  .px-hist-tabs{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .px-hist-tab{ background:var(--panel-2); border:1px solid var(--border); color:var(--text-muted); border-radius:20px; padding:5px 12px; font-size:11px; cursor:pointer; }
+  .px-hist-tab.active{ background:var(--teal); color:#0E0D12; border-color:var(--teal); font-weight:700; }
+  .px-mix-wrap label{ background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:5px 9px; }
 </style>
 </head>
 <body>
@@ -401,8 +415,17 @@
       </div>
 
       <div class="settings-section">
+        <h4>🔄 Auto-Backup</h4>
+        <div class="settings-hint">চালু থাকলে, উপরের Pantry ID / Firebase URL যেটাই বসানো থাকুক (Firebase-কে আগে চেষ্টা করবে, না থাকলে Pantry), তোমার প্রতিটা checkbox-click বা শব্দ যোগ/এডিট করার কিছুক্ষণ পর নিজে থেকেই চুপচাপ cloud-এ backup হয়ে যাবে — আলাদা করে Upload বাটনে চাপতে হবে না। Backup শুধু তোমার progress (কোনটা পড়া হয়েছে, override) পাঠায় — কোনো API key/ID কখনো cloud-এ যায় না।</div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;">
+          <input type="checkbox" id="autoBackupToggle"> Auto-backup চালু রাখো
+        </label>
+        <div class="sync-status" id="autoBackupStatus"></div>
+      </div>
+
+      <div class="settings-section">
         <h4>🧠 Gemini API (Flashcard AI-এর জন্য)</h4>
-        <div class="settings-hint">নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ৪টা API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে (কোনো wait ছাড়াই); একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। সব key + সব মডেল একবার করে fail হয়ে গেলে rate-limit এড়াতে ১ মিনিট wait করে আবার প্রথম থেকে try করবে। প্রতিটা শব্দের AI উত্তর একবার আনলে save হয়ে থাকবে (ফোনেই), পরে আবার একই শব্দ দেখলে offline-এও কাজ করবে আর নতুন করে token খরচ হবে না।</div>
+        <div class="settings-hint">নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ৪টা API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে (কোনো wait ছাড়াই); একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। সব key + সব মডেল একবার করে fail হয়ে গেলে rate-limit এড়াতে ১ মিনিট wait করে আবার প্রথম থেকে try করবে। প্রতিটা শব্দের AI উত্তর একবার আনলে save হয়ে থাকবে (ফোনেই), পরে আবার একই শব্দ দেখলে offline-এও কাজ করবে আর নতুন করে token খরচ হবে না। <b>এই key গুলো শুধু এই ডিভাইসের ব্রাউজারে (localStorage) সংরক্ষিত থাকে — কোনো sync/backup/cloud-এ কখনো পাঠানো হয় না, এমনকি Auto-Backup চালু থাকলেও না।</b></div>
         <label style="font-size:11px;color:var(--text-muted);">মডেল (ক্রম অনুযায়ী try হবে)</label>
         <div id="apiModelsWrap"></div>
         <label style="font-size:11px;color:var(--text-muted);margin-top:6px;display:block;">API Key (ক্রম অনুযায়ী try হবে)</label>
@@ -524,8 +547,8 @@
     </section>
 
     <div class="extra-section">
-      <h2>অতিরিক্ত তালিকা</h2>
-      <div class="sub" style="margin-bottom:10px;">এগুলো ক্যালেন্ডার routine-এর অংশ নয় — নিজের সময়মতো পড়ে চেক করো।</div>
+      <h2>সম্পূর্ণ শব্দ তালিকা</h2>
+      <div class="sub" style="margin-bottom:10px;">প্রতিটা বিষয়ের পুরো শব্দভাণ্ডার এখানে ব্রাউজ করো, নিজের ইচ্ছেমতো নতুন শব্দ যোগ করো, reorder/edit/delete করো। ⚠️ এখানে যোগ করা শব্দ শুধু এই তালিকা, ফ্ল্যাশকার্ড ও অনুশীলনেই দেখাবে — "আজকের পড়া" ট্যাবের নির্দিষ্ট দিনের ক্যালেন্ডারে (যেটা সংখ্যা-রেঞ্জ ধরে চলে) স্বয়ংক্রিয়ভাবে যুক্ত হবে না।</div>
       <div id="extraWrap"></div>
     </div>
 
@@ -550,7 +573,7 @@
   <div id="tabPane-practice" class="tab-pane">
 
     <section class="panel reveal d1" id="pxSetupPanel">
-      <div class="panel-title">অনুশীলন <span class="tag">Practice</span></div>
+      <div class="panel-title"><span>অনুশীলন <span class="tag">Practice</span></span><span class="px-quicklinks"><button id="pxGoProgress" type="button">📊 অগ্রগতি</button><button id="pxGoList" type="button">📋 তালিকা</button></span></div>
 
       <div class="px-block">
         <div class="px-label">উৎস — কোন শব্দ নিয়ে অনুশীলন হবে</div>
@@ -558,6 +581,7 @@
           <button data-src="today" class="active">আজকের পড়া</button>
           <button data-src="date">নির্দিষ্ট তারিখ</button>
           <button data-src="range">সিরিয়াল রেঞ্জ / টাইপ</button>
+          <button data-src="mix">মিক্স (একাধিক বিষয়)</button>
         </div>
       </div>
 
@@ -573,6 +597,8 @@
         </div>
       </div>
 
+      <div class="px-subwrap px-mix-wrap" id="pxMixWrap" style="display:none;flex-wrap:wrap;gap:6px;"></div>
+
       <div class="px-block">
         <div class="px-label">মোড</div>
         <div class="px-tabs" id="pxModeTabs">
@@ -587,6 +613,7 @@
 
     <section class="panel reveal d2" id="pxHistoryPanel">
       <div class="panel-title">সাম্প্রতিক সেশন <span class="tag">History</span></div>
+      <div class="px-hist-tabs" id="pxHistoryTabs"></div>
       <div id="pxHistoryWrap"><div class="sub">এখনো কোনো সেশন হয়নি।</div></div>
     </section>
 
@@ -663,25 +690,25 @@ const SCHEDULE = [
 {date:'2026-07-28', items:[
   {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[180,200]},
   {g:'bn', k:'বিপরীত শব্দ', type:'bnant', r:[210,230]},
-  {g:'en', k:'Word Meaning', type:'wm', r:[295,315]},
+  {g:'en', k:'Word Meaning', type:'wm', r:[196,215]},
   {g:'en', k:'Group Verb: Look', type:'groupverb', r:[108,115]},
 ]},
 {date:'2026-07-29', items:[
   {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[200,220]},
   {g:'bn', k:'বিপরীত শব্দ', type:'bnant', r:[230,250]},
-  {g:'en', k:'Word Meaning', type:'wm', r:[315,335]},
+  {g:'en', k:'Word Meaning', type:'wm', r:[216,235]},
   {g:'en', k:'Group Verb: Make', type:'groupverb', r:[116,126]},
 ]},
 {date:'2026-07-30', items:[
   {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[220,240]},
   {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[1,20]},
-  {g:'en', k:'Word Meaning', type:'wm', r:[335,355]},
+  {g:'en', k:'Word Meaning', type:'wm', r:[236,255]},
   {g:'en', k:'Group Verb: Put', type:'groupverb', r:[127,135]},
 ]},
 {date:'2026-08-02', items:[
   {g:'bn', k:'পারিভাষিক শব্দ', type:'poribhashik', r:[241,260]},
   {g:'bn', k:'এক কথায় প্রকাশ', type:'ekkotha', r:[20,40]},
-  {g:'en', k:'Word Meaning', type:'wm', r:[355,375]},
+  {g:'en', k:'Word Meaning', type:'wm', r:[256,275]},
   {g:'en', k:'Synonym', type:'syn', r:[1,20]},
   {g:'en', k:'Group Verb: Run', type:'groupverb', r:[136,147]},
 ]},
@@ -870,14 +897,84 @@ const WEEKDAYS_BN = {0:'Su',1:'Mo',2:'Tu',3:'We',4:'Th',5:'Fr',6:'Sa'};
 
 const STORE_KEY = 'mukhosto-checker-v3';
 function loadState(){ try{ const raw = localStorage.getItem(STORE_KEY); return raw?JSON.parse(raw):{}; }catch(e){ return {}; } }
-function saveState(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){} }
+function saveState(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){} scheduleAutoBackup(); }
 let state = loadState();
 let filter = 'today';
 
 const OVERRIDE_KEY = 'mukhosto-overrides-v1';
 function loadOverrides(){ try{ const raw = localStorage.getItem(OVERRIDE_KEY); return raw?JSON.parse(raw):{}; }catch(e){ return {}; } }
-function saveOverrides(o){ try{ localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o)); }catch(e){} }
+function saveOverrides(o){ try{ localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o)); }catch(e){} scheduleAutoBackup(); }
 let overrides = loadOverrides();
+
+const CUSTOM_KEY = 'memoria-custom-words-v1';
+function loadCustom(){ try{ const raw = localStorage.getItem(CUSTOM_KEY); return raw?JSON.parse(raw):{}; }catch(e){ return {}; } }
+function saveCustom(c){ try{ localStorage.setItem(CUSTOM_KEY, JSON.stringify(c)); }catch(e){} }
+let customWords = loadCustom(); // { [type]: [{no, word, bn, meaning/syn/ant}] }
+
+const ORDER_KEY = 'memoria-word-order-v1';
+function loadOrder(){ try{ const raw = localStorage.getItem(ORDER_KEY); return raw?JSON.parse(raw):{}; }catch(e){ return {}; } }
+function saveOrder(o){ try{ localStorage.setItem(ORDER_KEY, JSON.stringify(o)); }catch(e){} }
+let wordOrder = loadOrder(); // { [type]: [no, no, ...] }
+
+const CUSTOM_NO_BASE = 100000;
+function nextCustomNo(type){
+  const existing = (customWords[type]||[]).map(w=>w.no);
+  return existing.length ? Math.max(...existing)+1 : CUSTOM_NO_BASE;
+}
+// full ordered list for a type: built-ins (override-applied) + custom words, in saved order
+function getFullList(type){
+  const builtin = (LISTS[type]||[]).map(w => applyOverride(type, w));
+  const custom = (customWords[type]||[]).slice();
+  const all = builtin.concat(custom);
+  const order = wordOrder[type];
+  if(order && order.length){
+    const byNo = {}; all.forEach(w=>{ byNo[w.no]=w; });
+    const ordered = [];
+    order.forEach(no=>{ if(byNo[no]){ ordered.push(byNo[no]); delete byNo[no]; } });
+    Object.keys(byNo).forEach(no=> ordered.push(byNo[no]));
+    return ordered;
+  }
+  return all;
+}
+function saveOrderFromList(type, list){
+  wordOrder[type] = list.map(w=>w.no);
+  saveOrder(wordOrder);
+}
+function moveWord(type, no, dir){
+  const list = getFullList(type);
+  const idx = list.findIndex(w=>w.no===no);
+  if(idx<0) return;
+  const swapIdx = dir==='up' ? idx-1 : idx+1;
+  if(swapIdx<0 || swapIdx>=list.length) return;
+  const tmp = list[idx]; list[idx]=list[swapIdx]; list[swapIdx]=tmp;
+  saveOrderFromList(type, list);
+  renderExtra();
+}
+function deleteCustomWord(type, no){
+  customWords[type] = (customWords[type]||[]).filter(w=>w.no!==no);
+  saveCustom(customWords);
+  if(wordOrder[type]){ wordOrder[type] = wordOrder[type].filter(n=>n!==no); saveOrder(wordOrder); }
+  delete state[extraKey(type, no)];
+  saveState(state);
+  renderExtra();
+}
+function addCustomWord(type){
+  const wordEl = document.getElementById('addword-word-'+type);
+  const bnEl = document.getElementById('addword-bn-'+type);
+  const valEl = document.getElementById('addword-val-'+type);
+  const word = wordEl ? wordEl.value.trim() : '';
+  const val = valEl ? valEl.value.trim() : '';
+  if(!word || !val) return;
+  const bn = bnEl ? bnEl.value.trim() : '';
+  const entry = { no: nextCustomNo(type), word, bn };
+  entry[VALKEY[type]] = val;
+  customWords[type] = (customWords[type]||[]).concat([entry]);
+  saveCustom(customWords);
+  if(wordEl) wordEl.value = '';
+  if(bnEl) bnEl.value = '';
+  if(valEl) valEl.value = '';
+  renderExtra();
+}
 
 function applyOverride(type, w){
   const ov = overrides[type + '-' + w.no];
@@ -900,6 +997,7 @@ function defaultSettings(){
     fbDbUrl: '',
     fbApiKey: '',
     fbDocId: 'default',
+    autoBackupEnabled: true,
     geminiModels: [
       {model:'gemini-pro-latest', enabled:true},
       {model:'gemini-flash-latest', enabled:true},
@@ -952,6 +1050,8 @@ function openSettingsModal(){
   document.getElementById('fbDbUrlInput').value = settings.fbDbUrl || '';
   document.getElementById('fbApiKeyInput').value = settings.fbApiKey || '';
   document.getElementById('fbDocIdInput').value = settings.fbDocId || 'default';
+  document.getElementById('autoBackupToggle').checked = settings.autoBackupEnabled !== false;
+  renderAutoBackupStatus();
   renderApiModelRows();
   renderApiKeyRows();
   document.getElementById('pantryStatus').textContent = '';
@@ -985,6 +1085,7 @@ function collectSettingsFromForm(){
     fbDbUrl: document.getElementById('fbDbUrlInput').value.trim(),
     fbApiKey: document.getElementById('fbApiKeyInput').value.trim(),
     fbDocId: document.getElementById('fbDocIdInput').value.trim() || 'default',
+    autoBackupEnabled: document.getElementById('autoBackupToggle').checked,
     geminiModels,
     geminiKeys
   };
@@ -1000,6 +1101,11 @@ document.getElementById('settingsSave').addEventListener('click', ()=>{
   saveSettings(settings);
   closeSettingsModal();
 });
+document.getElementById('autoBackupToggle').addEventListener('change', e=>{
+  settings.autoBackupEnabled = e.target.checked;
+  saveSettings(settings);
+  renderAutoBackupStatus();
+});
 
 // ---- getPantry.cloud sync (free JSON key-value store, no signup key needed beyond a pantry id) ----
 const PANTRY_BASKET = 'memoria-progress';
@@ -1013,6 +1119,7 @@ document.getElementById('pantrySave').addEventListener('click', ()=>{
   const pantryId = document.getElementById('pantryIdInput').value.trim();
   if(!pantryId){ setSyncStatus('Pantry ID খালি — কিছু বসাও আগে।', 'err'); return; }
   settings.pantryId = pantryId; saveSettings(settings);
+  renderAutoBackupStatus();
   setSyncStatus('✓ ID সংরক্ষিত হয়েছে — এখন যেকোনো সময় Upload/Restore চাপলেই এটা ব্যবহার হবে।', 'ok');
 });
 document.getElementById('pantryUpload').addEventListener('click', async ()=>{
@@ -1024,9 +1131,11 @@ document.getElementById('pantryUpload').addEventListener('click', async ()=>{
     const res = await fetch(`https://getpantry.cloud/apiv1/pantry/${encodeURIComponent(pantryId)}/basket/${PANTRY_BASKET}`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ state, overrides, updatedAt: new Date().toISOString() })
+      body: JSON.stringify(buildBackupPayload())
     });
     if(!res.ok) throw new Error('HTTP ' + res.status);
+    setLastBackupISO(new Date().toISOString());
+    renderAutoBackupStatus();
     setSyncStatus('✓ Cloud-এ upload সম্পন্ন হয়েছে।', 'ok');
   }catch(err){
     setSyncStatus('Upload ব্যর্থ হয়েছে — Pantry ID ঠিক আছে কিনা দেখো। (' + err.message + ')', 'err');
@@ -1076,6 +1185,7 @@ document.getElementById('fbSave').addEventListener('click', ()=>{
   const {dbUrl, apiKey, docId} = readFbFields();
   if(!dbUrl){ setFbStatus('আগে Firebase Database URL বসাও।', 'err'); return; }
   settings.fbDbUrl = dbUrl; settings.fbApiKey = apiKey; settings.fbDocId = docId; saveSettings(settings);
+  renderAutoBackupStatus();
   setFbStatus('✓ তথ্য সংরক্ষিত হয়েছে — এখন যেকোনো সময় Upload/Restore চাপলেই এটা ব্যবহার হবে।', 'ok');
 });
 document.getElementById('fbUpload').addEventListener('click', async ()=>{
@@ -1087,9 +1197,11 @@ document.getElementById('fbUpload').addEventListener('click', async ()=>{
     const res = await fetch(fbRtdbUrl(dbUrl, docId, apiKey), {
       method: 'PUT',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ state, overrides, updatedAt: new Date().toISOString() })
+      body: JSON.stringify(buildBackupPayload())
     });
     if(!res.ok){ const t = await res.text(); throw new Error('HTTP ' + res.status + ' — ' + t.slice(0,150)); }
+    setLastBackupISO(new Date().toISOString());
+    renderAutoBackupStatus();
     setFbStatus('✓ Firebase-এ upload সম্পন্ন হয়েছে।', 'ok');
   }catch(err){
     setFbStatus('Upload ব্যর্থ হয়েছে — Database URL / Auth / Rules ঠিক আছে কিনা দেখো। (' + err.message + ')', 'err');
@@ -1114,6 +1226,70 @@ document.getElementById('fbDownload').addEventListener('click', async ()=>{
     setFbStatus('Restore ব্যর্থ হয়েছে — Database URL / Sync ID ঠিক আছে কিনা দেখো। (' + err.message + ')', 'err');
   }
 });
+
+// ---- Auto-Backup (silent, debounced push of progress only — never settings/keys) ----
+// LAST_BACKUP_KEY is device-only bookkeeping (just a timestamp); it is never
+// read/written as part of the cloud payload, so it can't leak between devices.
+const LAST_BACKUP_KEY = 'memoria-last-backup-v1';
+function getLastBackupISO(){ try{ return localStorage.getItem(LAST_BACKUP_KEY) || ''; }catch(e){ return ''; } }
+function setLastBackupISO(iso){ try{ localStorage.setItem(LAST_BACKUP_KEY, iso); }catch(e){} }
+function fmtBackupTime(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return '';
+  return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function renderAutoBackupStatus(){
+  const el = document.getElementById('autoBackupStatus');
+  if(!el) return;
+  if(!settings.pantryId && !settings.fbDbUrl){
+    el.textContent = 'কোনো Cloud Sync (Pantry/Firebase) এখনো বসানো হয়নি — উপরে একটা বসালে auto-backup কাজ শুরু করবে।';
+    el.className = 'sync-status';
+    return;
+  }
+  if(settings.autoBackupEnabled === false){
+    el.textContent = 'Auto-backup বন্ধ আছে।';
+    el.className = 'sync-status';
+    return;
+  }
+  const last = getLastBackupISO();
+  el.textContent = last ? ('✓ সর্বশেষ auto-backup: ' + fmtBackupTime(last)) : 'এখনো auto-backup হয়নি — কিছু একটা tick/edit করলেই প্রথম backup হয়ে যাবে।';
+  el.className = last ? 'sync-status ok' : 'sync-status';
+}
+// only {state, overrides} ever leave the device — settings (keys/IDs) never included
+function buildBackupPayload(){
+  return { state, overrides, updatedAt: new Date().toISOString() };
+}
+let autoBackupTimer = null;
+function scheduleAutoBackup(){
+  if(settings.autoBackupEnabled === false) return;
+  if(!settings.pantryId && !settings.fbDbUrl) return;
+  clearTimeout(autoBackupTimer);
+  autoBackupTimer = setTimeout(performAutoBackup, 4000);
+}
+async function performAutoBackup(){
+  if(settings.autoBackupEnabled === false) return;
+  try{
+    if(settings.fbDbUrl){
+      const res = await fetch(fbRtdbUrl(settings.fbDbUrl, settings.fbDocId || 'default', settings.fbApiKey), {
+        method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(buildBackupPayload())
+      });
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+    } else if(settings.pantryId){
+      const res = await fetch(`https://getpantry.cloud/apiv1/pantry/${encodeURIComponent(settings.pantryId)}/basket/${PANTRY_BASKET}`, {
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(buildBackupPayload())
+      });
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+    } else { return; }
+    setLastBackupISO(new Date().toISOString());
+    renderAutoBackupStatus();
+  }catch(e){ /* silent — will retry on the next change or the periodic safety-net tick */ }
+}
+// periodic safety-net: even if the person leaves a day open without further taps,
+// this makes sure a backup still goes out every few minutes
+setInterval(()=>{ if(settings.pantryId || settings.fbDbUrl) performAutoBackup(); }, 5*60*1000);
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'hidden') performAutoBackup(); });
+window.addEventListener('pagehide', ()=>{ performAutoBackup(); });
 
 // ============ Gemini API (flashcard AI help) ============
 function sleep(ms){ return new Promise(res => setTimeout(res, ms)); }
@@ -1264,13 +1440,25 @@ function escapeHtml(s){
 }
 // Parses the AI's labelled reply (মনে রাখার কৌশল: / উদাহরণ বাক্য:) into a small
 // two-block card instead of one plain-text blob.
+// Blocks that carry no real info when the AI decided a section doesn't apply
+// to this word ("প্রযোজ্য নয়") are dropped entirely, so cards for simple
+// words stay just as short as before — the extra sections only appear when
+// they'd actually help.
+function isNaBlock(text){
+  const t = (text||'').trim();
+  return t === '' || /^প্রযোজ্য\s*নয়\.?$/.test(t);
+}
 function renderAiAnswer(aiBox, raw){
-  const memMatch = raw.match(/মনে রাখার কৌশল:\s*([\s\S]*?)(?=উদাহরণ বাক্য:|$)/);
-  const exMatch = raw.match(/উদাহরণ বাক্য:\s*([\s\S]*)/);
-  if(memMatch || exMatch){
+  const memMatch = raw.match(/মনে রাখার কৌশল:\s*([\s\S]*?)(?=উদাহরণ বাক্য:|শব্দের গঠন:|কাছাকাছি শব্দ সতর্কতা:|$)/);
+  const exMatch = raw.match(/উদাহরণ বাক্য:\s*([\s\S]*?)(?=শব্দের গঠন:|কাছাকাছি শব্দ সতর্কতা:|$)/);
+  const rootMatch = raw.match(/শব্দের গঠন:\s*([\s\S]*?)(?=কাছাকাছি শব্দ সতর্কতা:|$)/);
+  const confuseMatch = raw.match(/কাছাকাছি শব্দ সতর্কতা:\s*([\s\S]*)/);
+  if(memMatch || exMatch || rootMatch || confuseMatch){
     let html = '';
     if(memMatch && memMatch[1].trim()) html += `<div class="fc-ai-block"><span class="fc-ai-label">💡 মনে রাখার কৌশল</span><p>${escapeHtml(memMatch[1].trim())}</p></div>`;
     if(exMatch && exMatch[1].trim()) html += `<div class="fc-ai-block"><span class="fc-ai-label">✍️ উদাহরণ বাক্য</span><p>${escapeHtml(exMatch[1].trim())}</p></div>`;
+    if(rootMatch && !isNaBlock(rootMatch[1])) html += `<div class="fc-ai-block"><span class="fc-ai-label">🧩 শব্দের গঠন</span><p>${escapeHtml(rootMatch[1].trim())}</p></div>`;
+    if(confuseMatch && !isNaBlock(confuseMatch[1])) html += `<div class="fc-ai-block"><span class="fc-ai-label">⚠️ কাছাকাছি শব্দ</span><p>${escapeHtml(confuseMatch[1].trim())}</p></div>`;
     aiBox.innerHTML = html || `<p>${escapeHtml(raw)}</p>`;
   } else {
     aiBox.innerHTML = `<p>${escapeHtml(raw)}</p>`;
@@ -1298,28 +1486,31 @@ document.getElementById('fcAi').addEventListener('click', async (e)=>{
   // the val is the OPPOSITE word, not the meaning, and telling the AI
   // otherwise produces a confusing/wrong mnemonic.
   const AI_TYPE_META = {
-    wm:        { label: 'অর্থ',                 note: 'এটা মূল শব্দটার সরাসরি অর্থ।' },
-    syn:       { label: 'সমার্থক শব্দ (Synonym)', note: 'এটা মূল শব্দের কাছাকাছি/একই অর্থবোধক আরেকটা শব্দ, direct অর্থ না। mnemonic-এ স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ প্রায় একই রকম মানে বহন করে।' },
-    ant:       { label: 'বিপরীত শব্দ (Antonym)',  note: 'এটা মূল শব্দের বিপরীত/উল্টো অর্থের শব্দ, একই অর্থ না। mnemonic-এ অবশ্যই স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ একে অপরের বিপরীত।' },
-    bnant:     { label: 'বিপরীত শব্দ (Antonym)',  note: 'এটা মূল শব্দের বিপরীত/উল্টো অর্থের শব্দ, একই অর্থ না। mnemonic-এ অবশ্যই স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ একে অপরের বিপরীত।' },
-    bagdhara:  { label: 'বাগধারাটির অর্থ',        note: 'এটা একটা বাগধারা/idiom-এর ব্যাখ্যা।' },
-    proverb:   { label: 'প্রবাদটির অর্থ',         note: 'এটা একটা প্রবাদের ব্যাখ্যা।' },
-    idiom:     { label: 'Idiom/Phrase-টির অর্থ',  note: 'এটা একটা ইংরেজি idiom/phrase-এর ব্যাখ্যা।' },
-    ows:       { label: 'One-Word Substitution', note: 'এটা প্রশ্নের বর্ণনা অনুযায়ী সঠিক এক শব্দের উত্তর।' },
-    ekkotha:   { label: 'এক কথায় প্রকাশ',         note: 'এটা বাক্যাংশের এক কথায় প্রকাশ।' },
-    shobdartho:{ label: 'শব্দের অর্থ',            note: 'এটা মূল শব্দটার সরাসরি অর্থ।' },
-    poribhashik:{ label: 'পারিভাষিক শব্দ (English term)', note: 'এটা বাংলা টার্মের ইংরেজি পারিভাষিক প্রতিশব্দ, সরাসরি অনুবাদ না — mnemonic-এ বোঝাও যে এটা একটা স্বীকৃত পরিভাষা।' },
-    groupverb: { label: 'Group Verb-এর অর্থ',     note: 'এটা group verb (phrasal verb) টার অর্থ।' },
+    wm:        { label: 'অর্থ',                 note: 'এটা মূল শব্দটার সরাসরি অর্থ।', hasRoot:true },
+    syn:       { label: 'সমার্থক শব্দ (Synonym)', note: 'এটা মূল শব্দের কাছাকাছি/একই অর্থবোধক আরেকটা শব্দ, direct অর্থ না। mnemonic-এ স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ প্রায় একই রকম মানে বহন করে।', hasRoot:true },
+    ant:       { label: 'বিপরীত শব্দ (Antonym)',  note: 'এটা মূল শব্দের বিপরীত/উল্টো অর্থের শব্দ, একই অর্থ না। mnemonic-এ অবশ্যই স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ একে অপরের বিপরীত।', hasRoot:true },
+    bnant:     { label: 'বিপরীত শব্দ (Antonym)',  note: 'এটা মূল শব্দের বিপরীত/উল্টো অর্থের শব্দ, একই অর্থ না। mnemonic-এ অবশ্যই স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ একে অপরের বিপরীত।', hasRoot:false },
+    bagdhara:  { label: 'বাগধারাটির অর্থ',        note: 'এটা একটা বাগধারা/idiom-এর ব্যাখ্যা।', hasRoot:false },
+    proverb:   { label: 'প্রবাদটির অর্থ',         note: 'এটা একটা প্রবাদের ব্যাখ্যা।', hasRoot:false },
+    idiom:     { label: 'Idiom/Phrase-টির অর্থ',  note: 'এটা একটা ইংরেজি idiom/phrase-এর ব্যাখ্যা।', hasRoot:false },
+    ows:       { label: 'One-Word Substitution', note: 'এটা প্রশ্নের বর্ণনা অনুযায়ী সঠিক এক শব্দের উত্তর।', hasRoot:true },
+    ekkotha:   { label: 'এক কথায় প্রকাশ',         note: 'এটা বাক্যাংশের এক কথায় প্রকাশ।', hasRoot:false },
+    shobdartho:{ label: 'শব্দের অর্থ',            note: 'এটা মূল শব্দটার সরাসরি অর্থ।', hasRoot:false },
+    poribhashik:{ label: 'পারিভাষিক শব্দ (English term)', note: 'এটা বাংলা টার্মের ইংরেজি পারিভাষিক প্রতিশব্দ, সরাসরি অনুবাদ না — mnemonic-এ বোঝাও যে এটা একটা স্বীকৃত পরিভাষা।', hasRoot:true },
+    groupverb: { label: 'Group Verb-এর অর্থ',     note: 'এটা group verb (phrasal verb) টার অর্থ।', hasRoot:false },
   };
   const meta = AI_TYPE_META[w.type] || AI_TYPE_META.wm;
+  const rootBlock = meta.hasRoot ? `
+শব্দের গঠন: (শব্দটা যদি ইংরেজি এবং এর prefix/root/suffix থেকে অর্থ বোঝা যায়, তাহলে ১ লাইনে ভেঙে দেখাও, যেমন "mal(খারাপ)+practice(চর্চা) = খারাপ চর্চা" ফরম্যাটে। এটা দিয়ে ভবিষ্যতে অচেনা শব্দও আন্দাজ করা শেখা যায়। যদি স্পষ্ট prefix/root/suffix না থাকে বা শব্দটা সাধারণ/সরল হয়, এই লাইনে শুধু "প্রযোজ্য নয়" লিখো।)
+কাছাকাছি শব্দ সতর্কতা: (exam-এ প্রায়ই গুলিয়ে ফেলা হয় এমন বানানে/উচ্চারণে কাছাকাছি একটা ইংরেজি শব্দ থাকলে, তার নাম আর অর্থের পার্থক্য ১ লাইনে বলো, যেমন "Considerable (যথেষ্ট) কে Considerate (বিবেচক)-এর সাথে গুলিও না"। এমন কোনো শব্দ মনে না পড়লে শুধু "প্রযোজ্য নয়" লিখো।)` : '';
   const prompt = `তুমি একজন বাংলাদেশের সরকারি চাকরির (BCS/Bank/৯ম গ্রেড) পরীক্ষার ভোকাবুলারি কোচ। একজন শিক্ষার্থী নিচের শব্দ/টার্মটা ফ্ল্যাশকার্ডে মুখস্থ করছে:
 শব্দ/টার্ম: "${w.word}"${w.bn ? ' ('+w.bn+')' : ''}
 ${meta.label}: "${w.val || ''}"
 (লক্ষ্য করো: ${meta.note})
 
-তোমার কাজ, ঠিক এই ফরম্যাটে বাংলায় উত্তর দাও (হেডিং দুইটা হুবহু রাখো, ভূমিকা বা অতিরিক্ত কিছু লিখো না):
+তোমার কাজ, ঠিক এই ফরম্যাটে বাংলায় উত্তর দাও (হেডিংগুলো হুবহু রাখো, ভূমিকা বা অতিরিক্ত কিছু লিখো না):
 মনে রাখার কৌশল: (১-২ লাইনের সহজ, মজার mnemonic বা association, যা উপরের সম্পর্কটা (${meta.label}) ঠিকভাবে মাথায় গেঁথে দেবে — উপরের নোটটা মাথায় রেখে)
-উদাহরণ বাক্য: (এই শব্দটা/টার্মটা ব্যবহার করে exam-এর উপযোগী একটা ছোট বাক্য, ইংরেজিতে যদি শব্দটা ইংরেজি হয়)`;
+উদাহরণ বাক্য: (এই শব্দটা/টার্মটা ব্যবহার করে exam-এর উপযোগী একটা ছোট বাক্য, ইংরেজিতে যদি শব্দটা ইংরেজি হয়)${rootBlock}`;
   try{
     const answer = await callGeminiText(prompt, msg => { aiBox.innerHTML = `<p class="fc-ai-loading">${escapeHtml(msg)}</p>`; });
     aiCache[cacheKey] = answer;
@@ -1332,9 +1523,8 @@ ${meta.label}: "${w.val || ''}"
 
 let editCtx = null;
 function openEditModal(type, no){
-  const base = (LISTS[type] || []).find(x => x.no === no);
-  if(!base) return;
-  const merged = applyOverride(type, base);
+  const merged = getFullList(type).find(x => x.no === no);
+  if(!merged) return;
   editCtx = {type, no};
   document.getElementById('editModalTitle').textContent = (TYPE_LABELS[type] || type) + ' #' + no + ' — এডিট করো';
   document.getElementById('editWord').value = merged.word || '';
@@ -1825,10 +2015,24 @@ function normalizeWords(list, type){
   return list.map(w => ({no:w.no, word:w.word, bn:w.bn, val: w[VALKEY[type]], type}));
 }
 
+// প্রতিটা টাইপকে এখানে ঢুকিয়ে দিলেই সেটার জন্য পুরো লিস্ট ব্রাউজ করা, নতুন শব্দ
+// যোগ করা, reorder/edit/delete করা ও ফ্ল্যাশকার্ড — সবকিছু আপনাআপনি চালু হয়ে যায়
+// (renderExtra() টাইপ-নিরপেক্ষ ভাবে কাজ করে)। এই যোগ-করার ফিচারটা ইচ্ছাকৃতভাবে
+// শুধু এখানেই (আজকের পড়া ট্যাবে না) রাখা হয়েছে — কারণ ক্যালেন্ডারের প্রতিটা দিন
+// একটা সংখ্যা-রেঞ্জ (range) থেকে শব্দ টানে, তাই নতুন যোগ করা শব্দ কোনো নির্দিষ্ট
+// দিনের সাথে স্বয়ংক্রিয়ভাবে যুক্ত হতে পারে না।
 const EXTRA_LISTS = [
+  {type:'wm', label:'Word Meaning — সম্পূর্ণ তালিকা (~৩৫৫টি, ক্যালেন্ডারে ধাপে ধাপে আসে)'},
+  {type:'syn', label:'Synonym — সম্পূর্ণ তালিকা (~৪৫৬টি)'},
+  {type:'ant', label:'Antonym — সম্পূর্ণ তালিকা (~৫১০টি)'},
+  {type:'bnant', label:'বিপরীত শব্দ — সম্পূর্ণ তালিকা (~২৪৮টি)'},
+  {type:'ekkotha', label:'এক কথায় প্রকাশ — সম্পূর্ণ তালিকা (~২৮৭টি)'},
+  {type:'bagdhara', label:'বাগধারা — সম্পূর্ণ তালিকা (~৩০৩টি)'},
+  {type:'shobdartho', label:'শব্দের অর্থ — সম্পূর্ণ তালিকা (~৩৬৭টি)'},
+  {type:'poribhashik', label:'পারিভাষিক শব্দ — সম্পূর্ণ তালিকা (~৩৩০টি)'},
+  {type:'groupverb', label:'Group Verb — ১৮৮টি সম্পূর্ণ লিস্ট (Bring–Turn ক্যালেন্ডারে যুক্ত; Act/Bear/Blow/Break/Do away with রুটিনে নেই, এখান থেকে পড়ুন)'},
   {type:'proverb', label:'ইংরেজি প্রবাদ (Proverbs) — ২০৫টি, ক্যালেন্ডারে যুক্ত নয়'},
   {type:'ows', label:'English One-Word Substitution — ৩৯২টি, ক্যালেন্ডারে যুক্ত নয়'},
-  {type:'groupverb', label:'Group Verb — ১৮৮টি সম্পূর্ণ লিস্ট (Bring–Turn ক্যালেন্ডারে যুক্ত; Act/Bear/Blow/Break/Do away with রুটিনে নেই, এখান থেকে পড়ুন)'},
   {type:'idiom', label:'Idioms & Phrases — ৩৯৬টি সম্পূর্ণ লিস্ট (page 1–23, 26 ক্যালেন্ডারে যুক্ত; page 24-25,27 এখনো রুটিনে আসেনি, এখান থেকে পড়ুন। ⚠️ scan থেকে OCR+manual করা, বাংলা অর্থ যাচাই করে নাও)'}
 ];
 
@@ -1839,19 +2043,23 @@ function renderExtra(){
   const wrap = document.getElementById('extraWrap');
   if(!wrap) return;
   wrap.innerHTML = EXTRA_LISTS.map(sec=>{
-    const items = LISTS[sec.type].map(w => applyOverride(sec.type, w));
+    const items = getFullList(sec.type);
     const done = items.filter(w => state[extraKey(sec.type, w.no)]).length;
     const blockId = 'extra-blk-' + sec.type;
-    const rows = items.map(w=>{
+    const rows = items.map((w, idx)=>{
       const wk = extraKey(sec.type, w.no);
       const checked = !!state[wk];
       const val = w[VALKEY[sec.type]];
+      const isCustom = w.no >= CUSTOM_NO_BASE;
       return `<div class="word-row">
-        <span class="wno">${w.no}</span>
-        <div class="word-eng">${w.word}<span class="sub2">${w.bn}</span></div>
-        <div class="word-val">${val}</div>
+        <span class="wno">${isCustom ? '★' : w.no}</span>
+        <div class="word-eng">${escapeHtml(w.word)}<span class="sub2">${escapeHtml(w.bn||'')}</span></div>
+        <div class="word-val">${escapeHtml(val||'')}</div>
         <div class="row-actions">
+          <button class="reorder-btn" data-movetype="${sec.type}" data-moveno="${w.no}" data-dir="up" ${idx===0?'disabled':''} title="উপরে সরাও">↑</button>
+          <button class="reorder-btn" data-movetype="${sec.type}" data-moveno="${w.no}" data-dir="down" ${idx===items.length-1?'disabled':''} title="নিচে সরাও">↓</button>
           <button class="edit-btn" data-etype="${sec.type}" data-eno="${w.no}" title="এডিট করো">✎</button>
+          ${isCustom ? `<button class="del-btn" data-deltype="${sec.type}" data-delno="${w.no}" title="মুছে ফেলো">🗑</button>` : ''}
           <input type="checkbox" class="chk mini en" data-wkey="${wk}" ${checked?'checked':''}>
         </div>
       </div>`;
@@ -1864,7 +2072,18 @@ function renderExtra(){
         <button class="fc-trigger" data-fcextra="${sec.type}" title="ফ্ল্যাশকার্ড দিয়ে ঝালাই করো">🎴</button>
         <span class="caret" id="caret-${blockId}">▸</span>
       </div>
-      <div class="word-table" id="${blockId}">${rows}</div>
+      <div class="word-table" id="${blockId}">
+        <div class="add-word-row">
+          <button class="add-word-toggle" data-addtoggle="${sec.type}" type="button">+ নতুন শব্দ যোগ করো</button>
+          <div class="add-word-form" id="addform-${sec.type}" style="display:none;">
+            <input type="text" class="px-input" id="addword-word-${sec.type}" placeholder="শব্দ / Word">
+            <input type="text" class="px-input" id="addword-bn-${sec.type}" placeholder="বাংলা অর্থ (ঐচ্ছিক)">
+            <input type="text" class="px-input" id="addword-val-${sec.type}" placeholder="অর্থ / Meaning">
+            <button class="add-word-save" data-addsave="${sec.type}" type="button">যোগ করো</button>
+          </div>
+        </div>
+        ${rows}
+      </div>
     </div>`;
   }).join('');
 
@@ -1901,8 +2120,33 @@ function renderExtra(){
       e.stopPropagation();
       const type = btn.dataset.fcextra;
       const sec = EXTRA_LISTS.find(s=>s.type===type);
-      const words = normalizeWords(LISTS[type].map(w => applyOverride(type, w)), type);
+      const words = normalizeWords(getFullList(type), type);
       openFlashcards(words, sec ? sec.label : type);
+    });
+  });
+  wrap.querySelectorAll('.reorder-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      moveWord(btn.dataset.movetype, Number(btn.dataset.moveno), btn.dataset.dir);
+    });
+  });
+  wrap.querySelectorAll('.del-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      deleteCustomWord(btn.dataset.deltype, Number(btn.dataset.delno));
+    });
+  });
+  wrap.querySelectorAll('[data-addtoggle]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const form = document.getElementById('addform-'+btn.dataset.addtoggle);
+      if(form) form.style.display = (form.style.display==='none' || !form.style.display) ? 'flex' : 'none';
+    });
+  });
+  wrap.querySelectorAll('[data-addsave]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      addCustomWord(btn.dataset.addsave);
     });
   });
 }
@@ -1913,18 +2157,31 @@ document.getElementById('editModalOverlay').addEventListener('click', e=>{
 });
 document.getElementById('editSave').addEventListener('click', ()=>{
   if(!editCtx) return;
-  const key = editCtx.type + '-' + editCtx.no;
-  overrides[key] = {
-    word: document.getElementById('editWord').value,
-    bn: document.getElementById('editBn').value,
-    val: document.getElementById('editVal').value
-  };
-  saveOverrides(overrides);
+  const {type, no} = editCtx;
+  const word = document.getElementById('editWord').value;
+  const bn = document.getElementById('editBn').value;
+  const val = document.getElementById('editVal').value;
+  if(no >= CUSTOM_NO_BASE){
+    const list = customWords[type] || [];
+    const idx = list.findIndex(w=>w.no===no);
+    if(idx>=0){
+      const updated = Object.assign({}, list[idx], {word, bn});
+      updated[VALKEY[type]] = val;
+      list[idx] = updated;
+      customWords[type] = list;
+      saveCustom(customWords);
+    }
+  } else {
+    const key = type + '-' + no;
+    overrides[key] = { word, bn, val };
+    saveOverrides(overrides);
+  }
   closeEditModal();
   refreshAll();
 });
 document.getElementById('editReset').addEventListener('click', ()=>{
   if(!editCtx) return;
+  if(editCtx.no >= CUSTOM_NO_BASE){ closeEditModal(); return; }
   const key = editCtx.type + '-' + editCtx.no;
   delete overrides[key];
   saveOverrides(overrides);
@@ -1969,7 +2226,10 @@ let pxQueue = [];
 let pxIndex = 0;
 let pxScore = 0;
 let pxWrongThisSession = [];
+let pxAnswered = [];
 let pxSourceLabel = '';
+let pxSessionEntryIds = {}; // {type: historyEntryId} — যে সেশনটা এখন চলছে তার history entry-গুলোর id
+let pxSessionActive = false; // true থাকবে quiz শুরু হওয়ার মুহূর্ত থেকে শেষ/বন্ধ হওয়া পর্যন্ত
 
 function pxBuildTypeSelect(){
   const sel = document.getElementById('pxTypeSelect');
@@ -1978,6 +2238,19 @@ function pxBuildTypeSelect(){
 }
 pxBuildTypeSelect();
 
+const pxGoProgressBtn = document.getElementById('pxGoProgress');
+if(pxGoProgressBtn) pxGoProgressBtn.addEventListener('click', ()=>{
+  const moreBtn = document.querySelector('.main-tab-btn[data-tab="more"]');
+  if(moreBtn) moreBtn.click();
+});
+const pxGoListBtn = document.getElementById('pxGoList');
+if(pxGoListBtn) pxGoListBtn.addEventListener('click', ()=>{
+  const moreBtn = document.querySelector('.main-tab-btn[data-tab="more"]');
+  if(moreBtn) moreBtn.click();
+  const extraSection = document.querySelector('.extra-section');
+  if(extraSection) extraSection.scrollIntoView({behavior:'smooth'});
+});
+
 document.querySelectorAll('#pxSourceTabs button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('#pxSourceTabs button').forEach(b=>b.classList.remove('active'));
@@ -1985,9 +2258,16 @@ document.querySelectorAll('#pxSourceTabs button').forEach(btn=>{
     pxSource = btn.dataset.src;
     document.getElementById('pxDateWrap').style.display = pxSource === 'date' ? 'flex' : 'none';
     document.getElementById('pxRangeWrap').style.display = pxSource === 'range' ? 'flex' : 'none';
+    document.getElementById('pxMixWrap').style.display = pxSource === 'mix' ? 'flex' : 'none';
     pxSetMsg('');
   });
 });
+function pxBuildMixCheckboxes(){
+  const wrap = document.getElementById('pxMixWrap');
+  if(!wrap) return;
+  wrap.innerHTML = Object.keys(TYPE_LABELS).map(t=>`<label><input type="checkbox" class="px-mix-chk" value="${t}" checked> ${escapeHtml(TYPE_LABELS[t])}</label>`).join('');
+}
+pxBuildMixCheckboxes();
 document.querySelectorAll('#pxModeTabs button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('#pxModeTabs button').forEach(b=>b.classList.remove('active'));
@@ -2023,15 +2303,22 @@ function pxGatherWords(){
     day.items.forEach(it=>{ if(it.type) words = words.concat(normalizeWords(getWords(it), it.type)); });
     return {words, label: formatDMY(dateVal) + ' তারিখের পড়া'};
   }
+  if(pxSource === 'mix'){
+    const checked = Array.from(document.querySelectorAll('.px-mix-chk:checked')).map(c=>c.value);
+    if(checked.length === 0) return {words: [], error: 'অন্তত একটা বিষয় বেছে নাও।'};
+    let words = [];
+    checked.forEach(type=>{ words = words.concat(normalizeWords(getFullList(type), type)); });
+    return {words, label: 'মিক্স কুইজ · ' + checked.length + 'টি বিষয়'};
+  }
   // range / type
   const type = document.getElementById('pxTypeSelect').value;
-  const list = LISTS[type];
+  const list = getFullList(type);
   if(!list || list.length===0) return {words: [], error: 'টাইপ বেছে নাও।'};
   const fromVal = document.getElementById('pxFromInput').value;
   const toVal = document.getElementById('pxToInput').value;
   const from = fromVal ? Number(fromVal) : list[0].no;
   const to = toVal ? Number(toVal) : list[list.length-1].no;
-  const words = normalizeWords(list.filter(w=>w.no>=from && w.no<=to).map(w=>applyOverride(type, w)), type);
+  const words = normalizeWords(list.filter(w=>w.no>=from && w.no<=to), type);
   return {words, label: (TYPE_LABELS[type]||type) + ' · #' + from + '–' + to};
 }
 
@@ -2094,6 +2381,25 @@ function pxShuffle(arr){
   return a;
 }
 
+// quiz শুরু হওয়ার সাথে সাথেই (AI প্রশ্ন বানানো শুরু করার আগেই) history-তে
+// "⏳ চলছে..." স্ট্যাটাসের এন্ট্রি বসিয়ে দেয় — exam শেষ হওয়া পর্যন্ত অপেক্ষা করে না।
+// exam শেষ হলে pxShowSummary() এই একই এন্ট্রিগুলোকে final score দিয়ে আপডেট করে;
+// মাঝপথে বন্ধ করে দিলে pxCloseOverlay() সেগুলোকে "অসম্পূর্ণ" হিসেবে চিহ্নিত করে।
+function pxCreateInProgressEntries(){
+  const byType = {};
+  pxQueue.forEach(w=>{ byType[w.type] = (byType[w.type]||0) + 1; });
+  pxSessionEntryIds = {};
+  pxSessionActive = true;
+  Object.keys(byType).forEach(t=>{
+    const id = 'px' + Date.now() + '-' + t + '-' + Math.random().toString(36).slice(2,7);
+    pxSessionEntryIds[t] = id;
+    practiceHistory.unshift({ id, date: todayISO(), source: pxSourceLabel, mode: 'MCQ Quiz', type: t, total: byType[t], correct: null, status: 'in-progress' });
+  });
+  practiceHistory = practiceHistory.slice(0, 150);
+  savePracticeHistory(practiceHistory);
+  pxRenderHistory();
+}
+
 document.getElementById('pxStartBtn').addEventListener('click', async ()=>{
   const gathered = pxGatherWords();
   if(gathered.error){ pxSetMsg(gathered.error, true); return; }
@@ -2117,13 +2423,16 @@ document.getElementById('pxStartBtn').addEventListener('click', async ()=>{
     words = pxShuffle(words);
   }
   pxQueue = words;
-  pxIndex = 0; pxScore = 0; pxWrongThisSession = [];
+  pxIndex = 0; pxScore = 0; pxWrongThisSession = []; pxAnswered = [];
   pxSourceLabel = gathered.label + truncNote;
 
   document.getElementById('pxTitle').textContent = 'MCQ Quiz';
   document.getElementById('pxOverlay').classList.add('open');
   lockBodyScroll();
   document.getElementById('pxBody').innerHTML = '<div class="px-loading">প্রশ্ন তৈরি হচ্ছে...</div>';
+
+  // AI দিয়ে প্রশ্ন বানানো শুরু হওয়ার ঠিক আগেই সেশনটা history-তে লগ হয়ে যায়
+  pxCreateInProgressEntries();
 
   try{
     await pxPrepareDistractors(pxQueue, msg=>{
@@ -2138,6 +2447,26 @@ document.getElementById('pxStartBtn').addEventListener('click', async ()=>{
 function pxCloseOverlay(){
   document.getElementById('pxOverlay').classList.remove('open');
   unlockBodyScroll();
+  if(pxSessionActive){
+    // quiz শুরু হয়েছিল কিন্তু শেষ হয়নি — এখনো পর্যন্ত যা উত্তর দেওয়া হয়েছে তা দিয়ে
+    // এন্ট্রিটা আপডেট করে "অসম্পূর্ণ" চিহ্নিত করা হয়, "⏳ চলছে..."-তে আটকে থাকে না
+    const byType = {};
+    pxAnswered.forEach(a=>{
+      if(!byType[a.type]) byType[a.type] = {total:0, correct:0};
+      byType[a.type].total++;
+      if(a.correct) byType[a.type].correct++;
+    });
+    Object.keys(pxSessionEntryIds).forEach(t=>{
+      const entry = practiceHistory.find(h=>h.id===pxSessionEntryIds[t]);
+      if(entry){
+        entry.correct = (byType[t] && byType[t].correct) || 0;
+        entry.status = 'abandoned';
+      }
+    });
+    savePracticeHistory(practiceHistory);
+    pxRenderHistory();
+    pxSessionActive = false;
+  }
 }
 document.getElementById('pxClose').addEventListener('click', pxCloseOverlay);
 document.getElementById('pxOverlay').addEventListener('click', e=>{
@@ -2183,7 +2512,9 @@ function pxAnswer(selIdx, correctIdx, w){
     if(i===correctIdx) btn.classList.add('correct');
     else if(i===selIdx) btn.classList.add('wrong');
   });
-  if(selIdx === correctIdx){
+  const isCorrect = selIdx === correctIdx;
+  pxAnswered.push({type: w.type, correct: isCorrect});
+  if(isCorrect){
     pxScore++;
   } else {
     pxWrongThisSession.push({type:w.type, no:w.no, word:w.word, bn:w.bn, val:w.val});
@@ -2203,10 +2534,28 @@ function pxNext(){
 function pxShowSummary(){
   const total = pxQueue.length;
   const correct = pxScore;
-  practiceHistory.unshift({ date: todayISO(), source: pxSourceLabel, mode: 'MCQ Quiz', total, correct, wrongCount: pxWrongThisSession.length });
-  practiceHistory = practiceHistory.slice(0, 30);
+  const byType = {};
+  pxAnswered.forEach(a=>{
+    if(!byType[a.type]) byType[a.type] = {total:0, correct:0};
+    byType[a.type].total++;
+    if(a.correct) byType[a.type].correct++;
+  });
+  // শুরুতে বানানো "চলছে..." এন্ট্রিগুলোকেই final score দিয়ে আপডেট করা হয় —
+  // নতুন করে আর history-তে ঢোকানো হয় না
+  Object.keys(byType).forEach(t=>{
+    const entry = practiceHistory.find(h=>h.id===pxSessionEntryIds[t]);
+    if(entry){
+      entry.total = byType[t].total;
+      entry.correct = byType[t].correct;
+      entry.status = 'done';
+    } else {
+      practiceHistory.unshift({ id:'px'+Date.now()+'-'+t+'-'+Math.random().toString(36).slice(2,7), date: todayISO(), source: pxSourceLabel, mode: 'MCQ Quiz', type: t, total: byType[t].total, correct: byType[t].correct, status:'done' });
+    }
+  });
+  practiceHistory = practiceHistory.slice(0, 150);
   savePracticeHistory(practiceHistory);
   pxRenderHistory();
+  pxSessionActive = false;
 
   document.getElementById('pxTitle').textContent = 'সেশন শেষ';
   document.getElementById('pxProgress').textContent = '';
@@ -2228,30 +2577,63 @@ function pxShowSummary(){
   if(pxWrongThisSession.length){
     document.getElementById('pxRetryWrong').addEventListener('click', ()=>{
       pxQueue = pxWrongThisSession.map(w=>({type:w.type, no:w.no, word:w.word, bn:w.bn, val:w.val}));
-      pxIndex = 0; pxScore = 0; pxWrongThisSession = [];
+      pxIndex = 0; pxScore = 0; pxWrongThisSession = []; pxAnswered = [];
       pxSourceLabel = 'ভুল শব্দগুলোর পুনরাবৃত্তি';
       document.getElementById('pxTitle').textContent = 'MCQ Quiz';
+      pxCreateInProgressEntries();
       pxRenderQuestion();
     });
   }
   document.getElementById('pxNewSession').addEventListener('click', pxCloseOverlay);
 }
 
+let pxHistoryTab = 'all';
 function pxRenderHistory(){
   const wrap = document.getElementById('pxHistoryWrap');
+  const tabsWrap = document.getElementById('pxHistoryTabs');
   if(!wrap) return;
-  if(practiceHistory.length === 0){ wrap.innerHTML = '<div class="sub">এখনো কোনো সেশন হয়নি।</div>'; return; }
-  wrap.innerHTML = practiceHistory.map(h=>`
-    <div class="px-hist-row">
+  const types = Array.from(new Set(practiceHistory.map(h=>h.type).filter(Boolean)));
+  if(tabsWrap){
+    if(types.length === 0){
+      tabsWrap.innerHTML = '';
+    } else {
+      if(pxHistoryTab !== 'all' && !types.includes(pxHistoryTab)) pxHistoryTab = 'all';
+      const tabs = ['all'].concat(types);
+      tabsWrap.innerHTML = tabs.map(t=> `<button class="px-hist-tab ${pxHistoryTab===t?'active':''}" data-histtab="${t}">${t==='all'?'সব':escapeHtml(TYPE_LABELS[t]||t)}</button>`).join('');
+      tabsWrap.querySelectorAll('[data-histtab]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{ pxHistoryTab = btn.dataset.histtab; pxRenderHistory(); });
+      });
+    }
+  }
+  const filtered = pxHistoryTab==='all' ? practiceHistory : practiceHistory.filter(h=>h.type===pxHistoryTab);
+  if(filtered.length === 0){ wrap.innerHTML = '<div class="sub">এখনো কোনো সেশন হয়নি।</div>'; return; }
+  wrap.innerHTML = filtered.map(h=>{
+    let scoreHtml;
+    if(h.status === 'in-progress') scoreHtml = '⏳ চলছে...';
+    else if(h.status === 'abandoned') scoreHtml = `${h.correct}/${h.total} <span style="color:var(--text-muted);font-size:9px;">(অসম্পূর্ণ)</span>`;
+    else scoreHtml = `${h.correct}/${h.total}`;
+    return `<div class="px-hist-row">
       <div>
-        <div>${escapeHtml(h.source)}</div>
+        <div>${escapeHtml(h.source)}${(pxHistoryTab==='all' && h.type) ? ' <span class="sub2b">· '+escapeHtml(TYPE_LABELS[h.type]||h.type)+'</span>' : ''}</div>
         <div class="px-hist-meta">${formatDMY(h.date)} · ${escapeHtml(h.mode)}</div>
       </div>
-      <div class="px-hist-score">${h.correct}/${h.total}</div>
-    </div>
-  `).join('');
+      <div class="px-hist-score">${scoreHtml}</div>
+    </div>`;
+  }).join('');
 }
 pxRenderHistory();
+
+// ট্যাব বন্ধ করে দিলে বা রিলোড দিলেও যেন কোনো চলমান সেশন চিরকাল
+// "⏳ চলছে..." অবস্থায় আটকে না থাকে
+window.addEventListener('beforeunload', ()=>{
+  if(pxSessionActive){
+    Object.keys(pxSessionEntryIds).forEach(t=>{
+      const entry = practiceHistory.find(h=>h.id===pxSessionEntryIds[t]);
+      if(entry && entry.status === 'in-progress') entry.status = 'abandoned';
+    });
+    savePracticeHistory(practiceHistory);
+  }
+});
 
 function formatDMY(dateStr){
   const [y,m,d] = dateStr.split('-');
