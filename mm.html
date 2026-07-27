@@ -624,10 +624,10 @@
     </section>
 
     <div class="filters reveal d4">
-      <button data-f="all">সব <span class="f-count" id="fcAll">0</span></button>
-      <button data-f="today" class="active">আজকে <span class="f-count" id="fcToday">0</span></button>
-      <button data-f="pending">বাকি আছে <span class="f-count" id="fcPending">0</span></button>
-      <button data-f="note">Notes <span class="f-count" id="fcNote">0</span></button>
+      <button data-f="all">সব</button>
+      <button data-f="today" class="active">আজকে</button>
+      <button data-f="pending">বাকি আছে</button>
+      <button data-f="note">Notes</button>
     </div>
 
     <div id="daysWrap"></div>
@@ -2172,10 +2172,6 @@ function render(){
     if(it.type){ return getWords(it).some(w=>!state[wordKey(d.date,idx,w.no)]); }
     return !state[itemKey(d.date,idx)];
   });
-  document.getElementById('fcAll').textContent = allDaysFull.length;
-  document.getElementById('fcToday').textContent = allDaysFull.filter(d=>d.date===TODAY).length;
-  document.getElementById('fcPending').textContent = allDaysFull.filter(isPendingDay).length;
-  document.getElementById('fcNote').textContent = allDaysFull.filter(d=>d.items.some(it=>it.note)).length;
 
   const wrap = document.getElementById('daysWrap');
   let days = allDaysFull;
