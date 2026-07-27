@@ -67,11 +67,14 @@
   .bar-day{ font-size:9.5px; color:var(--text-muted); margin-top:6px; font-family:'IBM Plex Mono',monospace; white-space:nowrap; }
 
   /* Streak */
-  .streak-badge{ width:38px; height:38px; border-radius:50%; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; background:linear-gradient(135deg, rgba(217,168,78,0.20), rgba(79,167,158,0.10)); border:1px solid rgba(217,168,78,0.38); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-shadow:inset 0 1px 0 rgba(255,255,255,0.10), 0 3px 10px rgba(0,0,0,0.28); cursor:default; }
-  .streak-badge .flame{ font-size:9px; line-height:1; }
+  .streak-badge{ position:relative; width:42px; height:42px; border-radius:50%; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; background:linear-gradient(155deg, rgba(217,168,78,0.26), rgba(79,167,158,0.12) 60%, rgba(217,168,78,0.16)); border:1px solid rgba(217,168,78,0.5); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-shadow:inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -6px 10px rgba(0,0,0,0.22), 0 4px 14px rgba(0,0,0,0.32), 0 0 0 1px rgba(217,168,78,0.08); cursor:default; transition:box-shadow .3s ease, transform .2s ease; }
+  .streak-badge::before{ content:""; position:absolute; inset:-1px; border-radius:50%; padding:1px; background:linear-gradient(155deg, rgba(243,241,236,0.55), rgba(217,168,78,0.55) 45%, rgba(79,167,158,0.35)); -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; opacity:.85; }
+  .streak-badge.lit{ box-shadow:inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -6px 10px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.34), 0 0 14px rgba(217,168,78,0.35), 0 0 0 1px rgba(217,168,78,0.14); }
+  .streak-badge:hover{ transform:translateY(-1px); }
+  .streak-badge .flame{ font-size:10.5px; line-height:1; filter:drop-shadow(0 0 3px rgba(217,168,78,0.15)); }
   .streak-badge .flame.active{ animation: pulseFlame 1.6s ease-in-out infinite; }
-  .streak-badge .num{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:11.5px; line-height:1.15; background:linear-gradient(135deg, #F3F1EC, var(--gold)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-  @keyframes pulseFlame{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.15); } }
+  .streak-badge .num{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:12.5px; line-height:1.2; background:linear-gradient(135deg, #F3F1EC, var(--gold) 60%, #fff); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  @keyframes pulseFlame{ 0%,100%{ transform:scale(1); filter:drop-shadow(0 0 3px rgba(217,168,78,0.15)); } 50%{ transform:scale(1.2); filter:drop-shadow(0 0 6px rgba(217,168,78,0.5)); } }
 
   /* Weekly Checker (week-nav + grid table) */
   .week-nav{ display:flex; align-items:center; gap:8px; }
@@ -85,7 +88,10 @@
   table.wk-grid th, table.wk-grid td{ padding:6px 4px; text-align:center; }
   table.wk-grid thead th{ font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--text-muted); font-weight:500; border-bottom:1px solid var(--border); }
   table.wk-grid thead th.today{ color:var(--gold); }
-  .wk-row-label{ text-align:left !important; font-size:12.5px; font-family:'Noto Sans Bengali','Inter',sans-serif; color:var(--text); white-space:nowrap; padding-right:10px !important; }
+  table.wk-grid td.today{ background:rgba(217,168,78,0.08); border-radius:6px; }
+  .wk-row-badge{ font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--text-muted); border:1px solid var(--border); border-radius:999px; padding:1px 6px; margin-left:6px; }
+  .wk-row-badge.full{ color:var(--teal); border-color:var(--teal-dim); }
+  .wk-row-label{ text-align:left !important; font-size:12.5px; font-family:'Noto Sans Bengali','Inter',sans-serif; color:var(--text); white-space:nowrap; padding-right:10px !important; display:flex; align-items:center; }
   .wk-row-label .dot{ display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; }
   .wk-chk{ appearance:none; -webkit-appearance:none; width:24px; height:24px; border-radius:7px; border:1.5px solid var(--border); background:var(--panel-2); cursor:pointer; position:relative; transition:background .15s ease, border-color .15s ease; }
   .wk-chk:checked{ background:var(--gold); border-color:var(--gold); }
@@ -109,11 +115,29 @@
     .bar-fill{ transition:none !important; }
     .day-card{ transition:none !important; }
     .chk.pop{ animation:none !important; }
+    .day-live-dot{ animation:none !important; }
+    .donut-wrap-big.complete{ animation:none !important; }
+    .item-mini-progress-fill{ transition:none !important; }
+    .px-score.pop{ animation:none !important; }
+    .px-top-progress-fill{ transition:none !important; }
   }
 
   .filters{ display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
-  .filters button{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; background:var(--panel); color:var(--text-muted); border:1px solid var(--border); padding:6px 11px; border-radius:999px; cursor:pointer; }
+  .filters button{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; background:var(--panel); color:var(--text-muted); border:1px solid var(--border); padding:6px 11px; border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:background .15s ease, color .15s ease, border-color .15s ease; }
   .filters button.active{ color:var(--bg); background:var(--gold); border-color:var(--gold); }
+  .f-count{ font-size:9px; background:rgba(255,255,255,0.08); color:var(--text-muted); border-radius:999px; padding:1px 5px; min-width:14px; text-align:center; line-height:1.4; transition:background .15s ease, color .15s ease; }
+  .filters button.active .f-count{ background:rgba(0,0,0,0.18); color:var(--bg); }
+
+  .day-live-dot{ display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--gold); margin-right:5px; box-shadow:0 0 0 3px rgba(217,168,78,0.22); animation:rnPulse 1.8s ease-in-out infinite; vertical-align:middle; }
+
+  .item-mini-progress{ height:3px; border-radius:999px; background:var(--panel-2); margin-top:6px; overflow:hidden; }
+  .item-mini-progress-fill{ height:100%; background:linear-gradient(90deg, var(--gold), var(--teal)); border-radius:999px; transition:width .4s cubic-bezier(.22,1,.36,1); }
+  .item-block.complete .item-mini-progress-fill{ background:linear-gradient(90deg, var(--teal-dim), var(--teal)); }
+  .item-block.complete .item-progress{ color:var(--teal); }
+
+  .donut-wrap-big.complete #donutRing{ stroke:var(--teal); }
+  .donut-wrap-big.complete{ animation:donutGlow 1.8s ease-in-out infinite; border-radius:50%; }
+  @keyframes donutGlow{ 0%,100%{ filter:drop-shadow(0 0 4px rgba(79,167,158,0.25)); } 50%{ filter:drop-shadow(0 0 12px rgba(79,167,158,0.55)); } }
 
   .main-tabs{ display:flex; gap:8px; margin-bottom:16px; }
   .main-tab-btn{ flex:1; font-family:'Fraunces','Noto Sans Bengali',serif; font-weight:600; font-size:13px; background:var(--panel); color:var(--text-muted); border:1px solid var(--border); padding:11px 10px; border-radius:12px; cursor:pointer; text-align:center; transition:background .2s ease, color .2s ease, border-color .2s ease; }
@@ -161,6 +185,52 @@
   .word-eng .sub2{ display:block; font-weight:400; font-size:11px; color:var(--text-muted); font-family:'Noto Sans Bengali',sans-serif; }
   .word-val{ font-size:12px; color:#D8CFAE; }
 
+  .routine-panel{ margin-bottom:16px; }
+  .routine-progress-wrap{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .routine-progress-bar{ flex:1; height:6px; border-radius:999px; background:var(--panel-2); overflow:hidden; }
+  .routine-progress-fill{ height:100%; background:linear-gradient(90deg, var(--gold), var(--teal)); border-radius:999px; transition:width .3s ease; }
+  .routine-progress-text{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--text-muted); white-space:nowrap; }
+  .routine-daytype{ font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--teal); border:1px solid var(--teal-dim); padding:1px 6px; border-radius:999px; margin-left:6px; }
+
+  .routine-now{ display:none; align-items:center; gap:10px; background:linear-gradient(90deg, rgba(217,168,78,0.12), rgba(79,167,158,0.06)); border:1px solid var(--gold-dim); border-radius:10px; padding:9px 11px; margin-bottom:12px; cursor:pointer; }
+  .routine-now.show{ display:flex; }
+  .routine-now .rn-dot{ width:8px; height:8px; border-radius:50%; background:var(--gold); flex-shrink:0; box-shadow:0 0 0 3px rgba(217,168,78,0.22); animation:rnPulse 1.8s ease-in-out infinite; }
+  .routine-now.idle .rn-dot{ background:var(--text-muted); box-shadow:none; animation:none; }
+  @keyframes rnPulse{ 0%,100%{ box-shadow:0 0 0 2px rgba(217,168,78,0.22);} 50%{ box-shadow:0 0 0 5px rgba(217,168,78,0.05);} }
+  .routine-now .rn-body{ flex:1; min-width:0; }
+  .routine-now .rn-tag{ font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.06em; text-transform:uppercase; color:var(--gold); }
+  .routine-now.idle .rn-tag{ color:var(--text-muted); }
+  .routine-now .rn-label{ font-size:12.5px; font-family:'Noto Sans Bengali','Inter',sans-serif; font-weight:600; margin-top:1px; }
+  .routine-now .rn-remain{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--text-muted); flex-shrink:0; white-space:nowrap; }
+
+  .routine-group{ border-bottom:1px solid var(--border); }
+  .routine-group:last-child{ border-bottom:none; }
+  .routine-group-head{ display:flex; align-items:center; gap:8px; cursor:pointer; padding:9px 2px; }
+  .routine-group-icon{ font-size:14px; flex-shrink:0; }
+  .routine-group-label{ flex:1; font-size:12.5px; font-family:'Noto Sans Bengali','Inter',sans-serif; font-weight:600; }
+  .routine-group-range{ display:block; font-weight:400; font-size:10px; font-family:'IBM Plex Mono',monospace; color:var(--text-muted); margin-top:1px; }
+  .routine-group-progress{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--text-muted); flex-shrink:0; }
+  .routine-group.has-now .routine-group-head{ color:var(--gold); }
+  .routine-group.has-now .routine-group-icon{ filter:drop-shadow(0 0 4px rgba(217,168,78,0.4)); }
+  .routine-group-body{ display:none; padding-bottom:4px; }
+  .routine-group-body.open{ display:block; }
+
+  .routine-row{ display:flex; align-items:flex-start; gap:9px; padding:7px 2px; border-bottom:1px solid var(--panel-2); }
+  .routine-row:last-child{ border-bottom:none; }
+  .routine-row.fixed{ opacity:.55; }
+  .routine-row.revision .routine-time{ color:var(--gold); }
+  .routine-row.revision{ background:linear-gradient(90deg, rgba(217,168,78,0.07), transparent); border-radius:8px; }
+  .routine-row.now{ background:linear-gradient(90deg, rgba(217,168,78,0.14), transparent); border-radius:8px; box-shadow:inset 2px 0 0 var(--gold); }
+  .routine-row.now.fixed{ opacity:.85; }
+  .routine-row-icon{ font-size:12px; flex-shrink:0; width:19px; text-align:center; padding-top:1px; }
+  .routine-info{ flex:1; min-width:0; }
+  .routine-time{ display:block; font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--text-muted); }
+  .routine-row.fixed .routine-time{ display:inline; margin-right:8px; }
+  .routine-label{ font-size:12.5px; font-family:'Noto Sans Bengali','Inter',sans-serif; font-weight:600; }
+  .routine-row.fixed .routine-label{ font-weight:400; font-size:12px; }
+  .routine-sub{ display:block; font-weight:400; font-size:11.5px; color:var(--text-muted); margin-top:1px; }
+  .routine-dur{ font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--text-muted); flex-shrink:0; white-space:nowrap; padding-top:1px; }
+
   footer{ text-align:center; color:var(--text-muted); font-size:11px; margin-top:18px; line-height:1.6; }
 
   .row-actions{ display:flex; align-items:center; gap:8px; justify-content:flex-end; }
@@ -183,6 +253,11 @@
   .cov-table .cov-name{ font-family:'Noto Sans Bengali','Inter',sans-serif; color:var(--text); }
   .cov-table .cov-mono{ font-family:'IBM Plex Mono',monospace; color:#D8CFAE; white-space:nowrap; }
   .cov-table .cov-days{ font-family:'IBM Plex Mono',monospace; color:var(--gold); text-align:right; white-space:nowrap; }
+  .cov-days-bar-wrap{ display:flex; align-items:center; justify-content:flex-end; gap:6px; }
+  .cov-days-bar-track{ width:36px; height:3px; border-radius:999px; background:var(--panel-2); overflow:hidden; }
+  .cov-days-bar-fill{ height:100%; background:linear-gradient(90deg, var(--gold-dim), var(--gold)); border-radius:999px; }
+  .cov-table tr.active .cov-name{ color:var(--teal); }
+  .cov-table tr.active .cov-name::before{ content:"● "; color:var(--teal); font-size:9px; }
   .cov-wrap{ overflow-x:auto; }
 
   .modal-overlay{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:100; align-items:center; justify-content:center; padding:16px; }
@@ -199,9 +274,14 @@
   .modal-btn.teal{ background:var(--teal); color:var(--bg); border-color:var(--teal); font-weight:600; }
 
   /* settings gear */
-  .header-actions{ position:absolute; top:6px; right:0; display:flex; gap:6px; }
-  .icon-btn{ width:34px; height:34px; border-radius:10px; background:var(--panel); border:1px solid var(--border); color:var(--text-muted); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .header-actions{ position:absolute; top:6px; right:0; display:flex; align-items:center; gap:7px; }
+  .icon-btn{ width:34px; height:34px; border-radius:10px; background:var(--panel); border:1px solid var(--border); color:var(--text-muted); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; transition:color .15s ease, border-color .15s ease, transform .15s ease; }
   .icon-btn:hover{ color:var(--gold); border-color:var(--gold-dim); }
+  .icon-btn:active{ transform:scale(0.9); }
+
+  .settings-section h4{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .section-status{ font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; letter-spacing:0.02em; color:var(--text-muted); border:1px solid var(--border); padding:2px 7px; border-radius:999px; white-space:nowrap; }
+  .section-status.on{ color:var(--teal); border-color:var(--teal-dim); }
 
   .settings-box{ max-width:520px; max-height:82vh; overflow-y:auto; }
   .settings-section{ border-top:1px dashed var(--border); margin-top:14px; padding-top:12px; }
@@ -218,12 +298,24 @@
   /* flashcard modal */
   .fc-overlay{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.78); z-index:110; align-items:center; justify-content:center; padding:16px; }
   .fc-overlay.open{ display:flex; }
-  .fc-box{ width:100%; max-width:420px; display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .fc-overlay.open .fc-box{ animation: fcBoxIn .3s cubic-bezier(.22,1,.36,1); }
+  @keyframes fcBoxIn{ from{ opacity:0; transform:scale(.94) translateY(10px); } to{ opacity:1; transform:scale(1) translateY(0); } }
+  .fc-box{ width:100%; max-width:420px; display:flex; flex-direction:column; align-items:center; gap:10px; }
   .fc-top{ width:100%; display:flex; align-items:center; justify-content:space-between; }
   .fc-title{ font-family:'Fraunces','Noto Sans Bengali',serif; color:var(--gold); font-size:14px; }
   .fc-progress{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-muted); }
   .fc-close{ background:none; border:1px solid var(--border); color:var(--text-muted); border-radius:8px; width:30px; height:30px; cursor:pointer; }
+  .fc-progress-bar-wrap{ width:100%; height:4px; border-radius:999px; background:var(--panel-2); overflow:hidden; }
+  .fc-progress-bar-fill{ height:100%; width:0%; background:linear-gradient(90deg, var(--gold), var(--teal)); border-radius:999px; transition:width .3s cubic-bezier(.22,1,.36,1); }
+  .fc-dots{ display:flex; flex-wrap:wrap; gap:5px; justify-content:center; width:100%; }
+  .fc-dots.hide{ display:none; }
+  .fc-dot{ width:6px; height:6px; border-radius:50%; background:var(--panel-2); border:1px solid var(--border); transition:background .2s ease, border-color .2s ease, transform .2s ease; flex-shrink:0; }
+  .fc-dot.active{ background:var(--gold); border-color:var(--gold); transform:scale(1.35); }
   .fc-card-wrap{ width:100%; height:230px; perspective:1200px; cursor:pointer; }
+  .fc-card-wrap.slide-in-next{ animation:fcSlideNext .32s cubic-bezier(.22,1,.36,1); }
+  .fc-card-wrap.slide-in-prev{ animation:fcSlidePrev .32s cubic-bezier(.22,1,.36,1); }
+  @keyframes fcSlideNext{ from{ opacity:0; transform:translateX(28px); } to{ opacity:1; transform:translateX(0); } }
+  @keyframes fcSlidePrev{ from{ opacity:0; transform:translateX(-28px); } to{ opacity:1; transform:translateX(0); } }
   .fc-card{ position:relative; width:100%; height:100%; transition:transform .5s cubic-bezier(.22,1,.36,1); transform-style:preserve-3d; }
   .fc-card.flipped{ transform:rotateY(180deg); }
   .fc-face{ position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; border:1px solid var(--border); background:linear-gradient(160deg, var(--panel), var(--panel-2)); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; gap:8px; }
@@ -254,6 +346,7 @@
   }
   @media (prefers-reduced-motion: reduce){
     .fc-controls button.fc-btn-pop, .fc-controls button.fc-ai.fc-btn-pop{ animation:none !important; }
+    .fc-overlay.open .fc-box, .fc-card-wrap.slide-in-next, .fc-card-wrap.slide-in-prev{ animation:none !important; }
   }
   .fc-controls-2{ margin-top:8px; }
   .fc-controls-2 button.fc-ai-all{ width:100%; padding:11px 8px; font-size:11.5px; opacity:0.96; background:var(--panel-2); color:var(--teal); font-weight:600; border:1px solid var(--teal-dim); box-shadow:none; }
@@ -299,7 +392,14 @@
   .px-overlay{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82); z-index:120; align-items:center; justify-content:center; padding:16px; }
   .px-overlay.open{ display:flex; }
   .px-box{ width:100%; max-width:440px; display:flex; flex-direction:column; gap:14px; }
-  .px-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .px-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .px-top-progress-wrap{ width:100%; height:4px; border-radius:999px; background:rgba(255,255,255,0.08); overflow:hidden; order:5; }
+  .px-top-progress-fill{ height:100%; background:linear-gradient(90deg, var(--gold), var(--teal)); border-radius:999px; transition:width .35s cubic-bezier(.22,1,.36,1); }
+  .px-score.pop{ animation:pxScorePop .3s ease; }
+  @keyframes pxScorePop{ 0%{ transform:scale(1); } 45%{ transform:scale(1.28); } 100%{ transform:scale(1); } }
+  .px-preview{ display:flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-muted); margin-top:2px; margin-bottom:2px; transition:color .2s ease; }
+  .px-preview .n{ color:var(--teal); font-weight:700; }
+  .px-preview.zero .n{ color:var(--danger); }
   .px-title{ font-family:'Fraunces','Noto Sans Bengali',serif; color:var(--gold); font-size:14px; }
   .px-progress{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-muted); }
   .px-score{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--teal); }
@@ -331,7 +431,13 @@
   .px-hist-row{ display:flex; justify-content:space-between; align-items:center; padding:9px 2px; border-bottom:1px solid var(--border); font-size:12px; gap:10px; }
   .px-hist-row:last-child{ border-bottom:none; }
   .px-hist-meta{ color:var(--text-muted); font-size:10.5px; }
-  .px-hist-score{ font-family:'IBM Plex Mono',monospace; font-weight:700; color:var(--gold); flex-shrink:0; }
+  .px-hist-score{ font-family:'IBM Plex Mono',monospace; font-weight:700; color:var(--gold); flex-shrink:0; text-align:right; }
+  .px-hist-right{ display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0; }
+  .px-hist-retake{ font-family:'Noto Sans Bengali','Inter',sans-serif; font-size:10px; background:var(--panel-2); border:1px solid var(--teal-dim); color:var(--teal); border-radius:999px; padding:3px 9px; cursor:pointer; white-space:nowrap; transition:background .15s ease, border-color .15s ease, transform .15s ease; }
+  .px-hist-retake:hover{ background:var(--teal); color:#0E0D12; border-color:var(--teal); }
+  .px-hist-retake:active{ transform:scale(0.94); }
+  .px-hist-more{ width:100%; margin-top:10px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; background:var(--panel-2); border:1px dashed var(--border); color:var(--text-muted); padding:8px; border-radius:9px; cursor:pointer; transition:color .15s ease, border-color .15s ease; }
+  .px-hist-more:hover{ color:var(--gold); border-color:var(--gold-dim); }
 
   .reorder-btn, .del-btn{ background:var(--panel-2); border:1px solid var(--border); color:var(--text-muted); border-radius:6px; width:22px; height:22px; font-size:11px; cursor:pointer; flex-shrink:0; line-height:1; }
   .reorder-btn:disabled{ opacity:0.3; cursor:not-allowed; }
@@ -389,7 +495,7 @@
       <div class="modal-title">⚙️ সেটিংস</div>
 
       <div class="settings-section">
-        <h4>☁️ Cloud Sync (getPantry)</h4>
+        <h4>☁️ Cloud Sync (getPantry) <span class="section-status" id="pantryStatusChip">কনফিগার করা হয়নি</span></h4>
         <div class="settings-hint">getpantry.cloud থেকে ফ্রি একটা Pantry বানিয়ে তার ID এখানে বসাও — তাহলে তোমার progress অন্য ডিভাইস থেকেও sync হবে।</div>
         <label>Pantry ID</label>
         <input type="text" id="pantryIdInput" placeholder="তোমার getPantry ID এখানে বসাও">
@@ -402,7 +508,7 @@
       </div>
 
       <div class="settings-section">
-        <h4>🔥 Cloud Sync (Firebase Realtime Database)</h4>
+        <h4>🔥 Cloud Sync (Firebase Realtime Database) <span class="section-status" id="fbStatusChip">কনফিগার করা হয়নি</span></h4>
         <div class="settings-hint">console.firebase.google.com এ প্রজেক্ট বানাও (অথবা তোমার আগের ExPo Vault প্রজেক্টটাই ব্যবহার করো), Realtime Database চালু করো, তারপর ডেটাবেজের URL (যেমন <b>https://your-project-default-rtdb.firebaseio.com</b>) এখানে বসাও। Rules টেস্ট মোডে (allow read/write: true) থাকলে Auth ফাঁকা রাখতে পারো। Sync ID তুমি নিজে যা ইচ্ছা লিখতে পারো — একই URL + Sync ID যেই ডিভাইসে বসাবে, সব জায়গায় progress sync হবে।</div>
         <label>Firebase Database URL</label>
         <input type="text" id="fbDbUrlInput" placeholder="https://your-project-default-rtdb.firebaseio.com">
@@ -428,7 +534,7 @@
       </div>
 
       <div class="settings-section">
-        <h4>🧠 Gemini API (Flashcard AI-এর জন্য)</h4>
+        <h4>🧠 Gemini API (Flashcard AI-এর জন্য) <span class="section-status" id="geminiStatusChip">0/8 key দেওয়া আছে</span></h4>
         <div class="settings-hint">নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ৮টা API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে (কোনো wait ছাড়াই); একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। সব key + সব মডেল একবার করে fail হয়ে গেলে rate-limit এড়াতে ১ মিনিট wait করে আবার প্রথম থেকে try করবে। প্রতিটা শব্দের AI উত্তর একবার আনলে save হয়ে থাকবে (ফোনেই), পরে আবার একই শব্দ দেখলে offline-এও কাজ করবে আর নতুন করে token খরচ হবে না। <b>এই key গুলো শুধু এই ডিভাইসের ব্রাউজারে (localStorage) সংরক্ষিত থাকে — কোনো sync/backup/cloud-এ কখনো পাঠানো হয় না, এমনকি Auto-Backup চালু থাকলেও না।</b></div>
         <label style="font-size:11px;color:var(--text-muted);">মডেল (ক্রম অনুযায়ী try হবে)</label>
         <div id="apiModelsWrap"></div>
@@ -449,6 +555,8 @@
         <div class="fc-progress" id="fcProgress">1/1</div>
         <button class="fc-close" id="fcClose">✕</button>
       </div>
+      <div class="fc-progress-bar-wrap"><div class="fc-progress-bar-fill" id="fcProgressFill"></div></div>
+      <div class="fc-dots" id="fcDots"></div>
       <div class="fc-card-wrap" id="fcCardWrap">
         <div class="fc-card" id="fcCard">
           <div class="fc-face front">
@@ -482,6 +590,7 @@
         <div class="px-progress" id="pxProgress">1/1</div>
         <div class="px-score" id="pxScoreLabel">✓0 · ✕0</div>
         <button class="px-close" id="pxClose">✕</button>
+        <div class="px-top-progress-wrap"><div class="px-top-progress-fill" id="pxTopProgressFill" style="width:0%"></div></div>
       </div>
       <div id="pxBody"></div>
     </div>
@@ -489,7 +598,7 @@
 
   <div class="main-tabs reveal d1">
     <button class="main-tab-btn active" data-tab="today">আজকের পড়া</button>
-    <button class="main-tab-btn" data-tab="more">অগ্রগতি ও তালিকা</button>
+    <button class="main-tab-btn" data-tab="more">রুটিন ও অগ্রগতি</button>
     <button class="main-tab-btn" data-tab="practice">অনুশীলন</button>
   </div>
 
@@ -503,7 +612,7 @@
           <div class="stats-row-item"><span class="k">Completed</span><span class="v done" id="statDone">0</span></div>
           <div class="stats-row-item"><span class="k">Left</span><span class="v left" id="statLeft">0</span></div>
         </div>
-        <div class="donut-wrap-big">
+        <div class="donut-wrap-big" id="donutWrapBig">
           <svg viewBox="0 0 36 36">
             <circle cx="18" cy="18" r="15.5" fill="none" stroke="#2A2932" stroke-width="3.2"></circle>
             <circle id="donutRing" cx="18" cy="18" r="15.5" fill="none" stroke="#D9A84E" stroke-width="3.2"
@@ -515,10 +624,10 @@
     </section>
 
     <div class="filters reveal d4">
-      <button data-f="all">সব</button>
-      <button data-f="today" class="active">আজকে</button>
-      <button data-f="pending">বাকি আছে</button>
-      <button data-f="note">Notes</button>
+      <button data-f="all">সব <span class="f-count" id="fcAll">0</span></button>
+      <button data-f="today" class="active">আজকে <span class="f-count" id="fcToday">0</span></button>
+      <button data-f="pending">বাকি আছে <span class="f-count" id="fcPending">0</span></button>
+      <button data-f="note">Notes <span class="f-count" id="fcNote">0</span></button>
     </div>
 
     <div id="daysWrap"></div>
@@ -543,6 +652,22 @@
 
   <div id="tabPane-more" class="tab-pane">
 
+    <section class="panel reveal d1 routine-panel">
+      <div class="panel-title">আজকের রুটিন
+        <span class="week-nav">
+          <button id="rtPrevBtn" onclick="changeRoutineDay(-1)">◀</button>
+          <span id="rtDateLabel"></span>
+          <button id="rtNextBtn" onclick="changeRoutineDay(1)">▶</button>
+        </span>
+      </div>
+      <div class="routine-progress-wrap">
+        <div class="routine-progress-bar"><div class="routine-progress-fill" id="routineProgressFill" style="width:0%"></div></div>
+        <span class="routine-progress-text" id="routineProgressText">0/6</span>
+      </div>
+      <div class="routine-now" id="routineNowCard"></div>
+      <div id="routineWrap"></div>
+    </section>
+
     <section class="panel reveal d2">
       <div class="panel-title">অগ্রগতির ধারা
         <span class="trend-toggle">
@@ -554,7 +679,7 @@
     </section>
 
     <div class="extra-section">
-      <h2>সম্পূর্ণ শব্দ তালিকা</h2>
+      <h2>সম্পূর্ণ শব্দ তালিকা <span class="section-status" id="extraTotalBadge"></span></h2>
       <div class="sub" style="margin-bottom:10px;">প্রতিটা বিষয়ের পুরো শব্দভাণ্ডার এখানে ব্রাউজ করো, নিজের ইচ্ছেমতো নতুন শব্দ যোগ করো, reorder/edit/delete করো। ⚠️ এখানে যোগ করা শব্দ শুধু এই তালিকা, ফ্ল্যাশকার্ড ও অনুশীলনেই দেখাবে — "আজকের পড়া" ট্যাবের নির্দিষ্ট দিনের ক্যালেন্ডারে (যেটা সংখ্যা-রেঞ্জ ধরে চলে) স্বয়ংক্রিয়ভাবে যুক্ত হবে না।</div>
       <div id="extraWrap"></div>
     </div>
@@ -614,14 +739,20 @@
         </div>
       </div>
 
+      <div class="px-preview" id="pxPreview">🔤 <span class="n" id="pxPreviewN">–</span> টি শব্দ পাওয়া যাচ্ছে</div>
       <button id="pxStartBtn" class="px-start-btn">শুরু করো</button>
       <div id="pxSetupMsg" class="px-msg"></div>
     </section>
 
     <section class="panel reveal d2" id="pxHistoryPanel">
-      <div class="panel-title">সাম্প্রতিক সেশন <span class="tag">History</span></div>
-      <div class="px-hist-tabs" id="pxHistoryTabs"></div>
-      <div id="pxHistoryWrap"><div class="sub">এখনো কোনো সেশন হয়নি।</div></div>
+      <div class="panel-title cov-header" data-toggle="pxHistoryBody">
+        <span>সাম্প্রতিক সেশন <span class="tag">History</span> <span class="section-status" id="pxHistoryCountBadge"></span></span>
+        <span class="caret" id="caret-pxHistoryBody">▸</span>
+      </div>
+      <div class="cov-wrap" id="pxHistoryBody">
+        <div class="px-hist-tabs" id="pxHistoryTabs"></div>
+        <div id="pxHistoryWrap"><div class="sub">এখনো কোনো সেশন হয়নি।</div></div>
+      </div>
     </section>
 
   </div>
@@ -1035,8 +1166,30 @@ function loadSettings(){
     return merged;
   }catch(e){ return defaultSettings(); }
 }
-function saveSettings(s){ try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }catch(e){} }
+function saveSettings(s){ try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }catch(e){} if(typeof updateSettingsStatusIndicators==='function') updateSettingsStatusIndicators(); }
 let settings = loadSettings();
+
+function updateSettingsStatusIndicators(){
+  const pantryChip = document.getElementById('pantryStatusChip');
+  if(pantryChip){
+    const on = !!settings.pantryId;
+    pantryChip.textContent = on ? 'কনফিগার করা ✓' : 'কনফিগার করা হয়নি';
+    pantryChip.classList.toggle('on', on);
+  }
+  const fbChip = document.getElementById('fbStatusChip');
+  if(fbChip){
+    const on = !!settings.fbDbUrl;
+    fbChip.textContent = on ? 'কনফিগার করা ✓' : 'কনফিগার করা হয়নি';
+    fbChip.classList.toggle('on', on);
+  }
+  const geminiChip = document.getElementById('geminiStatusChip');
+  if(geminiChip){
+    const n = (settings.geminiKeys||[]).filter(k=>k.key && k.enabled).length;
+    geminiChip.textContent = n + '/8 key সক্রিয়';
+    geminiChip.classList.toggle('on', n>0);
+  }
+}
+updateSettingsStatusIndicators();
 
 function renderApiModelRows(){
   const wrap = document.getElementById('apiModelsWrap');
@@ -1070,6 +1223,7 @@ function openSettingsModal(){
   renderAutoBackupStatus();
   renderApiModelRows();
   renderApiKeyRows();
+  updateSettingsStatusIndicators();
   document.getElementById('pantryStatus').textContent = '';
   document.getElementById('pantryStatus').className = 'sync-status';
   document.getElementById('fbStatus').textContent = '';
@@ -1115,6 +1269,7 @@ document.getElementById('settingsModalOverlay').addEventListener('click', e=>{
 document.getElementById('settingsSave').addEventListener('click', ()=>{
   settings = collectSettingsFromForm();
   saveSettings(settings);
+  updateSettingsStatusIndicators();
   closeSettingsModal();
 });
 document.getElementById('autoBackupToggle').addEventListener('change', e=>{
@@ -1404,7 +1559,7 @@ function closeFlashcards(){
   document.getElementById('fcOverlay').classList.remove('open');
   unlockBodyScroll();
 }
-function renderFlashcard(){
+function renderFlashcard(dir){
   const w = fcDeck[fcIndex];
   document.getElementById('fcProgress').textContent = (fcIndex+1) + '/' + fcDeck.length;
   document.getElementById('fcFrontWord').textContent = w.word;
@@ -1415,14 +1570,61 @@ function renderFlashcard(){
   const aiBox = document.getElementById('fcAiBox');
   aiBox.classList.remove('show');
   aiBox.textContent = '';
+
+  const fillEl = document.getElementById('fcProgressFill');
+  if(fillEl) fillEl.style.width = ((fcIndex+1)/fcDeck.length*100) + '%';
+
+  const dotsEl = document.getElementById('fcDots');
+  if(dotsEl){
+    if(fcDeck.length > 24){
+      dotsEl.classList.add('hide');
+      dotsEl.innerHTML = '';
+    } else {
+      dotsEl.classList.remove('hide');
+      dotsEl.innerHTML = fcDeck.map((_,i)=>`<span class="fc-dot ${i===fcIndex?'active':''}"></span>`).join('');
+    }
+  }
+
+  const wrapEl = document.getElementById('fcCardWrap');
+  if(wrapEl && dir){
+    wrapEl.classList.remove('slide-in-next','slide-in-prev');
+    void wrapEl.offsetWidth; // restart animation on rapid navigation
+    wrapEl.classList.add(dir==='next' ? 'slide-in-next' : 'slide-in-prev');
+  }
 }
+// swipe left/right on the card to navigate, without triggering the tap-to-flip
+let fcTouchX = 0, fcTouchY = 0, fcSwiped = false;
+document.getElementById('fcCardWrap').addEventListener('touchstart', e=>{
+  fcTouchX = e.touches[0].clientX;
+  fcTouchY = e.touches[0].clientY;
+  fcSwiped = false;
+}, {passive:true});
+document.getElementById('fcCardWrap').addEventListener('touchend', e=>{
+  const dx = e.changedTouches[0].clientX - fcTouchX;
+  const dy = e.changedTouches[0].clientY - fcTouchY;
+  if(Math.abs(dx) > 46 && Math.abs(dx) > Math.abs(dy)*1.4){
+    fcSwiped = true;
+    if(dx < 0) document.getElementById('fcNext').click();
+    else document.getElementById('fcPrev').click();
+  }
+});
 document.getElementById('fcCardWrap').addEventListener('click', ()=>{
+  if(fcSwiped){ fcSwiped = false; return; }
   fcFlipped = !fcFlipped;
   document.getElementById('fcCard').classList.toggle('flipped', fcFlipped);
 });
 document.getElementById('fcClose').addEventListener('click', closeFlashcards);
 document.getElementById('fcOverlay').addEventListener('click', e=>{
   if(e.target.id === 'fcOverlay') closeFlashcards();
+});
+// keyboard shortcuts while the flashcard modal is open: ←/→ navigate, space/enter flip, esc close
+document.addEventListener('keydown', e=>{
+  if(!document.getElementById('fcOverlay').classList.contains('open')) return;
+  if(e.target && (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT')) return;
+  if(e.key === 'ArrowRight'){ e.preventDefault(); document.getElementById('fcNext').click(); }
+  else if(e.key === 'ArrowLeft'){ e.preventDefault(); document.getElementById('fcPrev').click(); }
+  else if(e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); document.getElementById('fcCardWrap').click(); }
+  else if(e.key === 'Escape'){ closeFlashcards(); }
 });
 // pop animation so a tap always shows a visible "click registered" feedback,
 // even on quick mobile taps where :active barely renders
@@ -1435,12 +1637,12 @@ function pulseBtn(btn){
 document.getElementById('fcPrev').addEventListener('click', (e)=>{
   pulseBtn(e.currentTarget);
   fcIndex = (fcIndex - 1 + fcDeck.length) % fcDeck.length;
-  renderFlashcard();
+  renderFlashcard('prev');
 });
 document.getElementById('fcNext').addEventListener('click', (e)=>{
   pulseBtn(e.currentTarget);
   fcIndex = (fcIndex + 1) % fcDeck.length;
-  renderFlashcard();
+  renderFlashcard('next');
 });
 document.getElementById('fcShuffle').addEventListener('click', (e)=>{
   pulseBtn(e.currentTarget);
@@ -1707,11 +1909,13 @@ function renderWeeklyChecker(){
   }
 
   body.innerHTML = rows.map(row=>{
+    let doneCount = 0, totalCount = 0;
     const cells = weekDates.map(dt=>{
+      const isTodayCol = dt === TODAY;
       const day = dayMap[dt];
       const idx = day ? day.items.findIndex(it => (it.type?it.type:it.k) === row.rk) : -1;
       if(!day || idx===-1){
-        return `<td><input type="checkbox" class="wk-chk ${row.g}" disabled></td>`;
+        return `<td class="${isTodayCol?'today':''}"><input type="checkbox" class="wk-chk ${row.g}" disabled></td>`;
       }
       const it = day.items[idx];
       let checked;
@@ -1721,9 +1925,12 @@ function renderWeeklyChecker(){
       } else {
         checked = !!state[itemKey(dt, idx)];
       }
-      return `<td><input type="checkbox" class="wk-chk ${it.g}" data-wcdate="${dt}" data-wcidx="${idx}" ${checked?'checked':''}></td>`;
+      totalCount++;
+      if(checked) doneCount++;
+      return `<td class="${isTodayCol?'today':''}"><input type="checkbox" class="wk-chk ${it.g}" data-wcdate="${dt}" data-wcidx="${idx}" ${checked?'checked':''}></td>`;
     }).join('');
-    return `<tr><td class="wk-row-label"><span class="dot ${row.g}"></span>${row.k}</td>${cells}</tr>`;
+    const badge = totalCount ? `<span class="wk-row-badge ${doneCount===totalCount?'full':''}">${doneCount}/${totalCount}</span>` : '';
+    return `<tr><td class="wk-row-label"><span class="dot ${row.g}"></span>${row.k}${badge}</td>${cells}</tr>`;
   }).join('');
 
   body.querySelectorAll('.wk-chk:not(:disabled)').forEach(cb=>{
@@ -1865,7 +2072,10 @@ function renderStreak(){
   const scheduledDays = SCHEDULE.length;
   numEl.textContent = streak;
   flameEl.classList.toggle('active', streak>0);
-  if(badgeEl) badgeEl.title = `Consecutive full days: ${streak} · মোট নির্ধারিত দিন: ${scheduledDays}`;
+  if(badgeEl){
+    badgeEl.classList.toggle('lit', streak>0);
+    badgeEl.title = `Consecutive full days: ${streak} · মোট নির্ধারিত দিন: ${scheduledDays}`;
+  }
 }
 function toISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
@@ -1952,18 +2162,26 @@ function render(){
   prevGoal=goal; prevDone=done; prevLeft=left; prevPct=pct;
   const circumference = 97.4;
   document.getElementById('donutRing').setAttribute('stroke-dashoffset', circumference - (circumference*pct/100));
+  document.getElementById('donutWrapBig').classList.toggle('complete', goal>0 && pct>=100);
   renderTrend();
   renderStreak();
   renderWeeklyChecker();
 
-  const wrap = document.getElementById('daysWrap');
-  let days = getDisplaySchedule();
-  if(filter === 'today') days = days.filter(d=>d.date===TODAY);
-  if(filter === 'note') days = days.filter(d=>d.items.some(it=>it.note));
-  if(filter === 'pending') days = days.filter(d=> d.items.some((it,idx)=>{
+  const allDaysFull = getDisplaySchedule();
+  const isPendingDay = d => d.items.some((it,idx)=>{
     if(it.type){ return getWords(it).some(w=>!state[wordKey(d.date,idx,w.no)]); }
     return !state[itemKey(d.date,idx)];
-  }));
+  });
+  document.getElementById('fcAll').textContent = allDaysFull.length;
+  document.getElementById('fcToday').textContent = allDaysFull.filter(d=>d.date===TODAY).length;
+  document.getElementById('fcPending').textContent = allDaysFull.filter(isPendingDay).length;
+  document.getElementById('fcNote').textContent = allDaysFull.filter(d=>d.items.some(it=>it.note)).length;
+
+  const wrap = document.getElementById('daysWrap');
+  let days = allDaysFull;
+  if(filter === 'today') days = days.filter(d=>d.date===TODAY);
+  if(filter === 'note') days = days.filter(d=>d.items.some(it=>it.note));
+  if(filter === 'pending') days = days.filter(isPendingDay);
 
   wrap.innerHTML = days.map(day=>{
     const isToday = day.date === TODAY;
@@ -1998,7 +2216,8 @@ function render(){
             </div>
           </div>`;
         }).join('');
-        return `<div class="item-block">
+        const wPct = words.length ? Math.round(wDone/words.length*100) : 0;
+        return `<div class="item-block ${wPct===100?'complete':''}">
           <div class="item-head" data-toggle="${blockId}">
             <span class="dot ${it.g}"></span>
             <div class="item-label">${it.k}${note}</div>
@@ -2006,6 +2225,7 @@ function render(){
             <button class="fc-trigger" data-fcday="${day.date}" data-fcidx="${idx}" title="ফ্ল্যাশকার্ড দিয়ে ঝালাই করো">🎴</button>
             <span class="caret" id="caret-${blockId}">▸</span>
           </div>
+          <div class="item-mini-progress"><div class="item-mini-progress-fill" style="width:${wPct}%"></div></div>
           <div class="word-table" id="${blockId}">${wordRows}</div>
         </div>`;
       } else {
@@ -2028,7 +2248,7 @@ function render(){
     const dayHasWords = day.items.some(it=>it.type && getWords(it).length>0);
     return `<div class="day-card ${isToday?'today':''} ${isTomorrow?'is-tomorrow':''} ${day.missed?'past-missed':''} ${day.revision?'is-revision':''}">
       <div class="day-head">
-        <div><span class="day-date">${dd}/${mm}/${y}</span> <span class="day-weekday">${wd}</span>${missedTag}${revisionTag}${tomorrowTag}</div>
+        <div>${isToday?'<span class="day-live-dot"></span>':''}<span class="day-date">${dd}/${mm}/${y}</span> <span class="day-weekday">${wd}</span>${missedTag}${revisionTag}${tomorrowTag}</div>
         ${dayHasWords ? `<button class="day-fc-btn" data-fcdayall="${day.date}">🎴 আজকের পড়া ঝালাই করো</button>` : ''}
       </div>
       ${rows}
@@ -2121,9 +2341,11 @@ let lastExtraPoppedKey = null;
 function renderExtra(){
   const wrap = document.getElementById('extraWrap');
   if(!wrap) return;
+  let grandDone = 0, grandTotal = 0;
   wrap.innerHTML = EXTRA_LISTS.map(sec=>{
     const items = getFullList(sec.type);
     const done = items.filter(w => state[extraKey(sec.type, w.no)]).length;
+    grandDone += done; grandTotal += items.length;
     const blockId = 'extra-blk-' + sec.type;
     const rows = items.map((w, idx)=>{
       const wk = extraKey(sec.type, w.no);
@@ -2143,7 +2365,8 @@ function renderExtra(){
         </div>
       </div>`;
     }).join('');
-    return `<div class="item-block">
+    const wPct = items.length ? Math.round(done/items.length*100) : 0;
+    return `<div class="item-block ${wPct===100?'complete':''}">
       <div class="item-head" data-toggle="${blockId}">
         <span class="dot en"></span>
         <div class="item-label">${sec.label}</div>
@@ -2151,6 +2374,7 @@ function renderExtra(){
         <button class="fc-trigger" data-fcextra="${sec.type}" title="ফ্ল্যাশকার্ড দিয়ে ঝালাই করো">🎴</button>
         <span class="caret" id="caret-${blockId}">▸</span>
       </div>
+      <div class="item-mini-progress"><div class="item-mini-progress-fill" style="width:${wPct}%"></div></div>
       <div class="word-table" id="${blockId}">
         <div class="add-word-row">
           <button class="add-word-toggle" data-addtoggle="${sec.type}" type="button">+ নতুন শব্দ যোগ করো</button>
@@ -2165,6 +2389,9 @@ function renderExtra(){
       </div>
     </div>`;
   }).join('');
+
+  const totalBadge = document.getElementById('extraTotalBadge');
+  if(totalBadge) totalBadge.textContent = grandDone + '/' + grandTotal + ' সম্পন্ন';
 
   if(lastExtraPoppedKey){
     const poppedEl = wrap.querySelector(`.chk[data-wkey="${lastExtraPoppedKey}"]`);
@@ -2339,12 +2566,14 @@ document.querySelectorAll('#pxSourceTabs button').forEach(btn=>{
     document.getElementById('pxRangeWrap').style.display = pxSource === 'range' ? 'flex' : 'none';
     document.getElementById('pxMixWrap').style.display = pxSource === 'mix' ? 'flex' : 'none';
     pxSetMsg('');
+    pxUpdatePreview();
   });
 });
 function pxBuildMixCheckboxes(){
   const wrap = document.getElementById('pxMixWrap');
   if(!wrap) return;
   wrap.innerHTML = Object.keys(TYPE_LABELS).map(t=>`<label><input type="checkbox" class="px-mix-chk" value="${t}" checked> ${escapeHtml(TYPE_LABELS[t])}</label>`).join('');
+  wrap.querySelectorAll('.px-mix-chk').forEach(cb=> cb.addEventListener('change', pxUpdatePreview));
 }
 pxBuildMixCheckboxes();
 document.querySelectorAll('#pxModeTabs button').forEach(btn=>{
@@ -2353,8 +2582,30 @@ document.querySelectorAll('#pxModeTabs button').forEach(btn=>{
     btn.classList.add('active');
     pxMode = btn.dataset.mode;
     pxSetMsg('');
+    pxUpdatePreview();
   });
 });
+['pxDateInput','pxTypeSelect','pxFromInput','pxToInput'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('input', pxUpdatePreview);
+});
+function pxUpdatePreview(){
+  const el = document.getElementById('pxPreview');
+  const nEl = document.getElementById('pxPreviewN');
+  if(!el || !nEl) return;
+  const gathered = pxGatherWords();
+  let words = (gathered && gathered.words) ? gathered.words : [];
+  if(pxMode === 'weak'){
+    words = words.filter(w => (wrongCounts[wrongKey(w)]||0) > 0);
+  }
+  nEl.textContent = words.length;
+  el.classList.toggle('zero', words.length === 0);
+  const suffix = (!gathered.error && words.length > 20 && pxMode !== 'weak')
+    ? ' টি শব্দ পাওয়া যাচ্ছে (কুইজে ২০টি এলোমেলোভাবে বাছাই হবে)'
+    : ' টি শব্দ পাওয়া যাচ্ছে';
+  el.lastChild.textContent = suffix;
+}
+pxUpdatePreview();
 
 function pxSetMsg(msg, isErr){
   const el = document.getElementById('pxSetupMsg');
@@ -2466,17 +2717,48 @@ function pxShuffle(arr){
 // মাঝপথে বন্ধ করে দিলে pxCloseOverlay() সেগুলোকে "অসম্পূর্ণ" হিসেবে চিহ্নিত করে।
 function pxCreateInProgressEntries(){
   const byType = {};
-  pxQueue.forEach(w=>{ byType[w.type] = (byType[w.type]||0) + 1; });
+  const wordsByType = {};
+  pxQueue.forEach(w=>{
+    byType[w.type] = (byType[w.type]||0) + 1;
+    if(!wordsByType[w.type]) wordsByType[w.type] = [];
+    wordsByType[w.type].push({no:w.no, word:w.word, bn:w.bn, val:w.val, type:w.type});
+  });
   pxSessionEntryIds = {};
   pxSessionActive = true;
   Object.keys(byType).forEach(t=>{
     const id = 'px' + Date.now() + '-' + t + '-' + Math.random().toString(36).slice(2,7);
     pxSessionEntryIds[t] = id;
-    practiceHistory.unshift({ id, date: todayISO(), source: pxSourceLabel, mode: 'MCQ Quiz', type: t, total: byType[t], correct: null, status: 'in-progress' });
+    // words সহ সেভ হয় বলেই এই সেশনটা পরে "আবার দাও" দিয়ে রিটেক করা যায় —
+    // একই শব্দ মানে aiCache-এ আগে থেকেই distractor থাকা, তাই নতুন AI কল/token লাগে না।
+    practiceHistory.unshift({ id, date: todayISO(), source: pxSourceLabel, mode: 'MCQ Quiz', type: t, total: byType[t], correct: null, status: 'in-progress', words: wordsByType[t] });
   });
   practiceHistory = practiceHistory.slice(0, 150);
   savePracticeHistory(practiceHistory);
   pxRenderHistory();
+}
+
+// history-র একটা পুরোনো সেশন (words সহ) দিয়ে হুবহু সেই শব্দ ও একই ক্রম নিয়ে আবার কুইজ শুরু করে।
+// শব্দগুলো একই থাকায় aiCache-এ distractor আগে থেকেই সেভ থাকে — তাই কোনো নতুন AI/token খরচ হয় না।
+function pxRetakeFromHistory(id){
+  const entry = practiceHistory.find(h=>h.id===id);
+  if(!entry || !entry.words || !entry.words.length) return;
+  pxQueue = entry.words.map(w=>({type:w.type, no:w.no, word:w.word, bn:w.bn, val:w.val}));
+  pxIndex = 0; pxScore = 0; pxWrongThisSession = []; pxAnswered = [];
+  pxSourceLabel = entry.source + ' · পুনরাবৃত্তি (সাম্প্রতিক সেশন)';
+
+  document.getElementById('pxTitle').textContent = 'MCQ Quiz';
+  document.getElementById('pxOverlay').classList.add('open');
+  lockBodyScroll();
+  document.getElementById('pxBody').innerHTML = '<div class="px-loading">প্রশ্ন তৈরি হচ্ছে...</div>';
+
+  pxCreateInProgressEntries();
+
+  pxPrepareDistractors(pxQueue, msg=>{
+    const body = document.getElementById('pxBody');
+    if(body) body.innerHTML = `<div class="px-loading">${escapeHtml(msg)}</div>`;
+  }).catch(()=>{}).then(()=>{
+    pxRenderQuestion();
+  });
 }
 
 document.getElementById('pxStartBtn').addEventListener('click', async ()=>{
@@ -2556,6 +2838,7 @@ function pxRenderQuestion(){
   const w = pxQueue[pxIndex];
   document.getElementById('pxProgress').textContent = (pxIndex+1) + '/' + pxQueue.length;
   document.getElementById('pxScoreLabel').textContent = '✓' + pxScore + ' · ✕' + pxWrongThisSession.length;
+  document.getElementById('pxTopProgressFill').style.width = (pxQueue.length ? Math.round(pxIndex/pxQueue.length*100) : 0) + '%';
 
   let distractors = [];
   try{ distractors = JSON.parse(aiCache[pxCacheKey(w)] || '[]'); }catch(e){ distractors = []; }
@@ -2601,6 +2884,9 @@ function pxAnswer(selIdx, correctIdx, w){
     saveWrongCounts(wrongCounts);
   }
   document.getElementById('pxScoreLabel').textContent = '✓' + pxScore + ' · ✕' + pxWrongThisSession.length;
+  const scoreEl = document.getElementById('pxScoreLabel');
+  scoreEl.classList.remove('pop'); void scoreEl.offsetWidth; scoreEl.classList.add('pop');
+  document.getElementById('pxTopProgressFill').style.width = (pxQueue.length ? Math.round((pxIndex+1)/pxQueue.length*100) : 0) + '%';
   document.getElementById('pxNextBtn').classList.add('show');
 }
 
@@ -2628,7 +2914,8 @@ function pxShowSummary(){
       entry.correct = byType[t].correct;
       entry.status = 'done';
     } else {
-      practiceHistory.unshift({ id:'px'+Date.now()+'-'+t+'-'+Math.random().toString(36).slice(2,7), date: todayISO(), source: pxSourceLabel, mode: 'MCQ Quiz', type: t, total: byType[t].total, correct: byType[t].correct, status:'done' });
+      const wordsForType = pxQueue.filter(w=>w.type===t).map(w=>({no:w.no, word:w.word, bn:w.bn, val:w.val, type:w.type}));
+      practiceHistory.unshift({ id:'px'+Date.now()+'-'+t+'-'+Math.random().toString(36).slice(2,7), date: todayISO(), source: pxSourceLabel, mode: 'MCQ Quiz', type: t, total: byType[t].total, correct: byType[t].correct, status:'done', words: wordsForType });
     }
   });
   practiceHistory = practiceHistory.slice(0, 150);
@@ -2638,6 +2925,7 @@ function pxShowSummary(){
 
   document.getElementById('pxTitle').textContent = 'সেশন শেষ';
   document.getElementById('pxProgress').textContent = '';
+  document.getElementById('pxTopProgressFill').style.width = '100%';
   document.getElementById('pxBody').innerHTML = `
     <div class="px-card px-summary">
       <div class="big">${correct}/${total}</div>
@@ -2667,10 +2955,14 @@ function pxShowSummary(){
 }
 
 let pxHistoryTab = 'all';
+const PX_HIST_PAGE_SIZE = 15;
+let pxHistoryVisibleCount = PX_HIST_PAGE_SIZE;
 function pxRenderHistory(){
   const wrap = document.getElementById('pxHistoryWrap');
   const tabsWrap = document.getElementById('pxHistoryTabs');
+  const countBadge = document.getElementById('pxHistoryCountBadge');
   if(!wrap) return;
+  if(countBadge) countBadge.textContent = practiceHistory.length ? (practiceHistory.length + ' সেশন') : '';
   const types = Array.from(new Set(practiceHistory.map(h=>h.type).filter(Boolean)));
   if(tabsWrap){
     if(types.length === 0){
@@ -2680,25 +2972,41 @@ function pxRenderHistory(){
       const tabs = ['all'].concat(types);
       tabsWrap.innerHTML = tabs.map(t=> `<button class="px-hist-tab ${pxHistoryTab===t?'active':''}" data-histtab="${t}">${t==='all'?'সব':escapeHtml(TYPE_LABELS[t]||t)}</button>`).join('');
       tabsWrap.querySelectorAll('[data-histtab]').forEach(btn=>{
-        btn.addEventListener('click', ()=>{ pxHistoryTab = btn.dataset.histtab; pxRenderHistory(); });
+        btn.addEventListener('click', ()=>{
+          if(pxHistoryTab === btn.dataset.histtab) return;
+          pxHistoryTab = btn.dataset.histtab;
+          pxHistoryVisibleCount = PX_HIST_PAGE_SIZE; // ট্যাব পাল্টালে পেজিনেশন রিসেট হয়
+          pxRenderHistory();
+        });
       });
     }
   }
   const filtered = pxHistoryTab==='all' ? practiceHistory : practiceHistory.filter(h=>h.type===pxHistoryTab);
   if(filtered.length === 0){ wrap.innerHTML = '<div class="sub">এখনো কোনো সেশন হয়নি।</div>'; return; }
-  wrap.innerHTML = filtered.map(h=>{
+  const visible = filtered.slice(0, pxHistoryVisibleCount);
+  const remaining = filtered.length - visible.length;
+  wrap.innerHTML = visible.map(h=>{
     let scoreHtml;
     if(h.status === 'in-progress') scoreHtml = '⏳ চলছে...';
     else if(h.status === 'abandoned') scoreHtml = `${h.correct}/${h.total} <span style="color:var(--text-muted);font-size:9px;">(অসম্পূর্ণ)</span>`;
     else scoreHtml = `${h.correct}/${h.total}`;
+    const canRetake = h.status !== 'in-progress' && h.words && h.words.length > 0;
     return `<div class="px-hist-row">
       <div>
         <div>${escapeHtml(h.source)}${(pxHistoryTab==='all' && h.type) ? ' <span class="sub2b">· '+escapeHtml(TYPE_LABELS[h.type]||h.type)+'</span>' : ''}</div>
         <div class="px-hist-meta">${formatDMY(h.date)} · ${escapeHtml(h.mode)}</div>
       </div>
-      <div class="px-hist-score">${scoreHtml}</div>
+      <div class="px-hist-right">
+        <div class="px-hist-score">${scoreHtml}</div>
+        ${canRetake ? `<button class="px-hist-retake" data-retake="${h.id}" title="একই শব্দ দিয়ে আবার — নতুন token খরচ হবে না">↻ আবার দাও</button>` : ''}
+      </div>
     </div>`;
-  }).join('');
+  }).join('') + (remaining > 0 ? `<button class="px-hist-more" id="pxHistoryMoreBtn">আরও দেখাও (বাকি ${remaining}টি)</button>` : '');
+  const moreBtn = document.getElementById('pxHistoryMoreBtn');
+  if(moreBtn) moreBtn.addEventListener('click', ()=>{ pxHistoryVisibleCount += PX_HIST_PAGE_SIZE; pxRenderHistory(); });
+  wrap.querySelectorAll('[data-retake]').forEach(btn=>{
+    btn.addEventListener('click', ()=> pxRetakeFromHistory(btn.dataset.retake));
+  });
 }
 pxRenderHistory();
 
@@ -2739,17 +3047,20 @@ function renderCoverage(){
     });
   });
   const sortedOrder = order.slice().sort((a,b) => map[b].dates.length - map[a].dates.length);
+  const maxDays = sortedOrder.length ? map[sortedOrder[0]].dates.length : 1;
   body.innerHTML = sortedOrder.map(key=>{
     const d = map[key];
     const dates = d.dates.slice().sort();
     const first = dates[0];
     const last = dates[dates.length-1];
     const rangeTxt = (d.minR!==Infinity) ? `${d.minR}–${d.maxR}` : '—';
-    return `<tr>
+    const isActive = TODAY >= first && TODAY <= last;
+    const barPct = maxDays ? Math.round(dates.length/maxDays*100) : 0;
+    return `<tr class="${isActive?'active':''}">
       <td class="cov-name">${d.label}</td>
       <td class="cov-mono">${formatDMY(first)}</td>
       <td class="cov-mono">${formatDMY(last)}</td>
-      <td class="cov-days">${dates.length}</td>
+      <td class="cov-days"><div class="cov-days-bar-wrap">${dates.length}<div class="cov-days-bar-track"><div class="cov-days-bar-fill" style="width:${barPct}%"></div></div></div></td>
       <td class="cov-mono">${rangeTxt}</td>
     </tr>`;
   }).join('');
@@ -2776,9 +3087,263 @@ document.getElementById('trendMonthlyBtn').addEventListener('click', ()=>{
   renderTrend();
 });
 
+// ============ আজকের রুটিন (BankSO Prep Routine) ============
+const ROUTINE_DAYS = [ // index = Date.getDay(): 0=Su(রবি) ... 6=Sa(শনি)
+  { name:'রবিবার', type:'নতুন পড়া',
+    b1:'নতুন টপিক + পারিভাষিক/বিপরীত শব্দ',
+    b2:'নতুন গ্রামার টপিক + Word Meaning + Group Verb',
+    b3:'নতুন অধ্যায় (বোর্ড বই অনুশীলনী)',
+    b4:'বাংলা সাহিত্য – নতুন লেখক/গ্রন্থ',
+    b5:'বিগত বিসিএস প্রশ্ন সমাধান (সব বিষয়)',
+    b6:'দিনের পড়া রিভিশন + নোট তৈরি' },
+  { name:'সোমবার', type:'নতুন পড়া',
+    b1:'নতুন টপিক + পারিভাষিক/বিপরীত শব্দ',
+    b2:'নতুন গ্রামার টপিক + Word Meaning + Group Verb',
+    b3:'নতুন অধ্যায় (বোর্ড বই অনুশীলনী)',
+    b4:'বাংলা সাহিত্য – নতুন লেখক/গ্রন্থ',
+    b5:'বিগত বিসিএস প্রশ্ন সমাধান (সব বিষয়)',
+    b6:'দিনের পড়া রিভিশন + নোট তৈরি' },
+  { name:'মঙ্গলবার', type:'নতুন পড়া',
+    b1:'নতুন টপিক + পারিভাষিক/বিপরীত শব্দ',
+    b2:'নতুন গ্রামার টপিক + Word Meaning + Group Verb',
+    b3:'নতুন অধ্যায় (বোর্ড বই অনুশীলনী)',
+    b4:'বাংলা সাহিত্য – নতুন লেখক/গ্রন্থ',
+    b5:'ফোকাস রাইটিং (কোটেশন ১/২)',
+    b6:'দিনের পড়া রিভিশন + নোট তৈরি' },
+  { name:'বুধবার', type:'নতুন পড়া',
+    b1:'নতুন টপিক + পারিভাষিক/বিপরীত শব্দ',
+    b2:'নতুন গ্রামার টপিক + Word Meaning + Group Verb',
+    b3:'নতুন অধ্যায় (বোর্ড বই অনুশীলনী)',
+    b4:'বাংলা সাহিত্য / আন্তর্জাতিক বিষয়াবলি',
+    b5:'বিগত বিসিএস প্রশ্ন সমাধান (সব বিষয়)',
+    b6:'সপ্তাহের ৪ দিনের পড়া হালকা রিভিশন' },
+  { name:'বৃহস্পতিবার', type:'রিভিশন',
+    b1:'সপ্তাহের ব্যাকরণ রিভিশন + বিগত বিসিএস প্রশ্ন',
+    b2:'সপ্তাহের গ্রামার রিভিশন + বিগত বিসিএস প্রশ্ন',
+    b3:'সপ্তাহের গণিত রিভিশন (বোর্ড বই অংক পুনরায়)',
+    b4:'সাহিত্য/আন্তর্জাতিক রিভিশন',
+    b5:'ভুল প্রশ্ন খাতা তৈরি ও পুনরায় দেখা',
+    b6:'সম্পূর্ণ সপ্তাহ রিভিশন' },
+  { name:'শুক্রবার', type:'রিভিশন',
+    b1:'সপ্তাহের ব্যাকরণ রিভিশন + বিগত বিসিএস প্রশ্ন',
+    b2:'সপ্তাহের গ্রামার রিভিশন + বিগত বিসিএস প্রশ্ন',
+    b3:'সপ্তাহের গণিত রিভিশন (বোর্ড বই অংক পুনরায়)',
+    b4:'সাহিত্য/আন্তর্জাতিক রিভিশন',
+    b5:'ফোকাস রাইটিং (কোটেশন ২/২)',
+    b6:'সাপ্তাহিক পরীক্ষার প্রস্তুতি' },
+  { name:'শনিবার', type:'রিভিশন',
+    b1:'সপ্তাহের ব্যাকরণ রিভিশন + বিগত বিসিএস প্রশ্ন',
+    b2:'সপ্তাহের গ্রামার রিভিশন + বিগত বিসিএস প্রশ্ন',
+    b3:'সপ্তাহের গণিত রিভিশন (বোর্ড বই অংক পুনরায়)',
+    b4:'সাহিত্য/আন্তর্জাতিক রিভিশন',
+    b5:'সাপ্তাহিক পরীক্ষা (Weekly Exam)',
+    b6:'পরীক্ষার ভুল বিশ্লেষণ + পরের সপ্তাহের প্রস্তুতি' },
+];
+
+// fixed 13-slot daily skeleton; rows with `key` are the trackable study blocks (b1..b6)
+// startMin/endMin = minutes since midnight, used for the live "now" indicator
+const ROUTINE_SKELETON = [
+  { time:'০৮:০০ – ০৮:৩০', fixed:'ঘুম থেকে ওঠা + ফ্রেশ + সকালের নাস্তা', dur:'৩০ মিনিট', icon:'🌅', startMin:480, endMin:510 },
+  { time:'০৮:৩০ – ১০:৩০', key:'b1', label:'স্টাডি ব্লক ১ (বাংলা ব্যাকরণ)', dur:'২ ঘণ্টা', icon:'📖', startMin:510, endMin:630 },
+  { time:'১০:৩০ – ১০:৪৫', fixed:'বিরতি (চা/হাঁটাহাঁটি)', dur:'১৫ মিনিট', icon:'☕', startMin:630, endMin:645 },
+  { time:'১০:৪৫ – ০১:০০', key:'b2', label:'স্টাডি ব্লক ২ (ইংরেজি গ্রামার)', dur:'২ ঘণ্টা ১৫ মিনিট', icon:'🔤', startMin:645, endMin:780 },
+  { time:'০১:০০ – ০২:৩০', fixed:'দুপুরের খাবার + বিশ্রাম/ঘুম', dur:'১ ঘণ্টা ৩০ মিনিট', icon:'🍽️', startMin:780, endMin:870 },
+  { time:'০২:৩০ – ০৪:৩০', key:'b3', label:'স্টাডি ব্লক ৩ (গণিত – বোর্ড বই)', dur:'২ ঘণ্টা', icon:'➗', startMin:870, endMin:990 },
+  { time:'০৪:৩০ – ০৫:০০', fixed:'বিকেলের নাস্তা + বিরতি', dur:'৩০ মিনিট', icon:'☕', startMin:990, endMin:1020 },
+  { time:'০৫:০০ – ০৭:০০', key:'b4', label:'স্টাডি ব্লক ৪ (সাহিত্য/আন্তর্জাতিক)', dur:'২ ঘণ্টা', icon:'🌍', startMin:1020, endMin:1140 },
+  { time:'০৭:০০ – ০৭:৩০', fixed:'রাতের নামাজ (এশা)', dur:'৩০ মিনিট', icon:'🕌', startMin:1140, endMin:1170 },
+  { time:'০৭:৩০ – ০৯:৩০', key:'b5', label:'স্টাডি ব্লক ৫', dur:'২ ঘণ্টা', icon:'🎯', startMin:1170, endMin:1290 },
+  { time:'০৯:৩০ – ১০:০০', fixed:'রাতের খাবার', dur:'৩০ মিনিট', icon:'🍽️', startMin:1290, endMin:1320 },
+  { time:'১০:০০ – ১১:৩০', key:'b6', label:'স্টাডি ব্লক ৬ (রাতের রিভিশন)', dur:'১ ঘণ্টা ৩০ মিনিট', revision:true, icon:'🔁', startMin:1320, endMin:1410 },
+  { time:'১১:৩০ – ১২:০০', fixed:'পরদিনের প্রস্তুতি + ঘুমাতে যাওয়া', dur:'৩০ মিনিট', icon:'🌙', startMin:1410, endMin:1440 },
+];
+
+// group the 13 flat rows into 4 collapsible time-of-day segments so the whole day
+// isn't dumped on screen at once — this is the main fix for the cluttered feel
+const ROUTINE_GROUPS = [
+  { title:'সকাল', range:'০৮:০০ – ০১:০০', icon:'🌅', rows:[0,1,2,3] },
+  { title:'দুপুর', range:'০১:০০ – ০৫:০০', icon:'☀️', rows:[4,5,6] },
+  { title:'বিকেল – সন্ধ্যা', range:'০৫:০০ – ০৯:৩০', icon:'🌇', rows:[7,8,9] },
+  { title:'রাত', range:'০৯:৩০ – ১২:০০', icon:'🌙', rows:[10,11,12] },
+];
+
+const BN_DIGITS = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+function bnNum(n){ return String(n).split('').map(c=> /[0-9]/.test(c) ? BN_DIGITS[+c] : c).join(''); }
+function bnMinutes(min){
+  min = Math.max(0, Math.round(min));
+  const h = Math.floor(min/60), m = min%60;
+  if(h<=0) return `${bnNum(m)} মিনিট`;
+  if(m===0) return `${bnNum(h)} ঘণ্টা`;
+  return `${bnNum(h)} ঘণ্টা ${bnNum(m)} মিনিট`;
+}
+
+const ROUTINE_STATE_KEY = 'memoria-routine-state-v1';
+function loadRoutineState(){ try{ const raw = localStorage.getItem(ROUTINE_STATE_KEY); return raw?JSON.parse(raw):{}; }catch(e){ return {}; } }
+function saveRoutineState(s){ try{ localStorage.setItem(ROUTINE_STATE_KEY, JSON.stringify(s)); }catch(e){} scheduleAutoBackup(); }
+let routineState = loadRoutineState(); // { 'YYYY-MM-DD': {b1:true, b2:true, ...} }
+let routineDayOffset = 0;
+let routineManualOpen = null; // gi manually opened by user this render cycle, or null = auto
+
+function changeRoutineDay(delta){
+  routineDayOffset += delta;
+  routineManualOpen = null;
+  renderRoutine();
+}
+
+function routineActiveIndex(){
+  // only meaningful for "today" — other days don't have a live position
+  if(routineDayOffset !== 0) return -1;
+  const now = new Date();
+  const nowMin = now.getHours()*60 + now.getMinutes();
+  return ROUTINE_SKELETON.findIndex(row => nowMin >= row.startMin && nowMin < row.endMin);
+}
+
+function renderRoutine(){
+  const wrap = document.getElementById('routineWrap');
+  if(!wrap) return;
+  const d = new Date();
+  d.setDate(d.getDate() + routineDayOffset);
+  const iso = toISO(d);
+  const dayInfo = ROUTINE_DAYS[d.getDay()];
+  const dateLabel = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
+    .toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'});
+
+  const labelEl = document.getElementById('rtDateLabel');
+  if(labelEl){
+    labelEl.textContent = (routineDayOffset===0 ? 'আজ · ' : '') + dayInfo.name + ' · ' + dateLabel;
+  }
+
+  const dayState = routineState[iso] || {};
+  let doneCount = 0;
+  const activeIdx = routineActiveIndex();
+  const activeGi = activeIdx<0 ? -1 : ROUTINE_GROUPS.findIndex(g=>g.rows.includes(activeIdx));
+
+  wrap.innerHTML = ROUTINE_GROUPS.map((grp, gi)=>{
+    let grpDone = 0, grpTotal = 0;
+    const rowsHtml = grp.rows.map(idx=>{
+      const row = ROUTINE_SKELETON[idx];
+      const isNow = idx === activeIdx;
+      if(!row.key){
+        return `<div class="routine-row fixed ${isNow?'now':''}" id="rtRow-${idx}">
+          <span class="routine-row-icon">${row.icon||''}</span>
+          <span class="routine-time">${row.time}</span>
+          <span class="routine-label">${escapeHtml(row.fixed)}</span>
+        </div>`;
+      }
+      grpTotal++;
+      const checked = !!dayState[row.key];
+      if(checked){ doneCount++; grpDone++; }
+      const sub = dayInfo[row.key] || '';
+      return `<div class="routine-row ${row.revision ? 'revision' : ''} ${isNow?'now':''}" id="rtRow-${idx}">
+        <input type="checkbox" class="chk mini" data-bkey="${row.key}" ${checked ? 'checked' : ''}>
+        <div class="routine-info">
+          <span class="routine-time">${row.icon||''} ${row.time}</span>
+          <span class="routine-label">${escapeHtml(row.label)}<span class="routine-sub">${escapeHtml(sub)}</span></span>
+        </div>
+        <span class="routine-dur">${row.dur}</span>
+      </div>`;
+    }).join('');
+
+    const isOpen = routineManualOpen===null ? gi===activeGi : routineManualOpen.has(gi);
+    return `<div class="routine-group ${gi===activeGi?'has-now':''}">
+      <div class="routine-group-head" data-toggle="rtGrp-${gi}">
+        <span class="routine-group-icon">${grp.icon}</span>
+        <div class="routine-group-label">${grp.title}<span class="routine-group-range">${grp.range}</span></div>
+        <span class="routine-group-progress" id="rtGrpProg-${gi}">${grpDone}/${grpTotal}</span>
+        <span class="caret ${isOpen?'open':''}" id="caret-rtGrp-${gi}">▸</span>
+      </div>
+      <div class="routine-group-body ${isOpen?'open':''}" id="rtGrp-${gi}">${rowsHtml}</div>
+    </div>`;
+  }).join('');
+
+  // live "now" status card
+  const nowCard = document.getElementById('routineNowCard');
+  if(nowCard){
+    if(activeIdx<0){
+      const nowMin = new Date().getHours()*60 + new Date().getMinutes();
+      if(routineDayOffset===0 && nowMin < ROUTINE_SKELETON[0].startMin){
+        nowCard.className = 'routine-now show idle';
+        nowCard.innerHTML = `<span class="rn-dot"></span><div class="rn-body"><span class="rn-tag">শুরু হবে</span><div class="rn-label">রুটিন শুরু ০৮:০০ টায়</div></div>`;
+      } else if(routineDayOffset===0){
+        nowCard.className = 'routine-now show idle';
+        nowCard.innerHTML = `<span class="rn-dot"></span><div class="rn-body"><span class="rn-tag">সম্পন্ন</span><div class="rn-label">আজকের রুটিন শেষ, ভালো ঘুম হোক</div></div>`;
+      } else {
+        nowCard.className = 'routine-now';
+        nowCard.innerHTML = '';
+      }
+    } else {
+      const row = ROUTINE_SKELETON[activeIdx];
+      const nowMin = new Date().getHours()*60 + new Date().getMinutes();
+      const remain = row.endMin - nowMin;
+      const label = row.key ? row.label : row.fixed;
+      nowCard.className = 'routine-now show';
+      nowCard.innerHTML = `<span class="rn-dot"></span><div class="rn-body"><span class="rn-tag">এখন চলছে</span><div class="rn-label">${row.icon||''} ${escapeHtml(label)}</div></div><span class="rn-remain">বাকি ${bnMinutes(remain)}</span>`;
+      nowCard.onclick = ()=>{
+        const rowEl = document.getElementById('rtRow-'+activeIdx);
+        const gi = ROUTINE_GROUPS.findIndex(g=>g.rows.includes(activeIdx));
+        const body = document.getElementById('rtGrp-'+gi);
+        const caret = document.getElementById('caret-rtGrp-'+gi);
+        if(body && !body.classList.contains('open')){ body.classList.add('open'); caret.classList.add('open'); }
+        if(rowEl) rowEl.scrollIntoView({behavior:'smooth', block:'center'});
+      };
+    }
+  }
+
+  const fillEl = document.getElementById('routineProgressFill');
+  const textEl = document.getElementById('routineProgressText');
+  if(fillEl) fillEl.style.width = (doneCount/6*100) + '%';
+  if(textEl) textEl.textContent = doneCount + '/6';
+
+  wrap.querySelectorAll('[data-toggle]').forEach(head=>{
+    head.addEventListener('click', ()=>{
+      const id = head.dataset.toggle;
+      const gi = Number(id.split('-')[1]);
+      if(routineManualOpen===null){
+        // seed manual state from whatever is currently open
+        routineManualOpen = new Set();
+        ROUTINE_GROUPS.forEach((g,i)=>{ if(i===activeGi) routineManualOpen.add(i); });
+      }
+      const body = document.getElementById(id);
+      const caret = document.getElementById('caret-'+id);
+      const nowOpen = body.classList.toggle('open');
+      caret.classList.toggle('open', nowOpen);
+      if(nowOpen) routineManualOpen.add(gi); else routineManualOpen.delete(gi);
+    });
+  });
+
+  wrap.querySelectorAll('.chk[data-bkey]').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      const key = cb.dataset.bkey;
+      if(!routineState[iso]) routineState[iso] = {};
+      if(cb.checked){ routineState[iso][key] = true; cb.classList.add('pop'); }
+      else{ delete routineState[iso][key]; }
+      saveRoutineState(routineState);
+      const nDone = Object.keys(routineState[iso]).length;
+      if(fillEl) fillEl.style.width = (nDone/6*100) + '%';
+      if(textEl) textEl.textContent = nDone + '/6';
+      const rowEl = cb.closest('.routine-row');
+      const groupEl = cb.closest('.routine-group-body');
+      if(groupEl){
+        const gi = groupEl.id.split('-')[1];
+        const progEl = document.getElementById('rtGrpProg-'+gi);
+        if(progEl){
+          const grpDone = groupEl.querySelectorAll('.chk[data-bkey]:checked').length;
+          const grpTotal = groupEl.querySelectorAll('.chk[data-bkey]').length;
+          progEl.textContent = grpDone+'/'+grpTotal;
+        }
+      }
+    });
+  });
+}
+
+const routineTabBtn = document.querySelector('.main-tab-btn[data-tab="more"]');
+if(routineTabBtn) routineTabBtn.addEventListener('click', renderRoutine);
+setInterval(renderRoutine, 60000);
+
 render();
 renderExtra();
 renderCoverage();
+renderRoutine();
 </script>
 </body>
 </html>
