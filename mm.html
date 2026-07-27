@@ -425,7 +425,7 @@
 
       <div class="settings-section">
         <h4>🧠 Gemini API (Flashcard AI-এর জন্য)</h4>
-        <div class="settings-hint">নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ৪টা API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে (কোনো wait ছাড়াই); একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। সব key + সব মডেল একবার করে fail হয়ে গেলে rate-limit এড়াতে ১ মিনিট wait করে আবার প্রথম থেকে try করবে। প্রতিটা শব্দের AI উত্তর একবার আনলে save হয়ে থাকবে (ফোনেই), পরে আবার একই শব্দ দেখলে offline-এও কাজ করবে আর নতুন করে token খরচ হবে না। <b>এই key গুলো শুধু এই ডিভাইসের ব্রাউজারে (localStorage) সংরক্ষিত থাকে — কোনো sync/backup/cloud-এ কখনো পাঠানো হয় না, এমনকি Auto-Backup চালু থাকলেও না।</b></div>
+        <div class="settings-hint">নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ৮টা API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে (কোনো wait ছাড়াই); একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। সব key + সব মডেল একবার করে fail হয়ে গেলে rate-limit এড়াতে ১ মিনিট wait করে আবার প্রথম থেকে try করবে। প্রতিটা শব্দের AI উত্তর একবার আনলে save হয়ে থাকবে (ফোনেই), পরে আবার একই শব্দ দেখলে offline-এও কাজ করবে আর নতুন করে token খরচ হবে না। <b>এই key গুলো শুধু এই ডিভাইসের ব্রাউজারে (localStorage) সংরক্ষিত থাকে — কোনো sync/backup/cloud-এ কখনো পাঠানো হয় না, এমনকি Auto-Backup চালু থাকলেও না।</b></div>
         <label style="font-size:11px;color:var(--text-muted);">মডেল (ক্রম অনুযায়ী try হবে)</label>
         <div id="apiModelsWrap"></div>
         <label style="font-size:11px;color:var(--text-muted);margin-top:6px;display:block;">API Key (ক্রম অনুযায়ী try হবে)</label>
@@ -1007,6 +1007,10 @@ function defaultSettings(){
       {key:'', enabled:true},
       {key:'', enabled:true},
       {key:'', enabled:true},
+      {key:'', enabled:true},
+      {key:'', enabled:true},
+      {key:'', enabled:true},
+      {key:'', enabled:true},
       {key:'', enabled:true}
     ]
   };
@@ -1016,7 +1020,12 @@ function loadSettings(){
     const raw = localStorage.getItem(SETTINGS_KEY);
     if(!raw) return defaultSettings();
     const parsed = JSON.parse(raw);
-    return Object.assign(defaultSettings(), parsed);
+    const merged = Object.assign(defaultSettings(), parsed);
+    // পুরোনো সেভ করা settings-এ ৪টা key থাকলে সেটা ৮টা স্লটে পূরণ করে দেয়
+    const keys = Array.isArray(parsed.geminiKeys) ? parsed.geminiKeys.slice() : [];
+    while(keys.length < 8){ keys.push({key:'', enabled:true}); }
+    merged.geminiKeys = keys;
+    return merged;
   }catch(e){ return defaultSettings(); }
 }
 function saveSettings(s){ try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }catch(e){} }
