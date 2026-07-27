@@ -255,6 +255,9 @@
   @media (prefers-reduced-motion: reduce){
     .fc-controls button.fc-btn-pop, .fc-controls button.fc-ai.fc-btn-pop{ animation:none !important; }
   }
+  .fc-controls-2{ margin-top:8px; }
+  .fc-controls-2 button.fc-ai-all{ width:100%; padding:11px 8px; font-size:11.5px; opacity:0.96; }
+  .fc-controls-2 button.fc-ai-all:disabled{ opacity:0.6; cursor:default; }
   .fc-ai-box{ width:100%; background:var(--panel-2); border:1px solid var(--teal-dim); border-radius:12px; padding:12px 14px; font-size:12.5px; color:#B9E3DE; font-family:'Noto Sans Bengali','Inter',sans-serif; line-height:1.6; min-height:20px; display:none; box-shadow:0 6px 18px rgba(0,0,0,0.25); }
   .fc-ai-box.show{ display:block; }
   .fc-ai-box p{ margin:0; }
@@ -464,6 +467,9 @@
         <button id="fcShuffle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> এলোমেলো</button>
         <button id="fcAi" class="fc-ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5a2.5 2.5 0 0 0-2.45 2.03A2.5 2.5 0 0 0 5.5 8.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 2 4.42A2.5 2.5 0 0 0 9.5 20.5"/><path d="M9.5 3.5v17"/><path d="M9.5 8.5h-2"/><path d="M9.5 13.5h-2"/><path d="M14.5 3.5a2.5 2.5 0 0 1 2.45 2.03 2.5 2.5 0 0 1 1.55 2.97 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-2 4.42 2.5 2.5 0 0 1-2 2.58"/><path d="M14.5 3.5v17"/><path d="M14.5 8.5h2"/><path d="M14.5 13.5h2"/></svg> AI সাহায্য</button>
         <button id="fcNext">পরের <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="10 6 16 12 10 18"/></svg></button>
+      </div>
+      <div class="fc-controls fc-controls-2">
+        <button id="fcAiAll" class="fc-ai fc-ai-all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5a2.5 2.5 0 0 0-2.45 2.03A2.5 2.5 0 0 0 5.5 8.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 2 4.42A2.5 2.5 0 0 0 9.5 20.5"/><path d="M9.5 3.5v17"/><path d="M9.5 8.5h-2"/><path d="M9.5 13.5h-2"/><path d="M14.5 3.5a2.5 2.5 0 0 1 2.45 2.03 2.5 2.5 0 0 1 1.55 2.97 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-2 4.42 2.5 2.5 0 0 1-2 2.58"/><path d="M14.5 3.5v17"/><path d="M14.5 8.5h2"/><path d="M14.5 13.5h2"/></svg> <span id="fcAiAllLabel">এই তালিকার সব শব্দের AI একসাথে আনো</span></button>
       </div>
     </div>
   </div>
@@ -1473,6 +1479,41 @@ function renderAiAnswer(aiBox, raw){
     aiBox.innerHTML = `<p>${escapeHtml(raw)}</p>`;
   }
 }
+// Explicit job for the AI: a BCS/bank-exam vocabulary coach, output in two
+// clearly labelled parts so the app can render them as separate blocks.
+// The label/instructions are type-aware: what "val" actually represents
+// (meaning vs synonym vs antonym vs an idiom's sense) differs by list type,
+// so we must not always call it "অর্থ" (meaning) — e.g. for an antonym card
+// the val is the OPPOSITE word, not the meaning, and telling the AI
+// otherwise produces a confusing/wrong mnemonic.
+const AI_TYPE_META = {
+  wm:        { label: 'অর্থ',                 note: 'এটা মূল শব্দটার সরাসরি অর্থ।', hasRoot:true },
+  syn:       { label: 'সমার্থক শব্দ (Synonym)', note: 'এটা মূল শব্দের কাছাকাছি/একই অর্থবোধক আরেকটা শব্দ, direct অর্থ না। mnemonic-এ স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ প্রায় একই রকম মানে বহন করে।', hasRoot:true },
+  ant:       { label: 'বিপরীত শব্দ (Antonym)',  note: 'এটা মূল শব্দের বিপরীত/উল্টো অর্থের শব্দ, একই অর্থ না। mnemonic-এ অবশ্যই স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ একে অপরের বিপরীত।', hasRoot:true },
+  bnant:     { label: 'বিপরীত শব্দ (Antonym)',  note: 'এটা মূল শব্দের বিপরীত/উল্টো অর্থের শব্দ, একই অর্থ না। mnemonic-এ অবশ্যই স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ একে অপরের বিপরীত।', hasRoot:false },
+  bagdhara:  { label: 'বাগধারাটির অর্থ',        note: 'এটা একটা বাগধারা/idiom-এর ব্যাখ্যা।', hasRoot:false },
+  proverb:   { label: 'প্রবাদটির অর্থ',         note: 'এটা একটা প্রবাদের ব্যাখ্যা।', hasRoot:false },
+  idiom:     { label: 'Idiom/Phrase-টির অর্থ',  note: 'এটা একটা ইংরেজি idiom/phrase-এর ব্যাখ্যা।', hasRoot:false },
+  ows:       { label: 'One-Word Substitution', note: 'এটা প্রশ্নের বর্ণনা অনুযায়ী সঠিক এক শব্দের উত্তর।', hasRoot:true },
+  ekkotha:   { label: 'এক কথায় প্রকাশ',         note: 'এটা বাক্যাংশের এক কথায় প্রকাশ।', hasRoot:false },
+  shobdartho:{ label: 'শব্দের অর্থ',            note: 'এটা মূল শব্দটার সরাসরি অর্থ।', hasRoot:false },
+  poribhashik:{ label: 'পারিভাষিক শব্দ (English term)', note: 'এটা বাংলা টার্মের ইংরেজি পারিভাষিক প্রতিশব্দ, সরাসরি অনুবাদ না — mnemonic-এ বোঝাও যে এটা একটা স্বীকৃত পরিভাষা।', hasRoot:true },
+  groupverb: { label: 'Group Verb-এর অর্থ',     note: 'এটা group verb (phrasal verb) টার অর্থ।', hasRoot:false },
+};
+function buildAiPrompt(w){
+  const meta = AI_TYPE_META[w.type] || AI_TYPE_META.wm;
+  const rootBlock = meta.hasRoot ? `
+শব্দের গঠন: (শব্দটা যদি ইংরেজি এবং এর prefix/root/suffix থেকে অর্থ বোঝা যায়, তাহলে ১ লাইনে ভেঙে দেখাও, যেমন "mal(খারাপ)+practice(চর্চা) = খারাপ চর্চা" ফরম্যাটে। এটা দিয়ে ভবিষ্যতে অচেনা শব্দও আন্দাজ করা শেখা যায়। যদি স্পষ্ট prefix/root/suffix না থাকে বা শব্দটা সাধারণ/সরল হয়, এই লাইনে শুধু "প্রযোজ্য নয়" লিখো।)
+কাছাকাছি শব্দ সতর্কতা: (exam-এ প্রায়ই গুলিয়ে ফেলা হয় এমন বানানে/উচ্চারণে কাছাকাছি একটা ইংরেজি শব্দ থাকলে, তার নাম আর অর্থের পার্থক্য ১ লাইনে বলো, যেমন "Considerable (যথেষ্ট) কে Considerate (বিবেচক)-এর সাথে গুলিও না"। এমন কোনো শব্দ মনে না পড়লে শুধু "প্রযোজ্য নয়" লিখো।)` : '';
+  return `তুমি একজন বাংলাদেশের সরকারি চাকরির (BCS/Bank/৯ম গ্রেড) পরীক্ষার ভোকাবুলারি কোচ। একজন শিক্ষার্থী নিচের শব্দ/টার্মটা ফ্ল্যাশকার্ডে মুখস্থ করছে:
+শব্দ/টার্ম: "${w.word}"${w.bn ? ' ('+w.bn+')' : ''}
+${meta.label}: "${w.val || ''}"
+(লক্ষ্য করো: ${meta.note})
+
+তোমার কাজ, ঠিক এই ফরম্যাটে বাংলায় উত্তর দাও (হেডিংগুলো হুবহু রাখো, ভূমিকা বা অতিরিক্ত কিছু লিখো না):
+মনে রাখার কৌশল: (১-২ লাইনের সহজ, মজার mnemonic বা association, যা উপরের সম্পর্কটা (${meta.label}) ঠিকভাবে মাথায় গেঁথে দেবে — উপরের নোটটা মাথায় রেখে)
+উদাহরণ বাক্য: (এই শব্দটা/টার্মটা ব্যবহার করে exam-এর উপযোগী একটা ছোট বাক্য, ইংরেজিতে যদি শব্দটা ইংরেজি হয়)${rootBlock}`;
+}
 document.getElementById('fcAi').addEventListener('click', async (e)=>{
   pulseBtn(e.currentTarget);
   const w = fcDeck[fcIndex];
@@ -1487,39 +1528,7 @@ document.getElementById('fcAi').addEventListener('click', async (e)=>{
   }
 
   aiBox.innerHTML = '<p class="fc-ai-loading">AI ভাবছে...</p>';
-  // Explicit job for the AI: a BCS/bank-exam vocabulary coach, output in two
-  // clearly labelled parts so the app can render them as separate blocks.
-  // The label/instructions are type-aware: what "val" actually represents
-  // (meaning vs synonym vs antonym vs an idiom's sense) differs by list type,
-  // so we must not always call it "অর্থ" (meaning) — e.g. for an antonym card
-  // the val is the OPPOSITE word, not the meaning, and telling the AI
-  // otherwise produces a confusing/wrong mnemonic.
-  const AI_TYPE_META = {
-    wm:        { label: 'অর্থ',                 note: 'এটা মূল শব্দটার সরাসরি অর্থ।', hasRoot:true },
-    syn:       { label: 'সমার্থক শব্দ (Synonym)', note: 'এটা মূল শব্দের কাছাকাছি/একই অর্থবোধক আরেকটা শব্দ, direct অর্থ না। mnemonic-এ স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ প্রায় একই রকম মানে বহন করে।', hasRoot:true },
-    ant:       { label: 'বিপরীত শব্দ (Antonym)',  note: 'এটা মূল শব্দের বিপরীত/উল্টো অর্থের শব্দ, একই অর্থ না। mnemonic-এ অবশ্যই স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ একে অপরের বিপরীত।', hasRoot:true },
-    bnant:     { label: 'বিপরীত শব্দ (Antonym)',  note: 'এটা মূল শব্দের বিপরীত/উল্টো অর্থের শব্দ, একই অর্থ না। mnemonic-এ অবশ্যই স্পষ্ট করে বোঝাও যে এই দুইটা শব্দ একে অপরের বিপরীত।', hasRoot:false },
-    bagdhara:  { label: 'বাগধারাটির অর্থ',        note: 'এটা একটা বাগধারা/idiom-এর ব্যাখ্যা।', hasRoot:false },
-    proverb:   { label: 'প্রবাদটির অর্থ',         note: 'এটা একটা প্রবাদের ব্যাখ্যা।', hasRoot:false },
-    idiom:     { label: 'Idiom/Phrase-টির অর্থ',  note: 'এটা একটা ইংরেজি idiom/phrase-এর ব্যাখ্যা।', hasRoot:false },
-    ows:       { label: 'One-Word Substitution', note: 'এটা প্রশ্নের বর্ণনা অনুযায়ী সঠিক এক শব্দের উত্তর।', hasRoot:true },
-    ekkotha:   { label: 'এক কথায় প্রকাশ',         note: 'এটা বাক্যাংশের এক কথায় প্রকাশ।', hasRoot:false },
-    shobdartho:{ label: 'শব্দের অর্থ',            note: 'এটা মূল শব্দটার সরাসরি অর্থ।', hasRoot:false },
-    poribhashik:{ label: 'পারিভাষিক শব্দ (English term)', note: 'এটা বাংলা টার্মের ইংরেজি পারিভাষিক প্রতিশব্দ, সরাসরি অনুবাদ না — mnemonic-এ বোঝাও যে এটা একটা স্বীকৃত পরিভাষা।', hasRoot:true },
-    groupverb: { label: 'Group Verb-এর অর্থ',     note: 'এটা group verb (phrasal verb) টার অর্থ।', hasRoot:false },
-  };
-  const meta = AI_TYPE_META[w.type] || AI_TYPE_META.wm;
-  const rootBlock = meta.hasRoot ? `
-শব্দের গঠন: (শব্দটা যদি ইংরেজি এবং এর prefix/root/suffix থেকে অর্থ বোঝা যায়, তাহলে ১ লাইনে ভেঙে দেখাও, যেমন "mal(খারাপ)+practice(চর্চা) = খারাপ চর্চা" ফরম্যাটে। এটা দিয়ে ভবিষ্যতে অচেনা শব্দও আন্দাজ করা শেখা যায়। যদি স্পষ্ট prefix/root/suffix না থাকে বা শব্দটা সাধারণ/সরল হয়, এই লাইনে শুধু "প্রযোজ্য নয়" লিখো।)
-কাছাকাছি শব্দ সতর্কতা: (exam-এ প্রায়ই গুলিয়ে ফেলা হয় এমন বানানে/উচ্চারণে কাছাকাছি একটা ইংরেজি শব্দ থাকলে, তার নাম আর অর্থের পার্থক্য ১ লাইনে বলো, যেমন "Considerable (যথেষ্ট) কে Considerate (বিবেচক)-এর সাথে গুলিও না"। এমন কোনো শব্দ মনে না পড়লে শুধু "প্রযোজ্য নয়" লিখো।)` : '';
-  const prompt = `তুমি একজন বাংলাদেশের সরকারি চাকরির (BCS/Bank/৯ম গ্রেড) পরীক্ষার ভোকাবুলারি কোচ। একজন শিক্ষার্থী নিচের শব্দ/টার্মটা ফ্ল্যাশকার্ডে মুখস্থ করছে:
-শব্দ/টার্ম: "${w.word}"${w.bn ? ' ('+w.bn+')' : ''}
-${meta.label}: "${w.val || ''}"
-(লক্ষ্য করো: ${meta.note})
-
-তোমার কাজ, ঠিক এই ফরম্যাটে বাংলায় উত্তর দাও (হেডিংগুলো হুবহু রাখো, ভূমিকা বা অতিরিক্ত কিছু লিখো না):
-মনে রাখার কৌশল: (১-২ লাইনের সহজ, মজার mnemonic বা association, যা উপরের সম্পর্কটা (${meta.label}) ঠিকভাবে মাথায় গেঁথে দেবে — উপরের নোটটা মাথায় রেখে)
-উদাহরণ বাক্য: (এই শব্দটা/টার্মটা ব্যবহার করে exam-এর উপযোগী একটা ছোট বাক্য, ইংরেজিতে যদি শব্দটা ইংরেজি হয়)${rootBlock}`;
+  const prompt = buildAiPrompt(w);
   try{
     const answer = await callGeminiText(prompt, msg => { aiBox.innerHTML = `<p class="fc-ai-loading">${escapeHtml(msg)}</p>`; });
     aiCache[cacheKey] = answer;
@@ -1528,6 +1537,66 @@ ${meta.label}: "${w.val || ''}"
   }catch(err){
     aiBox.innerHTML = `<p class="fc-ai-error">⚠️ ${escapeHtml(err.message)}</p>`;
   }
+});
+
+// ---- Bulk AI fetch: one tap fetches AI help for every word currently in the
+// open flashcard deck (whether that deck is a single word or a whole
+// range/day/group) instead of clicking "AI সাহায্য" on each card one by one.
+// Already-cached words are skipped instantly; only uncached words hit the API,
+// one at a time (a small pause between calls to be gentle on rate limits).
+// If the person is currently looking at a card that just got its AI answer,
+// the on-screen box updates immediately.
+let fcBulkRunning = false;
+document.getElementById('fcAiAll').addEventListener('click', async (e)=>{
+  const btn = e.currentTarget;
+  const label = document.getElementById('fcAiAllLabel');
+  pulseBtn(btn);
+  if(fcBulkRunning){
+    label.textContent = 'আগের ব্যাচ এখনো চলছে, একটু অপেক্ষা করো...';
+    return; // the running job's own next progress tick will overwrite this shortly
+  }
+  if(!fcDeck || fcDeck.length === 0) return;
+
+  const pending = fcDeck.filter(w => !aiCache[aiCacheKey(w)]);
+  if(pending.length === 0){
+    const prevText = label.textContent;
+    label.textContent = 'সবগুলোর AI আগে থেকেই আছে ✓';
+    setTimeout(()=>{ label.textContent = prevText; }, 2200);
+    return;
+  }
+
+  fcBulkRunning = true;
+  btn.disabled = true;
+  const total = pending.length;
+  let done = 0, failed = 0;
+  const prevText = label.textContent;
+
+  for(let i = 0; i < pending.length; i++){
+    const w = pending[i];
+    label.textContent = `আনা হচ্ছে... (${done + 1}/${total})`;
+    try{
+      const answer = await callGeminiText(buildAiPrompt(w));
+      aiCache[aiCacheKey(w)] = answer;
+      saveAiCache(aiCache);
+      // if this exact card is on screen right now, show it immediately
+      if(fcDeck[fcIndex] === w){
+        const aiBox = document.getElementById('fcAiBox');
+        aiBox.classList.add('show');
+        renderAiAnswer(aiBox, answer);
+      }
+    }catch(err){
+      failed++;
+    }
+    done++;
+    if(i < pending.length - 1) await sleep(400); // small gap between calls, gentle on rate limits
+  }
+
+  btn.disabled = false;
+  fcBulkRunning = false;
+  label.textContent = failed === 0
+    ? `সম্পন্ন! ${total}/${total} শব্দের AI তথ্য আনা হয়েছে ✓`
+    : `সম্পন্ন — ${total - failed}/${total} সফল, ${failed}টা ব্যর্থ হয়েছে`;
+  setTimeout(()=>{ label.textContent = prevText; }, 3500);
 });
 
 let editCtx = null;
