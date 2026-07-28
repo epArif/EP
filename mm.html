@@ -448,10 +448,69 @@
   .add-word-save{ background:var(--teal); border:none; color:#0E0D12; border-radius:8px; padding:8px; font-size:12px; font-weight:700; cursor:pointer; }
   .px-quicklinks{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
   .px-quicklinks button{ background:var(--panel-2); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:5px 10px; font-size:11.5px; cursor:pointer; white-space:nowrap; }
+  .px-hist-cached-trigger{ width:100%; background:var(--panel-2); border:1px solid var(--teal-dim); color:var(--teal); border-radius:8px; padding:8px 10px; font-size:12px; font-weight:600; cursor:pointer; margin-bottom:10px; font-family:'Noto Sans Bengali','Inter',sans-serif; }
+  .px-hist-cached-trigger:hover{ background:var(--teal); color:#0E0D12; border-color:var(--teal); }
   .px-hist-tabs{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
   .px-hist-tab{ background:var(--panel-2); border:1px solid var(--border); color:var(--text-muted); border-radius:20px; padding:5px 12px; font-size:11px; cursor:pointer; }
   .px-hist-tab.active{ background:var(--teal); color:#0E0D12; border-color:var(--teal); font-weight:700; }
   .px-mix-wrap label{ background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:5px 9px; }
+
+  /* ===== Premium MCQ Exam redesign ===== */
+  #langModeTabs button{ font-family:'Noto Sans Bengali','Inter',sans-serif; }
+  .px-top{ position:relative; padding:10px 12px; border-radius:16px; background:linear-gradient(135deg, rgba(217,168,78,0.14), rgba(79,167,158,0.14)); border:1px solid var(--border); }
+  .px-top-progress-wrap{ height:5px; margin-top:8px; }
+  .px-top-progress-fill{ background:linear-gradient(90deg, var(--gold), var(--teal)); box-shadow:0 0 10px rgba(217,168,78,0.55); }
+  .px-title{ font-size:15.5px; display:flex; align-items:center; gap:6px; }
+  .px-progress{ background:var(--panel-2); border:1px solid var(--border); padding:3px 9px; border-radius:999px; }
+  .px-score{ background:var(--panel-2); border:1px solid var(--teal-dim); padding:3px 9px; border-radius:999px; }
+
+  .px-card{ position:relative; border-radius:20px; padding:26px 20px 22px; background:linear-gradient(165deg, var(--panel) 0%, var(--panel-2) 130%); border:1px solid var(--border); box-shadow:0 20px 46px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03); overflow:hidden; animation:pxCardIn .32s cubic-bezier(.22,1,.36,1); }
+  .px-card::before{ content:''; position:absolute; top:-40%; right:-20%; width:220px; height:220px; background:radial-gradient(circle, rgba(217,168,78,0.16), transparent 70%); pointer-events:none; }
+  @keyframes pxCardIn{ from{ opacity:0; transform:translateY(10px) scale(0.98); } to{ opacity:1; transform:translateY(0) scale(1); } }
+
+  .px-q-instr{ display:flex; align-items:center; gap:6px; }
+  .px-q-instr::before{ content:'✦'; color:var(--gold); }
+  .px-q-word{ position:relative; z-index:1; line-height:1.25; }
+  .px-q-counter{ position:absolute; top:16px; right:18px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--text-muted); background:var(--panel-2); border:1px solid var(--border); border-radius:999px; padding:3px 10px; }
+
+  .px-options{ position:relative; z-index:1; }
+  .px-opt{ position:relative; display:flex; align-items:center; gap:12px; padding:12px 14px 12px 12px; border-radius:14px; transition:transform .12s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease; }
+  .px-opt .opt-badge{ flex-shrink:0; width:26px; height:26px; border-radius:8px; background:var(--panel); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:700; color:var(--text-muted); transition:background .15s ease, border-color .15s ease, color .15s ease; }
+  .px-opt .opt-text{ flex:1; }
+  .px-opt .opt-icon{ flex-shrink:0; font-size:15px; opacity:0; transform:scale(0.5); transition:opacity .15s ease, transform .15s ease; }
+  .px-opt:not(.disabled):hover{ border-color:var(--gold-dim); background:rgba(217,168,78,0.06); transform:translateY(-1px); }
+  .px-opt:not(.disabled):active{ transform:scale(0.98); }
+  .px-opt.correct{ background:rgba(79,167,158,0.16); border-color:var(--teal); box-shadow:0 0 0 1px var(--teal) inset, 0 6px 18px rgba(79,167,158,0.18); }
+  .px-opt.correct .opt-badge{ background:var(--teal); border-color:var(--teal); color:#0E0D12; }
+  .px-opt.correct .opt-icon{ opacity:1; transform:scale(1); }
+  .px-opt.wrong{ background:rgba(196,99,79,0.16); box-shadow:0 0 0 1px var(--danger) inset; }
+  .px-opt.wrong .opt-badge{ background:var(--danger); border-color:var(--danger); color:#fff; }
+  .px-opt.wrong .opt-icon{ opacity:1; transform:scale(1); }
+
+  .px-nextbtn{ position:relative; z-index:1; overflow:hidden; background:linear-gradient(135deg, var(--gold), var(--teal)); color:var(--bg); border:none; font-weight:700; font-family:'Fraunces','Noto Sans Bengali',serif; font-size:13px; padding:12px; }
+  .px-nextbtn:active{ transform:scale(0.98); }
+
+  .px-loading{ display:flex; flex-direction:column; align-items:center; gap:14px; padding:44px 10px; }
+  .px-loading::before{ content:''; width:34px; height:34px; border-radius:50%; border:3px solid var(--border); border-top-color:var(--gold); animation:pxSpin .8s linear infinite; }
+  @keyframes pxSpin{ to{ transform:rotate(360deg); } }
+
+  .px-summary{ padding-top:30px; }
+  .px-score-ring{ position:relative; width:132px; height:132px; margin:0 auto 10px; }
+  .px-score-ring svg{ transform:rotate(-90deg); }
+  .px-score-ring .ring-pct{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .px-score-ring .ring-pct .big{ font-size:26px; }
+  .px-score-ring .ring-pct .frac{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-muted); margin-top:1px; }
+  .px-grade-chip{ display:inline-block; margin-top:8px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; padding:4px 12px; border-radius:999px; border:1px solid var(--teal-dim); color:var(--teal); }
+  .px-grade-chip.mid{ border-color:var(--gold-dim); color:var(--gold); }
+  .px-grade-chip.low{ border-color:rgba(196,99,79,0.5); color:var(--danger); }
+  .px-wronglist{ background:var(--panel-2); border-radius:14px; padding:6px 12px; }
+  .px-summary-btns button{ font-family:'Noto Sans Bengali','Inter',sans-serif; font-weight:600; transition:transform .12s ease, border-color .15s ease; }
+  .px-summary-btns button:active{ transform:scale(0.97); }
+  .px-summary-btns button#pxRetryWrong{ background:linear-gradient(135deg, rgba(196,99,79,0.18), rgba(217,168,78,0.14)); border-color:var(--danger); color:#F7DCD4; }
+  .px-summary-btns button#pxNewSession{ background:linear-gradient(135deg, var(--gold), var(--teal)); border:none; color:var(--bg); }
+
+  .px-hist-row{ transition:background .15s ease; border-radius:10px; padding-left:6px; padding-right:6px; }
+  .px-hist-row:hover{ background:rgba(255,255,255,0.03); }
 </style>
 </head>
 <body>
@@ -462,7 +521,7 @@
         <span class="flame" id="streakBadgeFlame">🔥</span>
         <span class="num" id="streakBadgeNum">0</span>
       </div>
-      <button class="icon-btn" id="settingsBtn" title="সেটিংস">⚙️</button>
+      <button class="icon-btn" id="settingsBtn" title="সেটিংস" data-i18n-title="settingsBtnTitle">⚙️</button>
     </div>
     <div class="brand-row">
       <div class="brand-mark">M</div>
@@ -470,79 +529,89 @@
         <h1>Memoria</h1>
       </div>
     </div>
-    <div class="sub">প্রতিদিনের শব্দচর্চা ও মুখস্থ অভ্যাস — এক জায়গায়</div>
+    <div class="sub" data-i18n="tagline">প্রতিদিনের শব্দচর্চা ও মুখস্থ অভ্যাস — এক জায়গায়</div>
   </header>
 
   <div class="modal-overlay" id="editModalOverlay">
     <div class="modal-box">
-      <div class="modal-title" id="editModalTitle">এডিট করো</div>
+      <div class="modal-title" id="editModalTitle" data-i18n="editModalTitleDefault">এডিট করো</div>
       <label>Word / Term</label>
       <input type="text" id="editWord">
-      <label>বাংলা (subtext)</label>
+      <label data-i18n="labelBnSubtext">বাংলা (subtext)</label>
       <input type="text" id="editBn">
       <label id="editValLabel">Meaning / Value</label>
       <textarea id="editVal" rows="3"></textarea>
       <div class="modal-actions">
-        <button id="editReset" class="modal-btn ghost">মূল অবস্থায় ফেরাও</button>
-        <button id="editCancel" class="modal-btn ghost">বাতিল</button>
-        <button id="editSave" class="modal-btn primary">সংরক্ষণ</button>
+        <button id="editReset" class="modal-btn ghost" data-i18n="editReset">মূল অবস্থায় ফেরাও</button>
+        <button id="editCancel" class="modal-btn ghost" data-i18n="cancel">বাতিল</button>
+        <button id="editSave" class="modal-btn primary" data-i18n="save">সংরক্ষণ</button>
       </div>
     </div>
   </div>
 
   <div class="modal-overlay" id="settingsModalOverlay">
     <div class="modal-box settings-box">
-      <div class="modal-title">⚙️ সেটিংস</div>
+      <div class="modal-title">⚙️ <span data-i18n="settingsBtnTitle">সেটিংস</span></div>
 
       <div class="settings-section">
-        <h4>☁️ Cloud Sync (getPantry) <span class="section-status" id="pantryStatusChip">কনফিগার করা হয়নি</span></h4>
-        <div class="settings-hint">getpantry.cloud থেকে ফ্রি একটা Pantry বানিয়ে তার ID এখানে বসাও — তাহলে তোমার progress অন্য ডিভাইস থেকেও sync হবে।</div>
+        <h4>🌐 <span data-i18n="languageSectionTitle">ভাষা</span></h4>
+        <div class="settings-hint" data-i18n="languageHint">অ্যাপের লেখা বাংলা, ইংরেজি, নাকি দুটোই একসাথে দেখতে চাও বেছে নাও।</div>
+        <div class="px-tabs" id="langModeTabs">
+          <button data-lang="bn" type="button">বাংলা</button>
+          <button data-lang="en" type="button">English</button>
+          <button data-lang="both" type="button">উভয়ই / Both</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h4>☁️ Cloud Sync (getPantry) <span class="section-status" id="pantryStatusChip" data-i18n="notConfigured">কনফিগার করা হয়নি</span></h4>
+        <div class="settings-hint" data-i18n="hintPantry">getpantry.cloud থেকে ফ্রি একটা Pantry বানিয়ে তার ID এখানে বসাও — তাহলে তোমার progress অন্য ডিভাইস থেকেও sync হবে।</div>
         <label>Pantry ID</label>
-        <input type="text" id="pantryIdInput" placeholder="তোমার getPantry ID এখানে বসাও">
+        <input type="text" id="pantryIdInput" placeholder="তোমার getPantry ID এখানে বসাও" data-i18n-ph="phPantryId">
         <div class="modal-actions">
-          <button id="pantrySave" class="modal-btn ghost">💾 ID সংরক্ষণ করো</button>
-          <button id="pantryUpload" class="modal-btn teal">☁️ Upload করো</button>
-          <button id="pantryDownload" class="modal-btn primary">⬇️ Restore করো</button>
+          <button id="pantrySave" class="modal-btn ghost">💾 <span data-i18n="btnIdSave">ID সংরক্ষণ করো</span></button>
+          <button id="pantryUpload" class="modal-btn teal">☁️ <span data-i18n="btnUpload">Upload করো</span></button>
+          <button id="pantryDownload" class="modal-btn primary">⬇️ <span data-i18n="btnRestore">Restore করো</span></button>
         </div>
         <div class="sync-status" id="pantryStatus"></div>
       </div>
 
       <div class="settings-section">
-        <h4>🔥 Cloud Sync (Firebase Realtime Database) <span class="section-status" id="fbStatusChip">কনফিগার করা হয়নি</span></h4>
-        <div class="settings-hint">console.firebase.google.com এ প্রজেক্ট বানাও (অথবা তোমার আগের ExPo Vault প্রজেক্টটাই ব্যবহার করো), Realtime Database চালু করো, তারপর ডেটাবেজের URL (যেমন <b>https://your-project-default-rtdb.firebaseio.com</b>) এখানে বসাও। Rules টেস্ট মোডে (allow read/write: true) থাকলে Auth ফাঁকা রাখতে পারো। Sync ID তুমি নিজে যা ইচ্ছা লিখতে পারো — একই URL + Sync ID যেই ডিভাইসে বসাবে, সব জায়গায় progress sync হবে।</div>
+        <h4>🔥 Cloud Sync (Firebase Realtime Database) <span class="section-status" id="fbStatusChip" data-i18n="notConfigured">কনফিগার করা হয়নি</span></h4>
+        <div class="settings-hint" data-i18n-html="hintFirebase">console.firebase.google.com এ প্রজেক্ট বানাও (অথবা তোমার আগের ExPo Vault প্রজেক্টটাই ব্যবহার করো), Realtime Database চালু করো, তারপর ডেটাবেজের URL (যেমন <b>https://your-project-default-rtdb.firebaseio.com</b>) এখানে বসাও। Rules টেস্ট মোডে (allow read/write: true) থাকলে Auth ফাঁকা রাখতে পারো। Sync ID তুমি নিজে যা ইচ্ছা লিখতে পারো — একই URL + Sync ID যেই ডিভাইসে বসাবে, সব জায়গায় progress sync হবে।</div>
         <label>Firebase Database URL</label>
         <input type="text" id="fbDbUrlInput" placeholder="https://your-project-default-rtdb.firebaseio.com">
-        <label>Auth Token / Database Secret (ঐচ্ছিক)</label>
-        <input type="text" id="fbApiKeyInput" placeholder="Rules প্রাইভেট হলে বসাও, নাহলে ফাঁকা রাখো">
+        <label data-i18n="labelAuthToken">Auth Token / Database Secret (ঐচ্ছিক)</label>
+        <input type="text" id="fbApiKeyInput" placeholder="Rules প্রাইভেট হলে বসাও, নাহলে ফাঁকা রাখো" data-i18n-ph="phAuthToken">
         <label>Sync ID</label>
         <input type="text" id="fbDocIdInput" placeholder="default">
         <div class="modal-actions">
-          <button id="fbSave" class="modal-btn ghost">💾 তথ্য সংরক্ষণ করো</button>
-          <button id="fbUpload" class="modal-btn teal">☁️ Upload করো</button>
-          <button id="fbDownload" class="modal-btn primary">⬇️ Restore করো</button>
+          <button id="fbSave" class="modal-btn ghost">💾 <span data-i18n="btnInfoSave">তথ্য সংরক্ষণ করো</span></button>
+          <button id="fbUpload" class="modal-btn teal">☁️ <span data-i18n="btnUpload">Upload করো</span></button>
+          <button id="fbDownload" class="modal-btn primary">⬇️ <span data-i18n="btnRestore">Restore করো</span></button>
         </div>
         <div class="sync-status" id="fbStatus"></div>
       </div>
 
       <div class="settings-section">
         <h4>🔄 Auto-Backup</h4>
-        <div class="settings-hint">চালু থাকলে, উপরের Pantry ID / Firebase URL যেটাই বসানো থাকুক (Firebase-কে আগে চেষ্টা করবে, না থাকলে Pantry), তোমার প্রতিটা checkbox-click বা শব্দ যোগ/এডিট করার কিছুক্ষণ পর নিজে থেকেই চুপচাপ cloud-এ backup হয়ে যাবে — আলাদা করে Upload বাটনে চাপতে হবে না। Backup শুধু তোমার progress (কোনটা পড়া হয়েছে, override) পাঠায় — কোনো API key/ID কখনো cloud-এ যায় না।</div>
+        <div class="settings-hint" data-i18n="hintAutoBackup">চালু থাকলে, উপরের Pantry ID / Firebase URL যেটাই বসানো থাকুক (Firebase-কে আগে চেষ্টা করবে, না থাকলে Pantry), তোমার প্রতিটা checkbox-click বা শব্দ যোগ/এডিট করার কিছুক্ষণ পর নিজে থেকেই চুপচাপ cloud-এ backup হয়ে যাবে — আলাদা করে Upload বাটনে চাপতে হবে না। Backup শুধু তোমার progress (কোনটা পড়া হয়েছে, override) পাঠায় — কোনো API key/ID কখনো cloud-এ যায় না।</div>
         <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;">
-          <input type="checkbox" id="autoBackupToggle"> Auto-backup চালু রাখো
+          <input type="checkbox" id="autoBackupToggle"> <span data-i18n="labelAutoBackupOn">Auto-backup চালু রাখো</span>
         </label>
         <div class="sync-status" id="autoBackupStatus"></div>
       </div>
 
       <div class="settings-section">
         <h4>🧠 Gemini API (Flashcard AI-এর জন্য) <span class="section-status" id="geminiStatusChip">0/8 key দেওয়া আছে</span></h4>
-        <div class="settings-hint">নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ৮টা API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে (কোনো wait ছাড়াই); একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। সব key + সব মডেল একবার করে fail হয়ে গেলে rate-limit এড়াতে ১ মিনিট wait করে আবার প্রথম থেকে try করবে। প্রতিটা শব্দের AI উত্তর একবার আনলে save হয়ে থাকবে (ফোনেই), পরে আবার একই শব্দ দেখলে offline-এও কাজ করবে আর নতুন করে token খরচ হবে না। <b>এই key গুলো শুধু এই ডিভাইসের ব্রাউজারে (localStorage) সংরক্ষিত থাকে — কোনো sync/backup/cloud-এ কখনো পাঠানো হয় না, এমনকি Auto-Backup চালু থাকলেও না।</b></div>
-        <label style="font-size:11px;color:var(--text-muted);">মডেল (ক্রম অনুযায়ী try হবে)</label>
+        <div class="settings-hint" data-i18n-html="hintGemini">নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ৮টা API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে (কোনো wait ছাড়াই); একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। সব key + সব মডেল একবার করে fail হয়ে গেলে rate-limit এড়াতে ১ মিনিট wait করে আবার প্রথম থেকে try করবে। প্রতিটা শব্দের AI উত্তর একবার আনলে save হয়ে থাকবে (ফোনেই), পরে আবার একই শব্দ দেখলে offline-এও কাজ করবে আর নতুন করে token খরচ হবে না। <b>এই key গুলো শুধু এই ডিভাইসের ব্রাউজারে (localStorage) সংরক্ষিত থাকে — কোনো sync/backup/cloud-এ কখনো পাঠানো হয় না, এমনকি Auto-Backup চালু থাকলেও না।</b></div>
+        <label style="font-size:11px;color:var(--text-muted);" data-i18n="labelModelsOrder">মডেল (ক্রম অনুযায়ী try হবে)</label>
         <div id="apiModelsWrap"></div>
-        <label style="font-size:11px;color:var(--text-muted);margin-top:6px;display:block;">API Key (ক্রম অনুযায়ী try হবে)</label>
+        <label style="font-size:11px;color:var(--text-muted);margin-top:6px;display:block;" data-i18n="labelKeysOrder">API Key (ক্রম অনুযায়ী try হবে)</label>
         <div id="apiKeysWrap"></div>
         <div class="modal-actions">
-          <button id="settingsSave" class="modal-btn primary">সংরক্ষণ করো</button>
-          <button id="settingsClose" class="modal-btn ghost">বন্ধ করো</button>
+          <button id="settingsSave" class="modal-btn primary" data-i18n="btnSaveAll">সংরক্ষণ করো</button>
+          <button id="settingsClose" class="modal-btn ghost" data-i18n="btnCloseModal">বন্ধ করো</button>
         </div>
       </div>
     </div>
@@ -551,7 +620,7 @@
   <div class="fc-overlay" id="fcOverlay">
     <div class="fc-box">
       <div class="fc-top">
-        <div class="fc-title" id="fcTitle">ফ্ল্যাশকার্ড</div>
+        <div class="fc-title" id="fcTitle" data-i18n="fcTitleDefault">ফ্ল্যাশকার্ড</div>
         <div class="fc-progress" id="fcProgress">1/1</div>
         <button class="fc-close" id="fcClose">✕</button>
       </div>
@@ -561,24 +630,24 @@
         <div class="fc-card" id="fcCard">
           <div class="fc-face front">
             <div class="fc-word" id="fcFrontWord"></div>
-            <div class="fc-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="6.5" opacity="0.55"/><circle cx="12" cy="12" r="10" opacity="0.28"/></svg> ট্যাপ করো উল্টানোর জন্য</div>
+            <div class="fc-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="6.5" opacity="0.55"/><circle cx="12" cy="12" r="10" opacity="0.28"/></svg> <span data-i18n="fcHintTap">ট্যাপ করো উল্টানোর জন্য</span></div>
           </div>
           <div class="fc-face back">
             <div class="fc-sub" id="fcBackSub"></div>
             <div class="fc-meaning" id="fcBackMeaning"></div>
-            <div class="fc-hint">↺ আবার ট্যাপ করো</div>
+            <div class="fc-hint" data-i18n="fcHintTapAgain">↺ আবার ট্যাপ করো</div>
           </div>
         </div>
       </div>
       <div class="fc-ai-box" id="fcAiBox"></div>
       <div class="fc-controls">
-        <button id="fcPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14 6 8 12 14 18"/></svg> আগের</button>
-        <button id="fcShuffle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> এলোমেলো</button>
-        <button id="fcAi" class="fc-ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5a2.5 2.5 0 0 0-2.45 2.03A2.5 2.5 0 0 0 5.5 8.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 2 4.42A2.5 2.5 0 0 0 9.5 20.5"/><path d="M9.5 3.5v17"/><path d="M9.5 8.5h-2"/><path d="M9.5 13.5h-2"/><path d="M14.5 3.5a2.5 2.5 0 0 1 2.45 2.03 2.5 2.5 0 0 1 1.55 2.97 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-2 4.42 2.5 2.5 0 0 1-2 2.58"/><path d="M14.5 3.5v17"/><path d="M14.5 8.5h2"/><path d="M14.5 13.5h2"/></svg> AI সাহায্য</button>
-        <button id="fcNext">পরের <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="10 6 16 12 10 18"/></svg></button>
+        <button id="fcPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14 6 8 12 14 18"/></svg> <span data-i18n="btnPrev">আগের</span></button>
+        <button id="fcShuffle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> <span data-i18n="btnShuffle">এলোমেলো</span></button>
+        <button id="fcAi" class="fc-ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5a2.5 2.5 0 0 0-2.45 2.03A2.5 2.5 0 0 0 5.5 8.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 2 4.42A2.5 2.5 0 0 0 9.5 20.5"/><path d="M9.5 3.5v17"/><path d="M9.5 8.5h-2"/><path d="M9.5 13.5h-2"/><path d="M14.5 3.5a2.5 2.5 0 0 1 2.45 2.03 2.5 2.5 0 0 1 1.55 2.97 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-2 4.42 2.5 2.5 0 0 1-2 2.58"/><path d="M14.5 3.5v17"/><path d="M14.5 8.5h2"/><path d="M14.5 13.5h2"/></svg> <span data-i18n="btnAiHelp">AI সাহায্য</span></button>
+        <button id="fcNext"><span data-i18n="btnNext">পরের</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="10 6 16 12 10 18"/></svg></button>
       </div>
       <div class="fc-controls fc-controls-2">
-        <button id="fcAiAll" class="fc-ai-all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5a2.5 2.5 0 0 0-2.45 2.03A2.5 2.5 0 0 0 5.5 8.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 2 4.42A2.5 2.5 0 0 0 9.5 20.5"/><path d="M9.5 3.5v17"/><path d="M9.5 8.5h-2"/><path d="M9.5 13.5h-2"/><path d="M14.5 3.5a2.5 2.5 0 0 1 2.45 2.03 2.5 2.5 0 0 1 1.55 2.97 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-2 4.42 2.5 2.5 0 0 1-2 2.58"/><path d="M14.5 3.5v17"/><path d="M14.5 8.5h2"/><path d="M14.5 13.5h2"/></svg> <span id="fcAiAllLabel">এই তালিকার সব শব্দের AI একসাথে আনো</span></button>
+        <button id="fcAiAll" class="fc-ai-all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5a2.5 2.5 0 0 0-2.45 2.03A2.5 2.5 0 0 0 5.5 8.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 2 4.42A2.5 2.5 0 0 0 9.5 20.5"/><path d="M9.5 3.5v17"/><path d="M9.5 8.5h-2"/><path d="M9.5 13.5h-2"/><path d="M14.5 3.5a2.5 2.5 0 0 1 2.45 2.03 2.5 2.5 0 0 1 1.55 2.97 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-2 4.42 2.5 2.5 0 0 1-2 2.58"/><path d="M14.5 3.5v17"/><path d="M14.5 8.5h2"/><path d="M14.5 13.5h2"/></svg> <span id="fcAiAllLabel" data-i18n="aiAllLabel">এই তালিকার সব শব্দের AI একসাথে আনো</span></button>
       </div>
     </div>
   </div>
@@ -599,30 +668,38 @@
   <div class="px-overlay" id="pxCachedOverlay">
     <div class="px-box">
       <div class="px-top">
-        <div class="px-title">🔁 পুরনো MCQ থেকে re-exam</div>
+        <div class="px-title">🔁 <span data-i18n="reExamTitle">পুরনো MCQ থেকে re-exam</span></div>
         <button class="px-close" id="pxCachedOverlayClose">✕</button>
       </div>
       <div class="px-card">
         <select id="pxCachedTypeSelect" class="px-input"></select>
-        <div class="px-range-row" style="margin-top:8px;">
-          <input type="number" id="pxCachedFrom" class="px-input" placeholder="থেকে (নম্বর, ফাঁকা = শুরু থেকে)">
-          <input type="number" id="pxCachedTo" class="px-input" placeholder="পর্যন্ত (নম্বর, ফাঁকা = শেষ পর্যন্ত)">
+        <div class="px-tabs" id="pxCachedRangeModeTabs" style="margin-top:8px;margin-bottom:0;">
+          <button data-rmode="num" class="active" type="button" data-i18n="byNumber">নম্বর দিয়ে</button>
+          <button data-rmode="letter" type="button" data-i18n="byLetter">অক্ষর দিয়ে (A–Z)</button>
+        </div>
+        <div class="px-range-row" id="pxCachedNumRangeRow" style="margin-top:8px;">
+          <input type="number" id="pxCachedFrom" class="px-input" placeholder="থেকে (নম্বর, ফাঁকা = শুরু থেকে)" data-i18n-ph="phFromNum">
+          <input type="number" id="pxCachedTo" class="px-input" placeholder="পর্যন্ত (নম্বর, ফাঁকা = শেষ পর্যন্ত)" data-i18n-ph="phToNum">
+        </div>
+        <div class="px-range-row" id="pxCachedLetterRangeRow" style="display:none;margin-top:8px;">
+          <input type="text" id="pxCachedFromLetter" maxlength="1" class="px-input" placeholder="থেকে অক্ষর (যেমন A)" data-i18n-ph="phFromLetter">
+          <input type="text" id="pxCachedToLetter" maxlength="1" class="px-input" placeholder="পর্যন্ত অক্ষর (যেমন C)" data-i18n-ph="phToLetter">
         </div>
         <div class="px-range-row" style="margin-top:8px;">
-          <input type="number" id="pxCachedCount" class="px-input" min="1" placeholder="কয়টা প্রশ্ন চাও (ফাঁকা = সবগুলো, ২০-এর বেশি হলে র‍্যান্ডম ২০)">
+          <input type="number" id="pxCachedCount" class="px-input" min="1" placeholder="কয়টা প্রশ্ন চাও (ফাঁকা = সবগুলো, ২০-এর বেশি হলে র‍্যান্ডম ২০)" data-i18n-ph="phCount">
         </div>
-        <div class="px-preview" id="pxCachedPreview" style="margin-top:10px;">🔤 <span class="n" id="pxCachedPreviewN">–</span> টি শব্দ পাওয়া যাচ্ছে</div>
-        <button id="pxCachedStartBtn" class="px-start-btn" type="button">শুরু করো</button>
+        <div class="px-preview" id="pxCachedPreview" style="margin-top:10px;">🔤 <span class="n" id="pxCachedPreviewN">–</span> <span data-i18n="wordsFoundSuffix">টি শব্দ পাওয়া যাচ্ছে</span></div>
+        <button id="pxCachedStartBtn" class="px-start-btn" type="button" data-i18n="btnStart">শুরু করো</button>
         <div id="pxCachedMsg" class="px-msg"></div>
-        <div class="sub" style="margin-top:2px;">✅ শুধু আগে যেসব শব্দের প্রশ্ন একবার AI দিয়ে জেনারেট হয়ে গেছে সেগুলো থেকেই বাছাই হবে — তাই নতুন token খরচ হবে না।</div>
+        <div class="sub" style="margin-top:2px;"><span data-i18n="noteCachedOnly">✅ শুধু আগে যেসব শব্দের প্রশ্ন একবার AI দিয়ে জেনারেট হয়ে গেছে সেগুলো থেকেই বাছাই হবে — তাই নতুন token খরচ হবে না।</span></div>
       </div>
     </div>
   </div>
 
   <div class="main-tabs reveal d1">
-    <button class="main-tab-btn" data-tab="today">আজকের পড়া</button>
-    <button class="main-tab-btn active" data-tab="more">রুটিন ও অগ্রগতি</button>
-    <button class="main-tab-btn" data-tab="practice">অনুশীলন</button>
+    <button class="main-tab-btn" data-tab="today" data-i18n="tabToday">আজকের পড়া</button>
+    <button class="main-tab-btn active" data-tab="more" data-i18n="tabRoutine">রুটিন ও অগ্রগতি</button>
+    <button class="main-tab-btn" data-tab="practice" data-i18n="tabPractice">অনুশীলন</button>
   </div>
 
   <div id="tabPane-today" class="tab-pane">
@@ -647,9 +724,9 @@
     </section>
 
     <div class="filters reveal d4">
-      <button data-f="all">সব</button>
-      <button data-f="today" class="active">আজকে</button>
-      <button data-f="pending">বাকি আছে</button>
+      <button data-f="all" data-i18n="filterAll">সব</button>
+      <button data-f="today" class="active" data-i18n="filterToday">আজকে</button>
+      <button data-f="pending" data-i18n="filterPending">বাকি আছে</button>
       <button data-f="note">Notes</button>
     </div>
 
@@ -676,7 +753,7 @@
   <div id="tabPane-more" class="tab-pane active">
 
     <section class="panel reveal d1 routine-panel">
-      <div class="panel-title">আজকের রুটিন
+      <div class="panel-title"><span data-i18n="todayRoutine">আজকের রুটিন</span>
         <span class="week-nav">
           <button id="rtPrevBtn" onclick="changeRoutineDay(-1)">◀</button>
           <span id="rtDateLabel"></span>
@@ -692,31 +769,31 @@
     </section>
 
     <section class="panel reveal d2">
-      <div class="panel-title">অগ্রগতির ধারা
+      <div class="panel-title"><span data-i18n="progressTrend">অগ্রগতির ধারা</span>
         <span class="trend-toggle">
-          <button id="trendWeeklyBtn" class="active" data-mode="weekly">সাপ্তাহিক</button>
-          <button id="trendMonthlyBtn" data-mode="monthly">মাসিক</button>
+          <button id="trendWeeklyBtn" class="active" data-mode="weekly" data-i18n="weekly">সাপ্তাহিক</button>
+          <button id="trendMonthlyBtn" data-mode="monthly" data-i18n="monthly">মাসিক</button>
         </span>
       </div>
       <div class="bars" id="barsWrap"></div>
     </section>
 
     <div class="extra-section">
-      <h2>সম্পূর্ণ শব্দ তালিকা <span class="section-status" id="extraTotalBadge"></span></h2>
-      <div class="sub" style="margin-bottom:10px;">প্রতিটা বিষয়ের পুরো শব্দভাণ্ডার এখানে ব্রাউজ করো, নিজের ইচ্ছেমতো নতুন শব্দ যোগ করো, reorder/edit/delete করো। ⚠️ এখানে যোগ করা শব্দ শুধু এই তালিকা, ফ্ল্যাশকার্ড ও অনুশীলনেই দেখাবে — "আজকের পড়া" ট্যাবের নির্দিষ্ট দিনের ক্যালেন্ডারে (যেটা সংখ্যা-রেঞ্জ ধরে চলে) স্বয়ংক্রিয়ভাবে যুক্ত হবে না।</div>
+      <h2><span data-i18n="fullWordList">সম্পূর্ণ শব্দ তালিকা</span> <span class="section-status" id="extraTotalBadge"></span></h2>
+      <div class="sub" style="margin-bottom:10px;" data-i18n="noteExtraSection">প্রতিটা বিষয়ের পুরো শব্দভাণ্ডার এখানে ব্রাউজ করো, নিজের ইচ্ছেমতো নতুন শব্দ যোগ করো, reorder/edit/delete করো। ⚠️ এখানে যোগ করা শব্দ শুধু এই তালিকা, ফ্ল্যাশকার্ড ও অনুশীলনেই দেখাবে — "আজকের পড়া" ট্যাবের নির্দিষ্ট দিনের ক্যালেন্ডারে (যেটা সংখ্যা-রেঞ্জ ধরে চলে) স্বয়ংক্রিয়ভাবে যুক্ত হবে না।</div>
       <div id="extraWrap"></div>
     </div>
 
     <div class="extra-section">
       <div class="cov-header" data-toggle="covWrap">
-        <h2>কভারেজ সারাংশ</h2>
+        <h2 data-i18n="coverageSummary">কভারেজ সারাংশ</h2>
         <span class="caret" id="caret-covWrap">▸</span>
       </div>
-      <div class="sub" style="margin-bottom:10px;">প্রতিটা বিষয় কোন তারিখ থেকে কোন তারিখ পর্যন্ত, কত দিনে কভার হচ্ছে। (বেশি দিন থেকে কম দিনের ক্রমে সাজানো)</div>
+      <div class="sub" style="margin-bottom:10px;" data-i18n="noteCoverage">প্রতিটা বিষয় কোন তারিখ থেকে কোন তারিখ পর্যন্ত, কত দিনে কভার হচ্ছে। (বেশি দিন থেকে কম দিনের ক্রমে সাজানো)</div>
       <div class="cov-wrap" id="covWrap">
         <table class="cov-table">
           <thead>
-            <tr><th>বিষয়</th><th>শুরু</th><th>শেষ</th><th style="text-align:right;">দিন</th><th>নম্বর রেঞ্জ</th></tr>
+            <tr><th data-i18n="thTopic">বিষয়</th><th data-i18n="thStart">শুরু</th><th data-i18n="thEnd">শেষ</th><th style="text-align:right;" data-i18n="thDays">দিন</th><th data-i18n="thRange">নম্বর রেঞ্জ</th></tr>
           </thead>
           <tbody id="covBody"></tbody>
         </table>
@@ -728,15 +805,15 @@
   <div id="tabPane-practice" class="tab-pane">
 
     <section class="panel reveal d1" id="pxSetupPanel">
-      <div class="panel-title"><span>অনুশীলন <span class="tag">Practice</span></span><span class="px-quicklinks"><button id="pxGoCached" type="button">🔁 পুরনো MCQ</button><button id="pxGoProgress" type="button">📊 অগ্রগতি</button><button id="pxGoList" type="button">📋 তালিকা</button></span></div>
+      <div class="panel-title"><span><span data-i18n="tabPractice">অনুশীলন</span> <span class="tag">Practice</span></span><span class="px-quicklinks"><button id="pxGoProgress" type="button">📊 <span data-i18n="btnProgress">অগ্রগতি</span></button><button id="pxGoList" type="button">📋 <span data-i18n="btnList">তালিকা</span></button></span></div>
 
       <div class="px-block">
-        <div class="px-label">উৎস — কোন শব্দ নিয়ে অনুশীলন হবে</div>
+        <div class="px-label" data-i18n="sourceLabel">উৎস — কোন শব্দ নিয়ে অনুশীলন হবে</div>
         <div class="px-tabs" id="pxSourceTabs">
-          <button data-src="today" class="active">আজকের পড়া</button>
-          <button data-src="date">নির্দিষ্ট তারিখ</button>
-          <button data-src="range">সিরিয়াল রেঞ্জ / টাইপ</button>
-          <button data-src="mix">মিক্স (একাধিক বিষয়)</button>
+          <button data-src="today" class="active" data-i18n="tabToday">আজকের পড়া</button>
+          <button data-src="date" data-i18n="specificDate">নির্দিষ্ট তারিখ</button>
+          <button data-src="range" data-i18n="serialRangeType">সিরিয়াল রেঞ্জ / টাইপ</button>
+          <button data-src="mix" data-i18n="mixMultiple">মিক্স (একাধিক বিষয়)</button>
         </div>
       </div>
 
@@ -746,42 +823,51 @@
 
       <div class="px-subwrap" id="pxRangeWrap" style="display:none;">
         <select id="pxTypeSelect" class="px-input"></select>
-        <div class="px-range-row">
-          <input type="number" id="pxFromInput" class="px-input" placeholder="থেকে (নম্বর, ফাঁকা = শুরু থেকে)">
-          <input type="number" id="pxToInput" class="px-input" placeholder="পর্যন্ত (নম্বর, ফাঁকা = শেষ পর্যন্ত)">
+        <div class="px-tabs" id="pxRangeModeTabs" style="margin-top:8px;margin-bottom:0;">
+          <button data-rmode="num" class="active" type="button" data-i18n="byNumber">নম্বর দিয়ে</button>
+          <button data-rmode="letter" type="button" data-i18n="byLetter">অক্ষর দিয়ে (A–Z)</button>
+        </div>
+        <div class="px-range-row" id="pxNumRangeRow" style="margin-top:8px;">
+          <input type="number" id="pxFromInput" class="px-input" placeholder="থেকে (নম্বর, ফাঁকা = শুরু থেকে)" data-i18n-ph="phFromNum">
+          <input type="number" id="pxToInput" class="px-input" placeholder="পর্যন্ত (নম্বর, ফাঁকা = শেষ পর্যন্ত)" data-i18n-ph="phToNum">
+        </div>
+        <div class="px-range-row" id="pxLetterRangeRow" style="display:none;margin-top:8px;">
+          <input type="text" id="pxFromLetter" maxlength="1" class="px-input" placeholder="থেকে অক্ষর (যেমন A)" data-i18n-ph="phFromLetter">
+          <input type="text" id="pxToLetter" maxlength="1" class="px-input" placeholder="পর্যন্ত অক্ষর (যেমন C)" data-i18n-ph="phToLetter">
         </div>
       </div>
 
       <div class="px-subwrap px-mix-wrap" id="pxMixWrap" style="display:none;flex-wrap:wrap;gap:6px;"></div>
 
       <div class="px-block">
-        <div class="px-label">মোড</div>
+        <div class="px-label" data-i18n="modeLabel">মোড</div>
         <div class="px-tabs" id="pxModeTabs">
           <button data-mode="mcq" class="active">MCQ Quiz</button>
-          <button data-mode="weak">দুর্বল শব্দ ফোকাস</button>
+          <button data-mode="weak" data-i18n="weakFocus">দুর্বল শব্দ ফোকাস</button>
         </div>
       </div>
 
-      <div class="px-preview" id="pxPreview">🔤 <span class="n" id="pxPreviewN">–</span> টি শব্দ পাওয়া যাচ্ছে</div>
-      <button id="pxStartBtn" class="px-start-btn">শুরু করো</button>
+      <div class="px-preview" id="pxPreview">🔤 <span class="n" id="pxPreviewN">–</span> <span data-i18n="wordsFoundSuffix">টি শব্দ পাওয়া যাচ্ছে</span></div>
+      <button id="pxStartBtn" class="px-start-btn" data-i18n="btnStart">শুরু করো</button>
       <div id="pxSetupMsg" class="px-msg"></div>
     </section>
 
     <section class="panel reveal d2" id="pxHistoryPanel">
       <div class="panel-title cov-header" data-toggle="pxHistoryBody">
-        <span>সাম্প্রতিক সেশন <span class="tag">History</span> <span class="section-status" id="pxHistoryCountBadge"></span></span>
+        <span><span data-i18n="recentSessions">সাম্প্রতিক সেশন</span> <span class="tag">History</span> <span class="section-status" id="pxHistoryCountBadge"></span></span>
         <span class="caret" id="caret-pxHistoryBody">▸</span>
       </div>
       <div class="cov-wrap" id="pxHistoryBody">
+        <button id="pxHistGoCached" type="button" class="px-hist-cached-trigger">🔁 <span data-i18n="reExamTitle">পুরনো MCQ থেকে re-exam</span></button>
         <div class="px-hist-tabs" id="pxHistoryTabs"></div>
-        <div id="pxHistoryWrap"><div class="sub">এখনো কোনো সেশন হয়নি।</div></div>
+        <div id="pxHistoryWrap"><div class="sub" data-i18n="noSessionsYet">এখনো কোনো সেশন হয়নি।</div></div>
       </div>
     </section>
 
   </div>
 
   <footer>
-    Memoria — প্রতিদিনের অভ্যাসই সবচেয়ে বড় শক্তি।
+    Memoria — <span data-i18n="footerTagline">প্রতিদিনের অভ্যাসই সবচেয়ে বড় শক্তি।</span>
   </footer>
 
 <script>
@@ -1054,7 +1140,7 @@ const GROUPVERB_LIST = [{"no": 1, "word": "Act on/upon", "bn": "নির্ভ�
 const IDIOM_LIST = [{"no": 1, "word": "ABC", "bn": "প্রাথমিক জ্ঞান", "meaning": "Elementary knowledge", "page": 1}, {"no": 2, "word": "A bad egg", "bn": "যে লোকের নীতিবোধের উপর নির্ভর করা যায় না", "meaning": "An unreliable person", "page": 1}, {"no": 3, "word": "A baker's dozen", "bn": "তেরো", "meaning": "Thirteen", "page": 1}, {"no": 4, "word": "A bed of roses", "bn": "সুখকর অবস্থা", "meaning": "A life of joy and comfort", "page": 1}, {"no": 5, "word": "A best seller", "bn": "সবচেয়ে বেশি বিক্রি হওয়া বই", "meaning": "A book that sells in very large numbers", "page": 1}, {"no": 6, "word": "A big draw", "bn": "অত্যন্ত আকর্ষণের বিষয়", "meaning": "A huge attraction", "page": 1}, {"no": 7, "word": "A bird brain", "bn": "বোকা ব্যক্তি", "meaning": "A foolish man", "page": 1}, {"no": 8, "word": "Abode of God", "bn": "স্বর্গ", "meaning": "Heaven", "page": 1}, {"no": 9, "word": "A bolt from the blue", "bn": "বিনা মেঘে বজ্রপাত", "meaning": "An unexpected calamity", "page": 1}, {"no": 10, "word": "Absolute zero", "bn": "সর্বনিম্ন তাপমাত্রা", "meaning": "-273° Centigrade", "page": 1}, {"no": 11, "word": "Above board", "bn": "সহজ-সরল", "meaning": "Legal and honest", "page": 1}, {"no": 12, "word": "According to", "bn": "অনুসারে", "meaning": "As stated or reported by somebody/something", "page": 1}, {"no": 13, "word": "Acid test", "bn": "অগ্নিপরীক্ষা", "meaning": "Real test", "page": 1}, {"no": 14, "word": "Achilles' heel", "bn": "দুর্বলতম স্থান", "meaning": "A weak point that can cause a person's downfall", "page": 1}, {"no": 15, "word": "A cock and bull story", "bn": "আজগুবি গল্প", "meaning": "A false story", "page": 1}, {"no": 16, "word": "Across the board", "bn": "সবাই বা সবকিছু মিলিয়ে", "meaning": "Everyone or everything included", "page": 1}, {"no": 17, "word": "A fall guy", "bn": "বলির পাঁঠা", "meaning": "A scapegoat", "page": 1}, {"no": 18, "word": "A flying visit", "bn": "খুব কম সময়ের ভ্রমণ", "meaning": "A very short visit", "page": 1}, {"no": 19, "word": "After one's own heart", "bn": "নিজের পছন্দ অনুযায়ী", "meaning": "To one's own liking", "page": 1}, {"no": 20, "word": "A gala day", "bn": "আনন্দের দিন", "meaning": "A day of festivity", "page": 1}, {"no": 21, "word": "A great deal", "bn": "প্রচুর", "meaning": "A lot", "page": 1}, {"no": 22, "word": "A la mode", "bn": "আধুনিক রীতি অনুযায়ী", "meaning": "According to the current fashion", "page": 1}, {"no": 23, "word": "All at once", "bn": "হঠাৎ", "meaning": "Suddenly", "page": 2}, {"no": 24, "word": "All but", "bn": "প্রায়", "meaning": "Almost / Nearly", "page": 2}, {"no": 25, "word": "All in", "bn": "ক্লান্ত", "meaning": "Tired", "page": 2}, {"no": 26, "word": "All agog", "bn": "উদগ্রীব", "meaning": "Very eager/interested", "page": 2}, {"no": 27, "word": "All in all", "bn": "সর্বেসর্বা", "meaning": "All powerful", "page": 2}, {"no": 28, "word": "A lot of", "bn": "প্রচুর", "meaning": "A vast amount", "page": 2}, {"no": 29, "word": "A man of letters", "bn": "শিক্ষিত লোক", "meaning": "A scholar", "page": 2}, {"no": 30, "word": "A man of his word", "bn": "কথা রাখে এমন মানুষ / এক কথার মানুষ", "meaning": "A person who keeps his promise", "page": 2}, {"no": 31, "word": "An estimate of the value", "bn": "মূল্য নিরূপণ", "meaning": "An appraisal", "page": 2}, {"no": 32, "word": "An early bird", "bn": "প্রত্যূষে শয্যাত্যাগকারী ব্যক্তি", "meaning": "An early riser", "page": 2}, {"no": 33, "word": "A piece of cake", "bn": "খুব সহজে করা যায় এমন কাজ", "meaning": "A task that can be accomplished very easily", "page": 2}, {"no": 34, "word": "Apple of discord", "bn": "বিবাদের বিষয়", "meaning": "An object of dispute/quarrel", "page": 2}, {"no": 35, "word": "Apple of one's eye", "bn": "প্রিয় ব্যক্তি বা বস্তু", "meaning": "Extremely favourite", "page": 2}, {"no": 36, "word": "A round dozen", "bn": "পূর্ণ ডজন", "meaning": "A full dozen", "page": 2}, {"no": 37, "word": "A slip of the tongue", "bn": "অনিচ্ছাকৃতভাবে ভুল বলা", "meaning": "Unintentionally saying something wrong", "page": 2}, {"no": 38, "word": "A storm in a tea cup", "bn": "তুচ্ছ বিষয় নিয়ে হইচই", "meaning": "A lot of fuss over a trivial matter", "page": 2}, {"no": 39, "word": "A snake in the grass", "bn": "গোপন শত্রু", "meaning": "A hidden enemy", "page": 2}, {"no": 40, "word": "A tenure position", "bn": "স্থায়ী পদ", "meaning": "A permanent position", "page": 2}, {"no": 41, "word": "At any cost", "bn": "যেকোনো মূল্যে", "meaning": "Under any circumstances", "page": 2}, {"no": 42, "word": "At a glance", "bn": "এক পলকে", "meaning": "With only a quick look", "page": 2}, {"no": 43, "word": "At all costs", "bn": "যেকোনো প্রকারে", "meaning": "Regardless of the difficulty or cost", "page": 2}, {"no": 44, "word": "(Not) at all", "bn": "মোটেই না", "meaning": "Not at all", "page": 2}, {"no": 45, "word": "At loggerheads", "bn": "চরম মতানৈক্যে", "meaning": "In strong disagreement", "page": 2}, {"no": 46, "word": "At a fixed rate", "bn": "নির্ধারিত মূল্যে", "meaning": "At the fixed price", "page": 2}, {"no": 47, "word": "At a low ebb", "bn": "হ্রাসমান", "meaning": "Decreasing", "page": 2}, {"no": 48, "word": "At a stretch", "bn": "একটানা", "meaning": "Without break/stopping", "page": 2}, {"no": 49, "word": "At bottom", "bn": "প্রকৃতপক্ষে", "meaning": "In reality", "page": 2}, {"no": 50, "word": "At home", "bn": "দক্ষ/পরিচিত", "meaning": "Expert / Familiar with", "page": 2}, {"no": 51, "word": "At daggers drawn", "bn": "উদ্যত", "meaning": "On the point of fighting / In a state of violent hostility", "page": 3}, {"no": 52, "word": "At home with", "bn": "স্বচ্ছন্দে", "meaning": "At ease", "page": 3}, {"no": 53, "word": "At large", "bn": "স্বাধীনভাবে", "meaning": "Freely / At liberty", "page": 3}, {"no": 54, "word": "At length", "bn": "অবশেষে", "meaning": "After a long time / Finally", "page": 3}, {"no": 55, "word": "At odds", "bn": "দ্বিমত পোষণ", "meaning": "In disagreement", "page": 3}, {"no": 56, "word": "At one go", "bn": "এক প্রচেষ্টায়", "meaning": "In a single attempt", "page": 3}, {"no": 57, "word": "At random", "bn": "দৈবক্রমে", "meaning": "By chance", "page": 3}, {"no": 58, "word": "At snail's pace", "bn": "ধীরে ধীরে", "meaning": "Very slowly", "page": 3}, {"no": 59, "word": "At stake", "bn": "সংকটাপন্ন", "meaning": "Endangered", "page": 3}, {"no": 60, "word": "At a stone's throw", "bn": "নিকটে", "meaning": "At a short distance", "page": 3}, {"no": 61, "word": "At the eleventh hour", "bn": "শেষ মুহূর্তে", "meaning": "At the last moment", "page": 3}, {"no": 62, "word": "At the outset", "bn": "প্রারম্ভে", "meaning": "From the beginning", "page": 3}, {"no": 63, "word": "At times", "bn": "মাঝে মাঝে", "meaning": "Sometimes", "page": 3}, {"no": 64, "word": "Aware of contrary things", "bn": "একই সাথে দুটি বিপরীতধর্মী অনুভূতি বিদ্যমান এমন", "meaning": "Ambivalent", "page": 3}, {"no": 65, "word": "A whale of a time", "bn": "উত্তেজনাকর ও আনন্দময় সময়", "meaning": "An exciting and interesting time", "page": 3}, {"no": 66, "word": "A white lie", "bn": "ক্ষতিহীন মিথ্যা", "meaning": "A harmless lie", "page": 3}, {"no": 67, "word": "Backstairs influence", "bn": "গোপন ও অনৈতিক প্রভাব", "meaning": "Secret and unfair influence", "page": 3}, {"no": 68, "word": "Back up", "bn": "সমর্থন করা", "meaning": "To support", "page": 3}, {"no": 69, "word": "Bad blood", "bn": "শত্রুতা", "meaning": "Animosity / Enmity", "page": 3}, {"no": 70, "word": "Bag and baggage", "bn": "তল্পিতল্পাসহ", "meaning": "Leaving nothing behind (taking all belongings)", "page": 3}, {"no": 71, "word": "Bear the brunt of", "bn": "বিরক্তিকর অভিজ্ঞতার মুখোমুখি হওয়া", "meaning": "To receive the main force of something unpleasant", "page": 3}, {"no": 72, "word": "Bear market", "bn": "মন্দা বাজার", "meaning": "A market with falling prices", "page": 3}, {"no": 73, "word": "Bear with", "bn": "সহ্য করা", "meaning": "To tolerate", "page": 3}, {"no": 74, "word": "Bear out", "bn": "সমর্থন করা", "meaning": "To confirm", "page": 3}, {"no": 75, "word": "Beat around the bush", "bn": "গুরুত্বপূর্ণ বিষয় এড়িয়ে চলা", "meaning": "To avoid the main point", "page": 3}, {"no": 76, "word": "Behave oneself", "bn": "ভালো ব্যবহার দেখানো", "meaning": "To show good manners", "page": 3}, {"no": 77, "word": "Beggar description", "bn": "শব্দে বর্ণনা করা যায় না এমন ⚠️ (যাচাই করো)", "meaning": "Cannot be described in words / Indescribable", "page": 4}, {"no": 78, "word": "Between the devil and the deep sea", "bn": "দুই বিপদের মাঝে ⚠️ (যাচাই করো)", "meaning": "Caught in a difficult situation between two dangers", "page": 4}, {"no": 79, "word": "Beyond all question", "bn": "কোনো সন্দেহ ছাড়াই ⚠️ (যাচাই করো)", "meaning": "Without any doubt", "page": 4}, {"no": 80, "word": "Beyond reform", "bn": "সংশোধনের অতীত ⚠️ (যাচাই করো)", "meaning": "Cannot be corrected/improved", "page": 4}, {"no": 81, "word": "Big gun/Big fish", "bn": "গুরুত্বপূর্ণ ব্যক্তি", "meaning": "An important/influential person", "page": 4}, {"no": 82, "word": "Bill of fare", "bn": "খাবারের তালিকা", "meaning": "A list of dishes at a restaurant", "page": 4}, {"no": 83, "word": "Birds of the same feather", "bn": "একই স্বভাবের মানুষ", "meaning": "People of the same sort", "page": 4}, {"no": 84, "word": "Black sheep", "bn": "কুলাঙ্গার", "meaning": "A wicked/bad person in a group or family", "page": 4}, {"no": 85, "word": "Blow one's own trumpet", "bn": "নিজের গুণগান করা ⚠️ (যাচাই করো)", "meaning": "To boast/praise one's own ability", "page": 4}, {"no": 86, "word": "Blue blood", "bn": "অভিজাত বংশোদ্ভূত", "meaning": "Aristocratic/noble birth", "page": 4}, {"no": 87, "word": "Blue Book", "bn": "সরকারি প্রতিবেদন", "meaning": "A government publication", "page": 4}, {"no": 88, "word": "Blue chip firm", "bn": "নিরাপদ বিনিয়োগযোগ্য শিল্প প্রতিষ্ঠান", "meaning": "Industrial shares considered to be a safe investment", "page": 4}, {"no": 89, "word": "Bone of contention", "bn": "বিবাদের বিষয়", "meaning": "Subject of argument/matter of dispute", "page": 4}, {"no": 90, "word": "In the core of one's heart", "bn": "হৃদয়ের গভীরে ⚠️ (যাচাই করো)", "meaning": "In one's innermost feelings", "page": 4}, {"no": 91, "word": "Keep one's nose to the grindstone", "bn": "কঠোর পরিশ্রম করতে থাকা ⚠️ (যাচাই করো)", "meaning": "To work hard continuously", "page": 4}, {"no": 92, "word": "Bring to book", "bn": "শাস্তি দেওয়া / জবাবদিহি করানো", "meaning": "To punish/hold accountable", "page": 4}, {"no": 93, "word": "Break out", "bn": "হঠাৎ শুরু হওয়া ⚠️ (যাচাই করো)", "meaning": "Sudden start of something unpleasant / to break down", "page": 5}, {"no": 94, "word": "Break the record", "bn": "আগে কখনো করা হয়নি এমন কিছু করা", "meaning": "To do something that has not been done before", "page": 5}, {"no": 95, "word": "Break forth", "bn": "হঠাৎ প্রকাশ করা", "meaning": "To burst out", "page": 5}, {"no": 96, "word": "Brush up", "bn": "পূর্ব জ্ঞান ঝালিয়ে নেওয়া", "meaning": "To improve one's previous knowledge", "page": 5}, {"no": 97, "word": "Bursting with health", "bn": "স্বাস্থ্যে পরিপূর্ণ ⚠️ (যাচাই করো)", "meaning": "In very good health", "page": 5}, {"no": 98, "word": "Burning question", "bn": "গুরুত্বপূর্ণ প্রশ্ন", "meaning": "An important question/hot topic", "page": 5}, {"no": 99, "word": "Bury the hatchet", "bn": "ঝগড়া মিটিয়ে বন্ধুত্ব করা", "meaning": "To stop quarrelling and become friendly", "page": 5}, {"no": 100, "word": "Butterflies in one's stomach", "bn": "খুব নার্ভাস বোধ করা", "meaning": "To feel very nervous", "page": 5}, {"no": 101, "word": "By leaps and bounds", "bn": "দ্রুত গতিতে", "meaning": "Very rapidly", "page": 5}, {"no": 102, "word": "By and large", "bn": "মোটের উপর ⚠️ (যাচাই করো)", "meaning": "Generally/on the whole", "page": 5}, {"no": 103, "word": "By fair means or foul", "bn": "যেকোনো উপায়ে, সৎ বা অসৎ", "meaning": "In any way, honest or dishonest", "page": 5}, {"no": 104, "word": "By fits and starts", "bn": "অনিয়মিতভাবে", "meaning": "At irregular intervals", "page": 5}, {"no": 105, "word": "By way of", "bn": "উপায় হিসেবে ⚠️ (যাচাই করো)", "meaning": "As a means of", "page": 5}, {"no": 106, "word": "Call it a day", "bn": "আজকের মতো কাজ শেষ করা", "meaning": "To stop work since enough has been done", "page": 5}, {"no": 107, "word": "Call at", "bn": "সাক্ষাৎ করা", "meaning": "To meet/pay a visit", "page": 5}, {"no": 108, "word": "Call (someone) names", "bn": "কাউকে খারাপ নামে ডাকা", "meaning": "To call someone by an insulting name", "page": 5}, {"no": 109, "word": "Call in question", "bn": "সন্দেহ করা ⚠️ (যাচাই করো)", "meaning": "To doubt/challenge", "page": 6}, {"no": 110, "word": "Capital punishment", "bn": "মৃত্যুদণ্ড", "meaning": "Death penalty", "page": 6}, {"no": 111, "word": "Catch sight of", "bn": "হঠাৎ দেখতে পাওয়া", "meaning": "To see for a moment", "page": 6}, {"no": 112, "word": "Cat's paw", "bn": "অন্যের হাতিয়ার", "meaning": "A person used to serve the purposes of another; a tool", "page": 6}, {"no": 113, "word": "A cock and bull story", "bn": "আজগুবি গল্প", "meaning": "A silly story", "page": 6}, {"no": 114, "word": "Cold shoulder", "bn": "উপেক্ষা করা", "meaning": "To treat in an unfriendly way / to ignore someone", "page": 6}, {"no": 115, "word": "Come to light", "bn": "প্রকাশ পাওয়া", "meaning": "To be brought to light/become known", "page": 6}, {"no": 116, "word": "Concrete proposal", "bn": "সুনির্দিষ্ট প্রস্তাব ⚠️ (যাচাই করো)", "meaning": "A definite/clear proposal", "page": 6}, {"no": 117, "word": "Cry wolf", "bn": "মিথ্যা বিপদ সংকেত দেওয়া", "meaning": "To give a false alarm", "page": 6}, {"no": 118, "word": "Culpable homicide", "bn": "হত্যাকাণ্ডের চেয়ে লঘু অপরাধ", "meaning": "Not amounting to murder", "page": 7}, {"no": 119, "word": "Curry favour", "bn": "তোষামোদ করে সুবিধা আদায় করা ⚠️ (যাচাই করো)", "meaning": "To show excessive flattery to gain favour", "page": 7}, {"no": 120, "word": "Cut a poor figure", "bn": "খারাপ ছাপ ফেলা", "meaning": "To produce a poor impression", "page": 7}, {"no": 121, "word": "Dark horse", "bn": "অজানা যোগ্যতাসম্পন্ন ব্যক্তি", "meaning": "A person of unknown past/whose qualities are not known", "page": 7}, {"no": 122, "word": "Day dream", "bn": "দিবাস্বপ্ন", "meaning": "Pleasant, imaginative thoughts unrelated to reality", "page": 7}, {"no": 123, "word": "Dead letter", "bn": "অকার্যকর আইন", "meaning": "Existing but inactive / a law not in force", "page": 7}, {"no": 124, "word": "Die in harness", "bn": "কাজ করতে করতে মারা যাওয়া", "meaning": "To go on working till death", "page": 7}, {"no": 125, "word": "Die-hard", "bn": "কট্টর সমর্থক", "meaning": "A strong, unwavering supporter", "page": 7}, {"no": 126, "word": "Don't judge a book by its cover", "bn": "বাইরের রূপ দেখে বিচার করো না", "meaning": "Not to prejudge the value of something by its outward appearance alone", "page": 7}, {"no": 127, "word": "Double jeopardy", "bn": "একই অপরাধে দুইবার বিচার ⚠️ (যাচাই করো)", "meaning": "Being tried twice for the same offence", "page": 7}, {"no": 128, "word": "Down to earth", "bn": "বাস্তববাদী", "meaning": "Realistic/practical", "page": 7}, {"no": 129, "word": "Cut to the quick", "bn": "গভীরভাবে আহত করা ⚠️ (যাচাই করো)", "meaning": "To hurt someone's feelings deeply", "page": 8}, {"no": 130, "word": "Come to nothing", "bn": "ব্যর্থ হওয়া", "meaning": "To fail / end without result", "page": 8}, {"no": 131, "word": "End in fiasco", "bn": "সম্পূর্ণ ব্যর্থতায় শেষ হওয়া", "meaning": "To end in complete failure", "page": 8}, {"no": 132, "word": "Face to face", "bn": "মুখোমুখি", "meaning": "Looking at each other directly", "page": 8}, {"no": 133, "word": "Fall out (with)", "bn": "ঝগড়া হওয়া ⚠️ (যাচাই করো)", "meaning": "To quarrel with someone", "page": 8}, {"no": 134, "word": "Fall for", "bn": "প্রবলভাবে আকৃষ্ট হওয়া", "meaning": "To be strongly attracted to", "page": 8}, {"no": 135, "word": "Far and wide", "bn": "সর্বত্র", "meaning": "Over a large area", "page": 8}, {"no": 136, "word": "Far cry", "bn": "অনেক পার্থক্য", "meaning": "A long way off / very different", "page": 8}, {"no": 137, "word": "Feel at home", "bn": "স্বচ্ছন্দ বোধ করা", "meaning": "To feel free and easy", "page": 8}, {"no": 138, "word": "Feel like", "bn": "মনে হওয়া", "meaning": "To have an inclination/urge to", "page": 8}, {"no": 139, "word": "Fight shy", "bn": "এড়িয়ে চলা", "meaning": "To avoid", "page": 8}, {"no": 140, "word": "First language", "bn": "মাতৃভাষা", "meaning": "One's natural/native language", "page": 8}, {"no": 141, "word": "Fish out of water", "bn": "অস্বস্তিতে থাকা", "meaning": "Uneasy in an unfamiliar situation", "page": 8}, {"no": 142, "word": "Flying colours", "bn": "পূর্ণ সাফল্য", "meaning": "Complete success", "page": 8}, {"no": 143, "word": "Focus on", "bn": "মনোনিবেশ করা", "meaning": "To concentrate on", "page": 8}, {"no": 144, "word": "Foregone conclusion", "bn": "পূর্বানুমিত ফলাফল", "meaning": "An anticipated result", "page": 8}, {"no": 145, "word": "For good", "bn": "চিরতরে", "meaning": "Permanently", "page": 8}, {"no": 146, "word": "Fall into a brown study", "bn": "গভীর চিন্তায় মগ্ন হওয়া ⚠️ (যাচাই করো)", "meaning": "To think seriously and deeply", "page": 8}, {"no": 147, "word": "Free and easy", "bn": "অবাধ ও সহজ", "meaning": "Without restriction", "page": 9}, {"no": 148, "word": "Free hand", "bn": "পূর্ণ স্বাধীনতা", "meaning": "Full liberty to act as one wishes", "page": 9}, {"no": 149, "word": "Get along", "bn": "সামলে নেওয়া", "meaning": "To manage/cope", "page": 9}, {"no": 150, "word": "Get rid of", "bn": "মুক্ত হওয়া", "meaning": "To be free from", "page": 9}, {"no": 151, "word": "Get (something) across", "bn": "বুঝিয়ে বলা", "meaning": "To make someone understand an idea", "page": 9}, {"no": 152, "word": "Get over", "bn": "কাটিয়ে ওঠা", "meaning": "To deal with or gain control of something", "page": 9}, {"no": 153, "word": "Get the ball rolling", "bn": "কাজ শুরু করা", "meaning": "To start the work with vigour", "page": 9}, {"no": 154, "word": "Gift of the gab", "bn": "বাকপটুতা", "meaning": "The ability to speak fluently/persuasively", "page": 9}, {"no": 155, "word": "Give way", "bn": "ভেঙে পড়া", "meaning": "To break or fall down", "page": 9}, {"no": 156, "word": "Go back on one's promise", "bn": "প্রতিশ্রুতি থেকে সরে আসা", "meaning": "To withdraw from one's promise", "page": 9}, {"no": 157, "word": "Go down", "bn": "ভেঙে পড়া", "meaning": "To collapse", "page": 9}, {"no": 158, "word": "Go out", "bn": "বেরিয়ে যাওয়া", "meaning": "To go outside", "page": 9}, {"no": 159, "word": "Go to the dogs", "bn": "সর্বনাশ হওয়া", "meaning": "To be ruined", "page": 9}, {"no": 160, "word": "Go through", "bn": "পড়া/পর্যালোচনা করা", "meaning": "To read/review", "page": 9}, {"no": 161, "word": "Let the grass grow under one's feet", "bn": "দেরি করা", "meaning": "To delay and linger", "page": 9}, {"no": 162, "word": "Hang about", "bn": "ঘোরাঘুরি করা", "meaning": "To loiter about", "page": 9}, {"no": 163, "word": "Hard and fast", "bn": "কঠোর/অপরিবর্তনীয় ⚠️ (যাচাই করো)", "meaning": "Strict/fixed", "page": 10}, {"no": 164, "word": "A hard nut to crack", "bn": "কঠিন সমস্যা ⚠️ (যাচাই করো)", "meaning": "A difficult problem or person to deal with", "page": 10}, {"no": 165, "word": "At the earliest", "bn": "যত দ্রুত সম্ভব", "meaning": "As soon as possible", "page": 10}, {"no": 166, "word": "Hand in glove", "bn": "ঘনিষ্ঠ সম্পর্কে ⚠️ (যাচাই করো)", "meaning": "In very close association", "page": 10}, {"no": 167, "word": "Head over heels", "bn": "প্রবলভাবে", "meaning": "Madly (in love)", "page": 10}, {"no": 168, "word": "From the core of one's heart", "bn": "হৃদয়ের অন্তঃস্থল থেকে", "meaning": "From the innermost feelings", "page": 10}, {"no": 169, "word": "Cut-throat competition", "bn": "তীব্র প্রতিযোগিতা ⚠️ (যাচাই করো)", "meaning": "Intense, ruthless competition", "page": 10}, {"no": 170, "word": "Hold water", "bn": "যুক্তিসঙ্গত হওয়া", "meaning": "To bear examination / be valid and logical", "page": 10}, {"no": 171, "word": "On the horns of a dilemma", "bn": "উভয় সংকটে", "meaning": "In a state of perplexity between two difficult choices", "page": 11}, {"no": 172, "word": "In a fix", "bn": "বিপদে", "meaning": "In trouble", "page": 11}, {"no": 173, "word": "In contrast", "bn": "বিপরীতে", "meaning": "On the other hand", "page": 11}, {"no": 174, "word": "In connection with", "bn": "সম্পর্কে", "meaning": "Having to do with a particular thing", "page": 11}, {"no": 175, "word": "In good time", "bn": "যথাসময়ে ⚠️ (যাচাই করো)", "meaning": "Punctually", "page": 11}, {"no": 176, "word": "Instead of", "bn": "পরিবর্তে", "meaning": "In place of", "page": 11}, {"no": 177, "word": "In response to", "bn": "জবাবে", "meaning": "In regard to", "page": 11}, {"no": 178, "word": "In short", "bn": "সংক্ষেপে", "meaning": "Briefly", "page": 11}, {"no": 179, "word": "Into the bargain", "bn": "অতিরিক্ত হিসেবে", "meaning": "In addition", "page": 11}, {"no": 180, "word": "In the lap of the gods", "bn": "ভাগ্যের হাতে", "meaning": "Depending on fate/uncertain outcome", "page": 11}, {"no": 181, "word": "In the nick of time", "bn": "একদম শেষ মুহূর্তে", "meaning": "At the very last minute/at the right time", "page": 11}, {"no": 182, "word": "In the pipeline", "bn": "প্রস্তুত কিন্তু এখনো প্রকাশিত হয়নি", "meaning": "Prepared but not yet made public", "page": 11}, {"no": 183, "word": "In the wake of", "bn": "পরপরই", "meaning": "Coming immediately after", "page": 11}, {"no": 184, "word": "A rich harvest", "bn": "প্রচুর ফলাফল/সাফল্য ⚠️ (যাচাই করো)", "meaning": "An abundant result/success", "page": 11}, {"no": 185, "word": "Keep aloof from", "bn": "দূরে থাকা ⚠️ (যাচাই করো)", "meaning": "To stay away from", "page": 12}, {"no": 186, "word": "Keep in the dark", "bn": "অন্ধকারে রাখা", "meaning": "To keep someone uninformed", "page": 12}, {"no": 187, "word": "Keep one's chin up", "bn": "সাহস না হারানো", "meaning": "To remain cheerful in the face of difficulty", "page": 12}, {"no": 188, "word": "Keep one's nose out of something", "bn": "হস্তক্ষেপ না করা", "meaning": "To avoid interfering in something", "page": 12}, {"no": 189, "word": "Keep one's fingers crossed", "bn": "সৌভাগ্য কামনা করা", "meaning": "To hope for good luck", "page": 12}, {"no": 190, "word": "Keep the flag flying", "bn": "উৎসাহ ধরে রাখা", "meaning": "To maintain enthusiasm/pride", "page": 12}, {"no": 191, "word": "Kick", "bn": "পদাঘাত করা ⚠️ (যাচাই করো)", "meaning": "To hit with the foot", "page": 12}, {"no": 192, "word": "Kith and kin", "bn": "আত্মীয়স্বজন", "meaning": "Blood relations", "page": 12}, {"no": 193, "word": "Knock into shape", "bn": "সঠিক আকারে আনা ⚠️ (যাচাই করো)", "meaning": "To make something/someone fit for purpose", "page": 12}, {"no": 194, "word": "Lead story", "bn": "প্রধান সংবাদ", "meaning": "Important news featured in a newspaper", "page": 12}, {"no": 195, "word": "Leave no stone unturned", "bn": "সর্বাত্মক চেষ্টা করা", "meaning": "To try every possible means", "page": 12}, {"no": 196, "word": "Let the cat out of the bag", "bn": "গোপন কথা ফাঁস করা", "meaning": "To reveal a secret", "page": 12}, {"no": 197, "word": "Lion's share", "bn": "সিংহভাগ", "meaning": "The largest part", "page": 12}, {"no": 198, "word": "Loads of mistakes", "bn": "অনেক ভুল", "meaning": "Many mistakes", "page": 12}, {"no": 199, "word": "Look and feel", "bn": "বাহ্যিক রূপ ⚠️ (যাচাই করো)", "meaning": "Outward appearance", "page": 12}, {"no": 200, "word": "Live from hand to mouth", "bn": "টেনেটুনে সংসার চালানো", "meaning": "To live with barely enough to survive", "page": 12}, {"no": 201, "word": "Lose ground", "bn": "ক্ষমতা কমে যাওয়া", "meaning": "To become less powerful", "page": 13}, {"no": 202, "word": "Look before you leap", "bn": "চিন্তা করে কাজ করা", "meaning": "Think about the possible results before acting", "page": 13}, {"no": 203, "word": "Look forward to", "bn": "আগ্রহের সাথে অপেক্ষা করা", "meaning": "To expect with pleasure", "page": 13}, {"no": 204, "word": "Loud and clear", "bn": "স্পষ্টভাবে", "meaning": "Very evident", "page": 13}, {"no": 205, "word": "First century", "bn": "প্রথম শতরান ⚠️ (যাচাই করো)", "meaning": "First hundred runs (cricket)", "page": 13}, {"no": 206, "word": "Made for", "bn": "উপযুক্ত", "meaning": "Perfectly suited for", "page": 13}, {"no": 207, "word": "Make friends with (someone)", "bn": "কারো সাথে বন্ধুত্ব করা", "meaning": "To be friends with someone", "page": 13}, {"no": 208, "word": "Make a dash for", "bn": "দ্রুত ছুটে যাওয়া", "meaning": "To run quickly for someone or something", "page": 13}, {"no": 209, "word": "Make hay while the sun shines", "bn": "সুযোগের সদ্ব্যবহার করা", "meaning": "To make good use of the opportunity", "page": 13}, {"no": 210, "word": "Make headway", "bn": "অগ্রগতি করা", "meaning": "To make progress", "page": 13}, {"no": 211, "word": "Make up", "bn": "পুষিয়ে নেওয়া/মিটমাট করা ⚠️ (যাচাই করো)", "meaning": "To compensate/reconcile", "page": 13}, {"no": 212, "word": "Mend fences", "bn": "সম্পর্ক ঠিক করা ⚠️ (যাচাই করো)", "meaning": "To do something that corrects a bad situation", "page": 13}, {"no": 213, "word": "Man of straw", "bn": "অসার/দুর্বল ব্যক্তি ⚠️ (যাচাই করো)", "meaning": "A person of no substance, easily overcome", "page": 13}, {"no": 214, "word": "Man does not live by bread alone", "bn": "মানুষের শুধু জাগতিক চাহিদাই যথেষ্ট নয় ⚠️ (যাচাই করো)", "meaning": "Man needs more than material things", "page": 13}, {"no": 215, "word": "Modus operandi", "bn": "কার্যপদ্ধতি", "meaning": "Method of operation", "page": 13}, {"no": 216, "word": "Nip in the bud", "bn": "শুরুতেই ধ্বংস করা", "meaning": "To destroy something at the very beginning", "page": 14}, {"no": 217, "word": "Not playing with a full deck", "bn": "মানসিকভাবে সুস্থ নয় ⚠️ (যাচাই করো)", "meaning": "Not mentally stable", "page": 14}, {"no": 218, "word": "Off and on", "bn": "মাঝে মাঝে", "meaning": "Occasionally", "page": 14}, {"no": 219, "word": "Off the hook", "bn": "সমস্যামুক্ত", "meaning": "No longer in difficulty or trouble", "page": 14}, {"no": 220, "word": "Off the record", "bn": "গোপনীয়", "meaning": "Confidential, not for publication", "page": 14}, {"no": 221, "word": "On the cards", "bn": "সম্ভাব্য ⚠️ (যাচাই করো)", "meaning": "Possible/likely", "page": 14}, {"no": 222, "word": "One-eyed", "bn": "পক্ষপাতদুষ্ট ⚠️ (যাচাই করো)", "meaning": "Biased", "page": 14}, {"no": 223, "word": "On the increase", "bn": "বৃদ্ধি পাচ্ছে এমন", "meaning": "Increasing", "page": 14}, {"no": 224, "word": "On the sly", "bn": "গোপনে", "meaning": "Secretly", "page": 14}, {"no": 225, "word": "Open secret", "bn": "প্রকাশ্য গোপন কথা", "meaning": "Something not officially announced but widely known", "page": 14}, {"no": 226, "word": "On the spur of the moment", "bn": "পূর্ব পরিকল্পনা ছাড়াই", "meaning": "Without previous thought, spontaneously", "page": 14}, {"no": 227, "word": "Out of the blue", "bn": "হঠাৎ ও অপ্রত্যাশিতভাবে", "meaning": "Something completely unexpected", "page": 14}, {"no": 228, "word": "Out and out", "bn": "সম্পূর্ণরূপে", "meaning": "Thoroughly/completely", "page": 14}, {"no": 229, "word": "Outbreak", "bn": "আকস্মিক সূচনা", "meaning": "Sudden start of something unpleasant", "page": 14}, {"no": 230, "word": "Out of doors", "bn": "বাইরে", "meaning": "Outdoors, away from inside a place", "page": 15}, {"no": 231, "word": "Out of place", "bn": "অনুপযুক্ত স্থানে ⚠️ (যাচাই করো)", "meaning": "Not in the proper position", "page": 15}, {"no": 232, "word": "Out at elbows", "bn": "দরিদ্র/জীর্ণ ⚠️ (যাচাই করো)", "meaning": "In poverty / shabby", "page": 15}, {"no": 233, "word": "Out of the wood(s)", "bn": "বিপদমুক্ত", "meaning": "Free from difficulty or problem", "page": 15}, {"no": 234, "word": "Outward show", "bn": "বাহ্যিক জাঁকজমক", "meaning": "Superficially good but actually not", "page": 15}, {"no": 235, "word": "Patch (something) up", "bn": "মিটমাট করা", "meaning": "To end a quarrel and become friends again", "page": 15}, {"no": 236, "word": "Pin money", "bn": "সামান্য খরচের টাকা ⚠️ (যাচাই করো)", "meaning": "A small amount of extra money/allowance", "page": 15}, {"no": 237, "word": "Play truant", "bn": "স্কুল ফাঁকি দেওয়া", "meaning": "To stay away from school without permission", "page": 15}, {"no": 238, "word": "Police state", "bn": "পুলিশি রাষ্ট্র", "meaning": "A country where people's freedom is highly restricted by the government", "page": 15}, {"no": 239, "word": "Possession in fact", "bn": "প্রকৃত দখল ⚠️ (যাচাই করো)", "meaning": "Physical/actual possession", "page": 16}, {"no": 240, "word": "Play the game", "bn": "ন্যায্যভাবে খেলা ⚠️ (যাচাই করো)", "meaning": "To follow the rules, be fair", "page": 16}, {"no": 241, "word": "Good and evil", "bn": "ভালো ও মন্দ ⚠️ (যাচাই করো)", "meaning": "Moral opposites", "page": 16}, {"no": 242, "word": "Play second fiddle", "bn": "গৌণ ভূমিকা পালন করা ⚠️ (যাচাই করো)", "meaning": "To be in a subordinate position", "page": 16}, {"no": 243, "word": "Pull well with", "bn": "বন্ধুত্বপূর্ণ সম্পর্ক থাকা ⚠️ (যাচাই করো)", "meaning": "To get along well with", "page": 16}, {"no": 244, "word": "Pass the buck", "bn": "দোষ চাপিয়ে দেওয়া", "meaning": "To pass the blame to someone else", "page": 16}, {"no": 245, "word": "Put the cart before the horse", "bn": "স্বাভাবিক ক্রম উল্টে দেওয়া", "meaning": "To reverse the natural order of things", "page": 16}, {"no": 246, "word": "Put someone away", "bn": "বন্দি বা আটক করা ⚠️ (যাচাই করো)", "meaning": "To send somebody to prison/an asylum", "page": 16}, {"no": 247, "word": "Quote", "bn": "উদ্ধৃত করা ⚠️ (যাচাই করো)", "meaning": "To recite something that is written", "page": 16}, {"no": 248, "word": "Rack and ruin", "bn": "শোচনীয় অবস্থা ⚠️ (যাচাই করো)", "meaning": "A state of decay/ruin", "page": 16}, {"no": 249, "word": "Red-handed", "bn": "হাতেনাতে ধরা", "meaning": "Caught in the act of doing something wrong", "page": 16}, {"no": 250, "word": "Red-letter day", "bn": "স্মরণীয় দিন", "meaning": "A memorable day/day of celebration", "page": 16}, {"no": 251, "word": "Right and left", "bn": "যত্রতত্র", "meaning": "Indiscriminately, in all directions", "page": 16}, {"no": 252, "word": "Round table conference", "bn": "গোল টেবিল বৈঠক", "meaning": "A political or other discussion among equals", "page": 16}, {"no": 253, "word": "Rule of thumb", "bn": "অভিজ্ঞতাভিত্তিক পদ্ধতি", "meaning": "A method based on experience/practical approach", "page": 16}, {"no": 254, "word": "Rank and file", "bn": "সাধারণ সদস্যবৃন্দ ⚠️ (যাচাই করো)", "meaning": "Ordinary members of a group", "page": 17}, {"no": 255, "word": "Cream of the crop", "bn": "সেরাদের সেরা ⚠️ (যাচাই করো)", "meaning": "The ideal/best people", "page": 17}, {"no": 256, "word": "Something fishy", "bn": "সন্দেহজনক ⚠️ (যাচাই করো)", "meaning": "Something suspicious", "page": 17}, {"no": 257, "word": "Rank outsider", "bn": "ক্ষমতার বাইরে থাকা দল/ব্যক্তি ⚠️ (যাচাই করো)", "meaning": "A party or person not in power/not expected to win", "page": 17}, {"no": 258, "word": "Sinister", "bn": "অশুভ", "meaning": "Seeming evil or dangerous", "page": 17}, {"no": 259, "word": "Smell a rat", "bn": "কারচুপি সন্দেহ করা", "meaning": "To suspect a trick or deceit", "page": 17}, {"no": 260, "word": "Soft soap", "bn": "স্বার্থপর তোষামোদ", "meaning": "Flattery for selfish motives", "page": 17}, {"no": 261, "word": "Call bad names", "bn": "গালিগালাজ করা ⚠️ (যাচাই করো)", "meaning": "To call someone bad names", "page": 17}, {"no": 262, "word": "Spill the beans", "bn": "গোপন কথা ফাঁস করা", "meaning": "To reveal a secret", "page": 17}, {"no": 263, "word": "Square meal", "bn": "পরিতৃপ্তিদায়ক পূর্ণ খাবার ⚠️ (যাচাই করো)", "meaning": "A good, satisfying meal", "page": 18}, {"no": 264, "word": "Steal the show", "bn": "সবার দৃষ্টি আকর্ষণ করা", "meaning": "To attract the most attention/praise", "page": 18}, {"no": 265, "word": "Take after", "bn": "চেহারা বা স্বভাবে সাদৃশ্য থাকা", "meaning": "To resemble a parent in appearance or character", "page": 18}, {"no": 266, "word": "Take full advantage", "bn": "পুরোপুরি সুযোগ নেওয়া ⚠️ (যাচাই করো)", "meaning": "To make full use of an opportunity", "page": 18}, {"no": 267, "word": "Take into account", "bn": "বিবেচনা করা", "meaning": "To consider", "page": 18}, {"no": 268, "word": "Talk of", "bn": "আলোচনা করা", "meaning": "To discuss", "page": 18}, {"no": 269, "word": "Three times a week", "bn": "সপ্তাহে তিনবার ⚠️ (যাচাই করো)", "meaning": "Thrice a week", "page": 18}, {"no": 270, "word": "Tempest in a teapot", "bn": "তুচ্ছ বিষয়ে হইচই ⚠️ (যাচাই করো)", "meaning": "A lot of fuss over a trivial matter", "page": 18}, {"no": 271, "word": "Trifling", "bn": "গুরুত্বহীন ⚠️ (যাচাই করো)", "meaning": "Unimportant, trivial", "page": 18}, {"no": 272, "word": "To turn a deaf ear", "bn": "শুনেও না শোনার ভান করা ⚠️ (যাচাই করো)", "meaning": "To deliberately ignore or refuse to listen", "page": 19}, {"no": 273, "word": "To take to something", "bn": "পছন্দ করে ফেলা ⚠️ (যাচাই করো)", "meaning": "To show liking/support for something", "page": 19}, {"no": 274, "word": "To be at one's wit's end", "bn": "কী করবে বুঝতে না পারা", "meaning": "Not to know what to do / to be perplexed", "page": 19}, {"no": 275, "word": "To beg the question", "bn": "স্বতঃসিদ্ধ ধরে নেওয়া ⚠️ (যাচাই করো)", "meaning": "To take something for granted", "page": 19}, {"no": 276, "word": "To break the ice", "bn": "আড়ষ্টতা কাটানো", "meaning": "To say something at the beginning of a meeting to ease tension", "page": 19}, {"no": 277, "word": "Not mince matters", "bn": "স্পষ্টভাবে বলা ⚠️ (যাচাই করো)", "meaning": "To speak plainly, without hiding anything", "page": 19}, {"no": 278, "word": "To catch off guard", "bn": "অসতর্ক অবস্থায় ধরা", "meaning": "To surprise someone when they are careless", "page": 19}, {"no": 279, "word": "To come into view", "bn": "দৃশ্যমান হওয়া ⚠️ (যাচাই করো)", "meaning": "To become visible", "page": 19}, {"no": 280, "word": "To cope with", "bn": "সামলানো", "meaning": "To adjust/deal with", "page": 19}, {"no": 281, "word": "To cry for the moon", "bn": "অসম্ভব জিনিস চাওয়া", "meaning": "To want something that is impossible to get", "page": 19}, {"no": 282, "word": "To cut a fine figure", "bn": "চমৎকার ছাপ ফেলা", "meaning": "To give a fine impression of oneself", "page": 19}, {"no": 283, "word": "To dash someone's hope", "bn": "আশাভঙ্গ করা ⚠️ (যাচাই করো)", "meaning": "To spoil someone's hope suddenly", "page": 19}, {"no": 284, "word": "To do away with", "bn": "বাদ দেওয়া", "meaning": "To get rid of", "page": 19}, {"no": 285, "word": "To embrace a habit", "bn": "কোনো অভ্যাসে অভ্যস্ত হওয়া ⚠️ (যাচাই করো)", "meaning": "To eagerly engage in a habit", "page": 19}, {"no": 286, "word": "To fish in troubled waters", "bn": "গোলযোগের সুযোগ নেওয়া", "meaning": "To make a personal profit out of a disturbance", "page": 19}, {"no": 287, "word": "To flog a dead horse", "bn": "অচল বিষয়ে সময় নষ্ট করা ⚠️ (যাচাই করো)", "meaning": "To waste effort on something already settled/hopeless", "page": 19}, {"no": 288, "word": "From the best away from the door", "bn": "কাছেই থাকা ⚠️ (যাচাই করো)", "meaning": "Nearby/close at hand", "page": 20}, {"no": 289, "word": "Grass does not grow under one's feet", "bn": "কালক্ষেপণ না করা ⚠️ (যাচাই করো)", "meaning": "To act without delay", "page": 20}, {"no": 290, "word": "To lighten the atmosphere", "bn": "পরিবেশ হালকা করা ⚠️ (যাচাই করো)", "meaning": "To ease tension", "page": 20}, {"no": 291, "word": "To lose heart", "bn": "সাহস হারানো", "meaning": "To lose courage", "page": 20}, {"no": 292, "word": "To make a living", "bn": "জীবিকা নির্বাহ করা", "meaning": "To earn a living", "page": 20}, {"no": 293, "word": "To make a clean breast of", "bn": "সব স্বীকার করা", "meaning": "To confess without reservation", "page": 20}, {"no": 294, "word": "To meet one's Waterloo", "bn": "চূড়ান্ত পরাজয় বরণ করা ⚠️ (যাচাই করো)", "meaning": "To suffer a final, decisive defeat", "page": 20}, {"no": 295, "word": "To meet trouble halfway", "bn": "আগেভাগেই দুশ্চিন্তা করা ⚠️ (যাচাই করো)", "meaning": "To worry about a problem before it happens", "page": 20}, {"no": 296, "word": "To make oneself at home", "bn": "স্বচ্ছন্দ বোধ করা", "meaning": "To be comfortable", "page": 20}, {"no": 297, "word": "To nurse a grudge", "bn": "মনে ক্ষোভ পুষে রাখা", "meaning": "To bear ill will towards someone", "page": 20}, {"no": 298, "word": "Tooth and nail", "bn": "সর্বশক্তি দিয়ে", "meaning": "With utmost effort/strongly", "page": 20}, {"no": 299, "word": "To pay lip service", "bn": "শুধু মুখে সমর্থন করা", "meaning": "To show only outward respect, not genuine", "page": 20}, {"no": 300, "word": "To pay through the nose", "bn": "অত্যধিক দাম দেওয়া", "meaning": "To pay a very high price", "page": 20}, {"no": 301, "word": "To paddle one's own canoe", "bn": "নিজের চেষ্টায় কিছু করা", "meaning": "To do something by one's own effort", "page": 20}, {"no": 302, "word": "To play high", "bn": "ঝুঁকি নিয়ে খেলা ⚠️ (যাচাই করো)", "meaning": "To take a big risk", "page": 20}, {"no": 303, "word": "To fiddle while Rome burns", "bn": "গুরুত্বপূর্ণ বিষয়ে উদাসীন থেকে সময় নষ্ট করা ⚠️ (যাচাই করো)", "meaning": "To waste time on trivial things while a crisis unfolds", "page": 20}, {"no": 304, "word": "To pour oil on troubled water", "bn": "পরিস্থিতি শান্ত করা ⚠️ (যাচাই করো)", "meaning": "To calm down a difficult situation", "page": 20}, {"no": 305, "word": "To pull strings", "bn": "গোপন প্রভাব খাটানো", "meaning": "To exert hidden influence", "page": 20}, {"no": 306, "word": "To push somebody to the wall", "bn": "কাউকে কোণঠাসা করা ⚠️ (যাচাই করো)", "meaning": "To defeat/corner someone completely", "page": 20}, {"no": 307, "word": "To ride well", "bn": "স্বাচ্ছন্দ্যে চলা ⚠️ (যাচাই করো)", "meaning": "To enjoy a smooth ride", "page": 20}, {"no": 308, "word": "To read between the lines", "bn": "অন্তর্নিহিত অর্থ বোঝা", "meaning": "To grasp the hidden meaning", "page": 21}, {"no": 309, "word": "To side with", "bn": "পক্ষ নেওয়া ⚠️ (যাচাই করো)", "meaning": "To support one side in a dispute", "page": 21}, {"no": 310, "word": "To take a nap", "bn": "একটু ঘুমিয়ে নেওয়া", "meaning": "To take a short sleep", "page": 21}, {"no": 311, "word": "To take somebody for a ride", "bn": "প্রতারণা করা ⚠️ (যাচাই করো)", "meaning": "To deceive/cheat someone", "page": 21}, {"no": 312, "word": "Trial and error", "bn": "চেষ্টা-নিরীক্ষার মাধ্যমে", "meaning": "Process of solving a problem by trying various methods", "page": 21}, {"no": 313, "word": "Turn a deaf ear", "bn": "অগ্রাহ্য করা", "meaning": "To disregard", "page": 21}, {"no": 314, "word": "Upper hand", "bn": "প্রাধান্য", "meaning": "Advantage over somebody", "page": 21}, {"no": 315, "word": "Value judgement", "bn": "ব্যক্তিগত মতামতভিত্তিক বিচার", "meaning": "Judgement based on personal views", "page": 21}, {"no": 316, "word": "Vicious circle", "bn": "জটিল অবস্থার পুনরাবৃত্তি", "meaning": "An unchangeable, self-perpetuating difficult situation", "page": 21}, {"no": 317, "word": "Vice versa", "bn": "বিপরীতক্রমে", "meaning": "The other way round", "page": 21}, {"no": 318, "word": "Wash one's dirty linen in public", "bn": "ব্যক্তিগত সমস্যা প্রকাশ্যে আনা", "meaning": "To discuss private/unpleasant matters in public", "page": 21}, {"no": 319, "word": "Watch out for", "bn": "সতর্ক থাকা", "meaning": "To be cautious", "page": 21}, {"no": 320, "word": "Wear and tear", "bn": "ক্ষয়ক্ষতি", "meaning": "Depreciation due to use", "page": 21}, {"no": 321, "word": "Weal and woe", "bn": "সুখ-দুঃখ ⚠️ (যাচাই করো)", "meaning": "Happiness and sorrow", "page": 22}, {"no": 322, "word": "Well off", "bn": "সচ্ছল ⚠️ (যাচাই করো)", "meaning": "Wealthy/prosperous", "page": 22}, {"no": 323, "word": "White collar job", "bn": "মর্যাদাপূর্ণ ডেস্ক-জব", "meaning": "A job that does not involve manual labour", "page": 22}, {"no": 324, "word": "White elephant", "bn": "ব্যয়বহুল কিন্তু অপ্রয়োজনীয় সম্পত্তি", "meaning": "A costly but useless possession", "page": 22}, {"no": 325, "word": "With flying colours", "bn": "পূর্ণ সাফল্যের সাথে", "meaning": "With complete success", "page": 22}, {"no": 326, "word": "Word for word", "bn": "হুবহু", "meaning": "Exactly the same, verbatim", "page": 22}, {"no": 327, "word": "Work against the clock", "bn": "সময়ের বিরুদ্ধে কাজ করা ⚠️ (যাচাই করো)", "meaning": "To work in a great hurry to finish before a deadline", "page": 22}, {"no": 328, "word": "Worth his salt", "bn": "যোগ্যতাসম্পন্ন", "meaning": "A capable/valuable employee", "page": 22}, {"no": 329, "word": "Whole-heartedly", "bn": "আন্তরিকভাবে", "meaning": "With complete sincerity/support", "page": 22}, {"no": 330, "word": "Pay the debt of nature", "bn": "মৃত্যুবরণ করা ⚠️ (যাচাই করো)", "meaning": "To die", "page": 22}, {"no": 331, "word": "To buy the farm", "bn": "মৃত্যুবরণ করা ⚠️ (যাচাই করো)", "meaning": "To die", "page": 22}, {"no": 332, "word": "To bite the dust", "bn": "মৃত্যুবরণ করা ⚠️ (যাচাই করো)", "meaning": "To die", "page": 22}, {"no": 333, "word": "Kick the bucket", "bn": "মৃত্যুবরণ করা", "meaning": "To die", "page": 22}, {"no": 334, "word": "To cross the Styx", "bn": "মৃত্যুবরণ করা ⚠️ (যাচাই করো)", "meaning": "To die", "page": 23}, {"no": 335, "word": "To give up the ghost", "bn": "মৃত্যুবরণ করা", "meaning": "To die", "page": 23}, {"no": 336, "word": "To hop the twig", "bn": "মৃত্যুবরণ করা ⚠️ (যাচাই করো)", "meaning": "To die", "page": 23}, {"no": 337, "word": "To yield up the ghost", "bn": "মৃত্যুবরণ করা ⚠️ (যাচাই করো)", "meaning": "To die", "page": 23}, {"no": 338, "word": "From time to time", "bn": "মাঝে মাঝে", "meaning": "Occasionally", "page": 23}, {"no": 339, "word": "Ever and anon", "bn": "মাঝে মাঝে ⚠️ (যাচাই করো)", "meaning": "Occasionally", "page": 23}, {"no": 340, "word": "Every now and then", "bn": "মাঝে মাঝে", "meaning": "Occasionally, sometimes", "page": 23}, {"no": 341, "word": "Now and then", "bn": "মাঝে মাঝে", "meaning": "Occasionally", "page": 23}, {"no": 342, "word": "Ab initio", "bn": "শুরু থেকে", "meaning": "From the beginning", "page": 23}, {"no": 343, "word": "Ab ovo", "bn": "শুরু থেকে ⚠️ (যাচাই করো)", "meaning": "From the very beginning", "page": 23}, {"no": 344, "word": "Ad infinitum", "bn": "চিরকাল ধরে", "meaning": "Forever, endlessly", "page": 23}, {"no": 345, "word": "Ad interim", "bn": "এই মধ্যবর্তী সময়ে", "meaning": "In the meantime", "page": 23}, {"no": 346, "word": "Ad hominem", "bn": "ব্যক্তি আক্রমণমূলক", "meaning": "Attacking the person rather than the argument", "page": 23}, {"no": 347, "word": "Ad referendum", "bn": "ভবিষ্যৎ বিবেচনার জন্য", "meaning": "For further consideration", "page": 23}, {"no": 348, "word": "Ad rem", "bn": "মূল বিষয়ে", "meaning": "To the point", "page": 23}, {"no": 349, "word": "Ad valorem", "bn": "মূল্যের অনুপাতে", "meaning": "In proportion to the value", "page": 24}, {"no": 350, "word": "Affidavit", "bn": "হলফনামা", "meaning": "A written statement made under oath", "page": 24}, {"no": 351, "word": "Alma mater", "bn": "নিজের বিশ্ববিদ্যালয়", "meaning": "One's own school/university", "page": 24}, {"no": 352, "word": "Alter ego", "bn": "প্রাণের বন্ধু", "meaning": "A close, trusted friend / second self", "page": 24}, {"no": 353, "word": "Anno Domini", "bn": "খ্রিস্টাব্দে", "meaning": "In the year of Christ (A.D.)", "page": 24}, {"no": 354, "word": "Ante meridiem", "bn": "পূর্বাহ্ণে ⚠️ (যাচাই করো)", "meaning": "Before noon (A.M.)", "page": 24}, {"no": 355, "word": "A propos", "bn": "প্রসঙ্গক্রমে ⚠️ (যাচাই করো)", "meaning": "With regard to/regarding", "page": 24}, {"no": 356, "word": "Au revoir", "bn": "আবার দেখা হবে", "meaning": "Goodbye till we meet again", "page": 24}, {"no": 357, "word": "Bona fide", "bn": "সরল বিশ্বাসে", "meaning": "In good faith, genuine", "page": 24}, {"no": 358, "word": "Bona fides", "bn": "সরল বিশ্বাস", "meaning": "Good faith", "page": 24}, {"no": 359, "word": "Carpe diem", "bn": "বর্তমান মুহূর্তকে উপভোগ করো", "meaning": "Enjoy the present moment", "page": 24}, {"no": 360, "word": "Cul-de-sac", "bn": "বদ্ধ গলি", "meaning": "A dead end / a street closed at one end", "page": 24}, {"no": 361, "word": "De facto", "bn": "প্রকৃতপক্ষে", "meaning": "In fact/actual, though not officially recognized", "page": 25}, {"no": 362, "word": "De luxe", "bn": "জাঁকজমকপূর্ণ ও ব্যয়বহুল", "meaning": "Splendid and expensive", "page": 25}, {"no": 363, "word": "Edition de luxe", "bn": "জাঁকজমকপূর্ণ সংস্করণ", "meaning": "A splendid, expensive edition of a book", "page": 25}, {"no": 364, "word": "En masse", "bn": "দলবদ্ধভাবে", "meaning": "In a group, all together", "page": 25}, {"no": 365, "word": "E.g. (exempli gratia)", "bn": "উদাহরণস্বরূপ", "meaning": "For example", "page": 25}, {"no": 366, "word": "En passant", "bn": "পথিমধ্যে", "meaning": "By the way, in passing", "page": 25}, {"no": 367, "word": "En rapport", "bn": "সহমতে", "meaning": "In agreement/harmony", "page": 25}, {"no": 368, "word": "En route", "bn": "পথিমধ্যে", "meaning": "On the way", "page": 25}, {"no": 369, "word": "Ergo", "bn": "অতএব", "meaning": "Therefore", "page": 25}, {"no": 370, "word": "Etcetera (etc.)", "bn": "ইত্যাদি", "meaning": "And others / and so forth", "page": 25}, {"no": 371, "word": "Fait accompli", "bn": "সম্পন্ন হয়ে গেছে এমন কাজ", "meaning": "A thing that has been done and cannot be altered now", "page": 25}, {"no": 372, "word": "Functus officio", "bn": "আর কর্তৃত্ব নেই এমন", "meaning": "Having no further authority", "page": 25}, {"no": 373, "word": "Habeas corpus", "bn": "বন্দির উপস্থাপনার আদেশ ⚠️ (যাচাই করো)", "meaning": "A legal order requiring a prisoner to be brought before a court", "page": 25}, {"no": 374, "word": "Impasse", "bn": "অচলাবস্থা", "meaning": "A deadlock/insoluble difficulty", "page": 25}, {"no": 375, "word": "In toto", "bn": "সম্পূর্ণভাবে ⚠️ (যাচাই করো)", "meaning": "Entirely, completely", "page": 25}, {"no": 376, "word": "Inter alia", "bn": "অন্যান্যের মধ্যে", "meaning": "Among other things", "page": 25}, {"no": 377, "word": "Ipso facto", "bn": "সেই ঘটনার দ্বারাই", "meaning": "By that very fact", "page": 25}, {"no": 378, "word": "Lingua franca", "bn": "সাধারণ যোগাযোগের ভাষা", "meaning": "A common language used for communication among speakers of different languages", "page": 26}, {"no": 379, "word": "Magnum opus", "bn": "একজন লেখক বা শিল্পীর শ্রেষ্ঠ কীর্তি", "meaning": "A great work of art/literature; a masterpiece", "page": 26}, {"no": 380, "word": "Mala fide", "bn": "অসৎ উদ্দেশ্যে", "meaning": "With bad/dishonest intent", "page": 26}, {"no": 381, "word": "Modus operandi", "bn": "কার্যপদ্ধতি", "meaning": "Manner/method of working", "page": 26}, {"no": 382, "word": "Midas touch", "bn": "হাতে ছোঁয়ালেই সাফল্য আনার ক্ষমতা", "meaning": "The ability to make a financial success of everything one does", "page": 26}, {"no": 383, "word": "Nom de plume", "bn": "ছদ্মনাম ⚠️ (যাচাই করো)", "meaning": "A pen name", "page": 26}, {"no": 384, "word": "Nouveau riche", "bn": "নব্য ধনী", "meaning": "A newly rich person", "page": 26}, {"no": 385, "word": "Per capita", "bn": "মাথাপিছু", "meaning": "Per head/for each person", "page": 26}, {"no": 386, "word": "Pari passu", "bn": "সমান হারে/ন্যায্যভাবে", "meaning": "Without partiality, equally", "page": 26}, {"no": 387, "word": "Pro forma", "bn": "আনুষ্ঠানিকতা রক্ষার্থে", "meaning": "For the sake of form", "page": 26}, {"no": 388, "word": "Per se", "bn": "স্বাভাবিকভাবেই ⚠️ (যাচাই করো)", "meaning": "By itself/intrinsically", "page": 27}, {"no": 389, "word": "Post mortem", "bn": "মৃত্যুর পর পরীক্ষা", "meaning": "Examination of a body after death", "page": 27}, {"no": 390, "word": "Prior to", "bn": "পূর্বে", "meaning": "Before/previous", "page": 27}, {"no": 391, "word": "Pro rata", "bn": "আনুপাতিক হারে", "meaning": "In proportion", "page": 27}, {"no": 392, "word": "Pro bono", "bn": "বিনা পারিশ্রমিকে ⚠️ (যাচাই করো)", "meaning": "Without charge, for the public good", "page": 27}, {"no": 393, "word": "Status quo", "bn": "বিদ্যমান অবস্থা", "meaning": "The existing state of affairs", "page": 27}, {"no": 394, "word": "Sub judice", "bn": "বিচারাধীন", "meaning": "Under judicial consideration", "page": 27}, {"no": 395, "word": "Vice versa", "bn": "বিপরীতক্রমে ⚠️ (যাচাই করো)", "meaning": "The other way round", "page": 27}, {"no": 396, "word": "Videlicet (viz.)", "bn": "অর্থাৎ ⚠️ (যাচাই করো)", "meaning": "Namely, that is to say", "page": 27}];
 const LISTS = {wm: WM_LIST, syn: SYN_LIST, ant: ANT_LIST, bagdhara: BAGDHARA_LIST, proverb: PROVERB_LIST, ows: OWS_LIST, ekkotha: EKKOTHA_LIST, bnant: BNANT_LIST, shobdartho: SHOBDARTHO_LIST, poribhashik: PORIBHASHIK_LIST, groupverb: GROUPVERB_LIST, idiom: IDIOM_LIST};
 const VALKEY = {wm:'meaning', syn:'syn', ant:'ant', bagdhara:'meaning', proverb:'meaning', ows:'meaning', ekkotha:'meaning', bnant:'meaning', shobdartho:'meaning', poribhashik:'meaning', groupverb:'meaning', idiom:'meaning'};
-const WEEKDAYS_BN = {0:'Su',1:'Mo',2:'Tu',3:'We',4:'Th',5:'Fr',6:'Sa'};
+const WEEKDAYS_BN = {0:'Sun',1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat'};
 
 const STORE_KEY = 'mukhosto-checker-v3';
 function loadState(){ try{ const raw = localStorage.getItem(STORE_KEY); return raw?JSON.parse(raw):{}; }catch(e){ return {}; } }
@@ -1159,6 +1245,7 @@ function defaultSettings(){
     fbApiKey: '',
     fbDocId: 'default',
     autoBackupEnabled: true,
+    language: 'bn', // 'bn' | 'en' | 'both'
     geminiModels: [
       {model:'gemini-pro-latest', enabled:true},
       {model:'gemini-flash-latest', enabled:true},
@@ -1191,6 +1278,148 @@ function loadSettings(){
 }
 function saveSettings(s){ try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }catch(e){} if(typeof updateSettingsStatusIndicators==='function') updateSettingsStatusIndicators(); }
 let settings = loadSettings();
+
+// ============ i18n (bilingual UI) ============
+const I18N = {
+  settingsBtnTitle: {bn:'সেটিংস', en:'Settings'},
+  tagline: {bn:'প্রতিদিনের শব্দচর্চা ও মুখস্থ অভ্যাস — এক জায়গায়', en:'Daily vocabulary & memorization practice — all in one place'},
+  editModalTitleDefault: {bn:'এডিট করো', en:'Edit'},
+  labelBnSubtext: {bn:'বাংলা (subtext)', en:'Bangla (subtext)'},
+  editReset: {bn:'মূল অবস্থায় ফেরাও', en:'Reset to original'},
+  cancel: {bn:'বাতিল', en:'Cancel'},
+  save: {bn:'সংরক্ষণ', en:'Save'},
+  languageSectionTitle: {bn:'ভাষা', en:'Language'},
+  languageHint: {bn:'অ্যাপের লেখা বাংলা, ইংরেজি, নাকি দুটোই একসাথে দেখতে চাও বেছে নাও।', en:'Choose whether the app text shows in Bangla, English, or both together.'},
+  notConfigured: {bn:'কনফিগার করা হয়নি', en:'Not configured'},
+  hintPantry: {bn:'getpantry.cloud থেকে ফ্রি একটা Pantry বানিয়ে তার ID এখানে বসাও — তাহলে তোমার progress অন্য ডিভাইস থেকেও sync হবে।', en:'Create a free Pantry at getpantry.cloud and paste its ID here — your progress will then sync across devices too.'},
+  phPantryId: {bn:'তোমার getPantry ID এখানে বসাও', en:'Paste your getPantry ID here'},
+  btnIdSave: {bn:'ID সংরক্ষণ করো', en:'Save ID'},
+  btnUpload: {bn:'Upload করো', en:'Upload'},
+  btnRestore: {bn:'Restore করো', en:'Restore'},
+  hintFirebase: {
+    bn:'console.firebase.google.com এ প্রজেক্ট বানাও (অথবা তোমার আগের ExPo Vault প্রজেক্টটাই ব্যবহার করো), Realtime Database চালু করো, তারপর ডেটাবেজের URL (যেমন <b>https://your-project-default-rtdb.firebaseio.com</b>) এখানে বসাও। Rules টেস্ট মোডে (allow read/write: true) থাকলে Auth ফাঁকা রাখতে পারো। Sync ID তুমি নিজে যা ইচ্ছা লিখতে পারো — একই URL + Sync ID যেই ডিভাইসে বসাবে, সব জায়গায় progress sync হবে।',
+    en:'Create a project at console.firebase.google.com (or use your earlier ExPo Vault project), turn on Realtime Database, then paste the database URL here (e.g. <b>https://your-project-default-rtdb.firebaseio.com</b>). If Rules are in test mode (allow read/write: true) you can leave Auth blank. You can pick any Sync ID you like — the same URL + Sync ID on any device will sync progress everywhere.'
+  },
+  labelAuthToken: {bn:'Auth Token / Database Secret (ঐচ্ছিক)', en:'Auth Token / Database Secret (optional)'},
+  phAuthToken: {bn:'Rules প্রাইভেট হলে বসাও, নাহলে ফাঁকা রাখো', en:'Fill in if Rules are private, otherwise leave blank'},
+  btnInfoSave: {bn:'তথ্য সংরক্ষণ করো', en:'Save info'},
+  hintAutoBackup: {bn:'চালু থাকলে, উপরের Pantry ID / Firebase URL যেটাই বসানো থাকুক (Firebase-কে আগে চেষ্টা করবে, না থাকলে Pantry), তোমার প্রতিটা checkbox-click বা শব্দ যোগ/এডিট করার কিছুক্ষণ পর নিজে থেকেই চুপচাপ cloud-এ backup হয়ে যাবে — আলাদা করে Upload বাটনে চাপতে হবে না। Backup শুধু তোমার progress (কোনটা পড়া হয়েছে, override) পাঠায় — কোনো API key/ID কখনো cloud-এ যায় না।', en:'When on, whichever of Pantry ID / Firebase URL is set (Firebase is tried first, then Pantry) will quietly back up to the cloud a few moments after every checkbox click or word add/edit — no need to press Upload separately. Backup only sends your progress (what has been read, overrides) — no API key/ID is ever sent to the cloud.'},
+  labelAutoBackupOn: {bn:'Auto-backup চালু রাখো', en:'Keep auto-backup on'},
+  hintGemini: {
+    bn:'নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ৮টা API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে (কোনো wait ছাড়াই); একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। সব key + সব মডেল একবার করে fail হয়ে গেলে rate-limit এড়াতে ১ মিনিট wait করে আবার প্রথম থেকে try করবে। প্রতিটা শব্দের AI উত্তর একবার আনলে save হয়ে থাকবে (ফোনেই), পরে আবার একই শব্দ দেখলে offline-এও কাজ করবে আর নতুন করে token খরচ হবে না। <b>এই key গুলো শুধু এই ডিভাইসের ব্রাউজারে (localStorage) সংরক্ষিত থাকে — কোনো sync/backup/cloud-এ কখনো পাঠানো হয় না, এমনকি Auto-Backup চালু থাকলেও না।</b>',
+    en:'Give the names of 3 models below (whatever latest version is current — flash/pro/flash-lite) and 8 API keys. Each key tries the 3 models in order (no waiting); if all models fail for a key, the next key tries all 3 again. If every key + model combination fails once, it waits 1 minute to avoid rate-limits and tries again from the top. Each word answer from AI is saved once fetched (on this phone), so seeing the same word again later works offline too and spends no new tokens. <b>These keys are stored only in this device browser (localStorage) — never sent to any sync/backup/cloud, even with Auto-Backup on.</b>'
+  },
+  labelModelsOrder: {bn:'মডেল (ক্রম অনুযায়ী try হবে)', en:'Models (tried in this order)'},
+  labelKeysOrder: {bn:'API Key (ক্রম অনুযায়ী try হবে)', en:'API Keys (tried in this order)'},
+  btnSaveAll: {bn:'সংরক্ষণ করো', en:'Save'},
+  btnCloseModal: {bn:'বন্ধ করো', en:'Close'},
+  fcTitleDefault: {bn:'ফ্ল্যাশকার্ড', en:'Flashcard'},
+  fcHintTap: {bn:'ট্যাপ করো উল্টানোর জন্য', en:'Tap to flip'},
+  fcHintTapAgain: {bn:'↺ আবার ট্যাপ করো', en:'↺ Tap again'},
+  btnPrev: {bn:'আগের', en:'Prev'},
+  btnShuffle: {bn:'এলোমেলো', en:'Shuffle'},
+  btnAiHelp: {bn:'AI সাহায্য', en:'AI Help'},
+  btnNext: {bn:'পরের', en:'Next'},
+  aiAllLabel: {bn:'এই তালিকার সব শব্দের AI একসাথে আনো', en:'Fetch AI for every word in this list at once'},
+  reExamTitle: {bn:'পুরনো MCQ থেকে re-exam', en:'Re-exam from old MCQs'},
+  byNumber: {bn:'নম্বর দিয়ে', en:'By number'},
+  byLetter: {bn:'অক্ষর দিয়ে (A–Z)', en:'By letter (A–Z)'},
+  phFromNum: {bn:'থেকে (নম্বর, ফাঁকা = শুরু থেকে)', en:'From (number, blank = from start)'},
+  phToNum: {bn:'পর্যন্ত (নম্বর, ফাঁকা = শেষ পর্যন্ত)', en:'To (number, blank = till end)'},
+  phFromLetter: {bn:'থেকে অক্ষর (যেমন A)', en:'From letter (e.g. A)'},
+  phToLetter: {bn:'পর্যন্ত অক্ষর (যেমন C)', en:'To letter (e.g. C)'},
+  phCount: {bn:'কয়টা প্রশ্ন চাও (ফাঁকা = সবগুলো, ২০-এর বেশি হলে র‍্যান্ডম ২০)', en:'How many questions (blank = all; random 20 if more than 20)'},
+  wordsFoundSuffix: {bn:'টি শব্দ পাওয়া যাচ্ছে', en:'words found'},
+  btnStart: {bn:'শুরু করো', en:'Start'},
+  noteCachedOnly: {bn:'✅ শুধু আগে যেসব শব্দের প্রশ্ন একবার AI দিয়ে জেনারেট হয়ে গেছে সেগুলো থেকেই বাছাই হবে — তাই নতুন token খরচ হবে না।', en:'✅ Only words whose questions have already been AI-generated once will be picked from — so no new tokens are spent.'},
+  tabToday: {bn:'আজকের পড়া', en:"Today's Reading"},
+  tabRoutine: {bn:'রুটিন ও অগ্রগতি', en:'Routine & Progress'},
+  tabPractice: {bn:'অনুশীলন', en:'Practice'},
+  filterAll: {bn:'সব', en:'All'},
+  filterToday: {bn:'আজকে', en:'Today'},
+  filterPending: {bn:'বাকি আছে', en:'Pending'},
+  todayRoutine: {bn:'আজকের রুটিন', en:"Today's Routine"},
+  progressTrend: {bn:'অগ্রগতির ধারা', en:'Progress Trend'},
+  weekly: {bn:'সাপ্তাহিক', en:'Weekly'},
+  monthly: {bn:'মাসিক', en:'Monthly'},
+  fullWordList: {bn:'সম্পূর্ণ শব্দ তালিকা', en:'Full Word List'},
+  noteExtraSection: {bn:'প্রতিটা বিষয়ের পুরো শব্দভাণ্ডার এখানে ব্রাউজ করো, নিজের ইচ্ছেমতো নতুন শব্দ যোগ করো, reorder/edit/delete করো। ⚠️ এখানে যোগ করা শব্দ শুধু এই তালিকা, ফ্ল্যাশকার্ড ও অনুশীলনেই দেখাবে — "আজকের পড়া" ট্যাবের নির্দিষ্ট দিনের ক্যালেন্ডারে (যেটা সংখ্যা-রেঞ্জ ধরে চলে) স্বয়ংক্রিয়ভাবে যুক্ত হবে না।', en:'Browse the full vocabulary for each topic here, add new words as you like, and reorder/edit/delete them. ⚠️ Words added here only show up in this list, flashcards and practice — they won\'t automatically be added to a specific day\'s calendar in the "Today\'s Reading" tab (which follows number ranges).'},
+  coverageSummary: {bn:'কভারেজ সারাংশ', en:'Coverage Summary'},
+  noteCoverage: {bn:'প্রতিটা বিষয় কোন তারিখ থেকে কোন তারিখ পর্যন্ত, কত দিনে কভার হচ্ছে। (বেশি দিন থেকে কম দিনের ক্রমে সাজানো)', en:'Which date range and how many days each topic is covered in. (Sorted from most to fewest days)'},
+  thTopic: {bn:'বিষয়', en:'Topic'},
+  thStart: {bn:'শুরু', en:'Start'},
+  thEnd: {bn:'শেষ', en:'End'},
+  thDays: {bn:'দিন', en:'Days'},
+  thRange: {bn:'নম্বর রেঞ্জ', en:'Number Range'},
+  btnProgress: {bn:'অগ্রগতি', en:'Progress'},
+  btnList: {bn:'তালিকা', en:'List'},
+  sourceLabel: {bn:'উৎস — কোন শব্দ নিয়ে অনুশীলন হবে', en:'Source — which words to practice'},
+  specificDate: {bn:'নির্দিষ্ট তারিখ', en:'Specific Date'},
+  serialRangeType: {bn:'সিরিয়াল রেঞ্জ / টাইপ', en:'Serial Range / Type'},
+  mixMultiple: {bn:'মিক্স (একাধিক বিষয়)', en:'Mix (multiple topics)'},
+  modeLabel: {bn:'মোড', en:'Mode'},
+  weakFocus: {bn:'দুর্বল শব্দ ফোকাস', en:'Weak Words Focus'},
+  recentSessions: {bn:'সাম্প্রতিক সেশন', en:'Recent Sessions'},
+  noSessionsYet: {bn:'এখনো কোনো সেশন হয়নি।', en:'No sessions yet.'},
+  footerTagline: {bn:'প্রতিদিনের অভ্যাসই সবচেয়ে বড় শক্তি।', en:'Daily practice is the greatest strength.'},
+
+  // ---- MCQ / Practice runtime strings ----
+  mcqQuizTitle: {bn:'MCQ Quiz', en:'MCQ Quiz'},
+  sessionDone: {bn:'সেশন শেষ', en:'Session complete'},
+  generatingQuestions: {bn:'প্রশ্ন তৈরি হচ্ছে...', en:'Generating questions...'},
+  chooseCorrect: {bn:'সঠিক {type} বেছে নাও', en:'Choose the correct {type}'},
+  chooseCorrectGeneric: {bn:'সঠিক উত্তর বেছে নাও', en:'Choose the correct answer'},
+  nextQuestion: {bn:'পরের প্রশ্ন', en:'Next question'},
+  allCorrect: {bn:'সব সঠিক — চমৎকার! 🎉', en:'All correct — excellent! 🎉'},
+  retryWrongOnly: {bn:'শুধু ভুলগুলো আবার দাও', en:'Retry only the wrong ones'},
+  newSession: {bn:'নতুন সেশন', en:'New session'},
+  repeatWrongWords: {bn:'ভুল শব্দগুলোর পুনরাবৃত্তি', en:'Repeat of wrong words'},
+  noWordsInSource: {bn:'এই সোর্সে কোনো শব্দ পাওয়া যায়নি।', en:'No words found in this source.'},
+  noWeakWordsYet: {bn:'এই সোর্সে এখনো কোনো দুর্বল শব্দ নেই — MCQ Quiz-এ ভুল হলে সেগুলো এখানে জমা হবে।', en:"There are no weak words in this source yet — words you get wrong in the MCQ Quiz will collect here."},
+  weakFocusCountSuffix: {bn:'টি', en:'words'},
+  randomlyPicked20: {bn:' (এলোমেলোভাবে বাছাই করা ২০টি)', en:' (randomly picked 20)'},
+  inProgress: {bn:'⏳ চলছে...', en:'⏳ In progress...'},
+  incomplete: {bn:'(অসম্পূর্ণ)', en:'(incomplete)'},
+  retakeBtn: {bn:'↻ আবার দাও', en:'↻ Retake'},
+  retakeTitle: {bn:'একই শব্দ দিয়ে আবার — নতুন token খরচ হবে না', en:'Same words again — no new tokens spent'},
+  showMoreRemaining: {bn:'আরও দেখাও (বাকি {n}টি)', en:'Show more ({n} remaining)'},
+  histAll: {bn:'সব', en:'All'},
+  repeatFromRecent: {bn:'পুনরাবৃত্তি (সাম্প্রতিক সেশন)', en:'Repeat (recent session)'},
+  histSessionsSuffix: {bn:'সেশন', en:'sessions'},
+};
+
+function trKey(key, vars){
+  const entry = I18N[key];
+  if(!entry) return key;
+  const lang = settings.language || 'bn';
+  let out = lang==='both' ? (entry.bn + ' / ' + entry.en) : (lang==='en' ? entry.en : entry.bn);
+  if(vars){ Object.keys(vars).forEach(k=>{ out = out.split('{'+k+'}').join(vars[k]); }); }
+  return out;
+}
+function applyLanguage(){
+  const lang = settings.language || 'bn';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const entry = I18N[el.getAttribute('data-i18n')];
+    if(!entry) return;
+    el.textContent = lang==='both' ? (entry.bn + ' / ' + entry.en) : (lang==='en' ? entry.en : entry.bn);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+    const entry = I18N[el.getAttribute('data-i18n-html')];
+    if(!entry) return;
+    el.innerHTML = lang==='both' ? (entry.bn + ' <br><span style="opacity:.72">' + entry.en + '</span>') : (lang==='en' ? entry.en : entry.bn);
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(el=>{
+    const entry = I18N[el.getAttribute('data-i18n-title')];
+    if(!entry) return;
+    el.title = lang==='both' ? (entry.bn + ' / ' + entry.en) : (lang==='en' ? entry.en : entry.bn);
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const entry = I18N[el.getAttribute('data-i18n-ph')];
+    if(!entry) return;
+    el.placeholder = lang==='both' ? (entry.bn + ' / ' + entry.en) : (lang==='en' ? entry.en : entry.bn);
+  });
+  if(typeof pxRenderHistory === 'function') try{ pxRenderHistory(); }catch(e){}
+}
 
 function updateSettingsStatusIndicators(){
   const pantryChip = document.getElementById('pantryStatusChip');
@@ -1237,7 +1466,24 @@ function renderApiKeyRows(){
     </div>`).join('');
 }
 
+function renderLangModeTabs(){
+  const wrap = document.getElementById('langModeTabs');
+  if(!wrap) return;
+  const cur = settings.language || 'bn';
+  wrap.querySelectorAll('[data-lang]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.lang === cur);
+  });
+}
+document.getElementById('langModeTabs').addEventListener('click', e=>{
+  const btn = e.target.closest('[data-lang]');
+  if(!btn) return;
+  settings.language = btn.dataset.lang;
+  saveSettings(settings);
+  renderLangModeTabs();
+  applyLanguage();
+});
 function openSettingsModal(){
+  renderLangModeTabs();
   document.getElementById('pantryIdInput').value = settings.pantryId || '';
   document.getElementById('fbDbUrlInput').value = settings.fbDbUrl || '';
   document.getElementById('fbApiKeyInput').value = settings.fbApiKey || '';
@@ -1279,6 +1525,7 @@ function collectSettingsFromForm(){
     fbApiKey: document.getElementById('fbApiKeyInput').value.trim(),
     fbDocId: document.getElementById('fbDocIdInput').value.trim() || 'default',
     autoBackupEnabled: document.getElementById('autoBackupToggle').checked,
+    language: settings.language || 'bn',
     geminiModels,
     geminiKeys
   };
@@ -2601,6 +2848,7 @@ function wrongKey(w){ return w.type + '-' + w.no; }
 
 let pxSource = 'today';
 let pxMode = 'mcq';
+let pxRangeMode = 'num';
 let pxQueue = [];
 let pxIndex = 0;
 let pxScore = 0;
@@ -2651,6 +2899,16 @@ document.querySelectorAll('#pxSourceTabs button').forEach(btn=>{
     pxUpdatePreview();
   });
 });
+document.querySelectorAll('#pxRangeModeTabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#pxRangeModeTabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    pxRangeMode = btn.dataset.rmode;
+    document.getElementById('pxNumRangeRow').style.display = pxRangeMode === 'num' ? 'flex' : 'none';
+    document.getElementById('pxLetterRangeRow').style.display = pxRangeMode === 'letter' ? 'flex' : 'none';
+    pxUpdatePreview();
+  });
+});
 function pxBuildMixCheckboxes(){
   const wrap = document.getElementById('pxMixWrap');
   if(!wrap) return;
@@ -2667,7 +2925,7 @@ document.querySelectorAll('#pxModeTabs button').forEach(btn=>{
     pxUpdatePreview();
   });
 });
-['pxDateInput','pxTypeSelect','pxFromInput','pxToInput'].forEach(id=>{
+['pxDateInput','pxTypeSelect','pxFromInput','pxToInput','pxFromLetter','pxToLetter'].forEach(id=>{
   const el = document.getElementById(id);
   if(el) el.addEventListener('input', pxUpdatePreview);
 });
@@ -2726,12 +2984,28 @@ function pxGatherWords(){
   const type = document.getElementById('pxTypeSelect').value;
   const list = getFullList(type);
   if(!list || list.length===0) return {words: [], error: 'টাইপ বেছে নাও।'};
+  if(pxRangeMode === 'letter'){
+    const fromL = (document.getElementById('pxFromLetter').value || 'A').toUpperCase();
+    const toL = (document.getElementById('pxToLetter').value || 'Z').toUpperCase();
+    const filtered = pxFilterByLetterRange(list, fromL, toL);
+    const words = normalizeWords(filtered, type);
+    return {words, label: (TYPE_LABELS[type]||type) + ' · ' + fromL + '–' + toL};
+  }
   const fromVal = document.getElementById('pxFromInput').value;
   const toVal = document.getElementById('pxToInput').value;
   const from = fromVal ? Number(fromVal) : list[0].no;
   const to = toVal ? Number(toVal) : list[list.length-1].no;
   const words = normalizeWords(list.filter(w=>w.no>=from && w.no<=to), type);
   return {words, label: (TYPE_LABELS[type]||type) + ' · #' + from + '–' + to};
+}
+
+// শব্দের প্রথম অক্ষর অনুযায়ী (A-Z) রেঞ্জ ফিল্টার করে — নম্বর রেঞ্জের বদলে
+function pxFilterByLetterRange(list, fromL, toL){
+  return list.filter(w=>{
+    const ch = (w.word || '').trim().charAt(0).toUpperCase();
+    if(!ch) return false;
+    return ch >= fromL && ch <= toL;
+  });
 }
 
 function pxCacheKey(w){ return 'mcq::' + w.type + '-' + w.no; }
@@ -2760,7 +3034,7 @@ async function pxPrepareDistractors(words, onProgress){
   const CHUNK = 15;
   for(let i=0;i<uncached.length;i+=CHUNK){
     const chunk = uncached.slice(i, i+CHUNK);
-    if(onProgress) onProgress(`প্রশ্ন তৈরি হচ্ছে... (${Math.min(i+CHUNK, uncached.length)}/${uncached.length})`);
+    if(onProgress) onProgress(`${trKey('generatingQuestions')} (${Math.min(i+CHUNK, uncached.length)}/${uncached.length})`);
     const payload = chunk.map(w => ({no: w.no, word: w.word, answer: w.val}));
     const prompt = `তুমি বাংলাদেশ সরকারি চাকরি নিয়োগ পরীক্ষার (BCS / Bank Senior Officer পর্যায়ের) MCQ প্রশ্নকর্তা। নিচের প্রতিটি শব্দ ও তার সঠিক উত্তরের জন্য exam-মানের ৩টি বিভ্রান্তিকর (plausible wrong) option বানাও। Option গুলো আসল উত্তরের কাছাকাছি অর্থ, বিভাগ বা ধরনের ইংরেজি শব্দ/phrase হতে হবে, যাতে পরীক্ষার্থী confuse হয় — কিন্তু ভুল হতে হবে, খুব সহজ বা সম্পূর্ণ অপ্রাসঙ্গিক option দিও না।
 
@@ -2826,12 +3100,12 @@ function pxRetakeFromHistory(id){
   if(!entry || !entry.words || !entry.words.length) return;
   pxQueue = entry.words.map(w=>({type:w.type, no:w.no, word:w.word, bn:w.bn, val:w.val}));
   pxIndex = 0; pxScore = 0; pxWrongThisSession = []; pxAnswered = [];
-  pxSourceLabel = entry.source + ' · পুনরাবৃত্তি (সাম্প্রতিক সেশন)';
+  pxSourceLabel = entry.source + ' · ' + trKey('repeatFromRecent');
 
   document.getElementById('pxTitle').textContent = 'MCQ Quiz';
   document.getElementById('pxOverlay').classList.add('open');
   lockBodyScroll();
-  document.getElementById('pxBody').innerHTML = '<div class="px-loading">প্রশ্ন তৈরি হচ্ছে...</div>';
+  document.getElementById('pxBody').innerHTML = `<div class="px-loading">${escapeHtml(trKey('generatingQuestions'))}</div>`;
 
   pxCreateInProgressEntries();
 
@@ -2846,14 +3120,14 @@ function pxRetakeFromHistory(id){
 document.getElementById('pxStartBtn').addEventListener('click', async ()=>{
   const gathered = pxGatherWords();
   if(gathered.error){ pxSetMsg(gathered.error, true); return; }
-  if(!gathered.words || gathered.words.length === 0){ pxSetMsg('এই সোর্সে কোনো শব্দ পাওয়া যায়নি।', true); return; }
+  if(!gathered.words || gathered.words.length === 0){ pxSetMsg(trKey('noWordsInSource'), true); return; }
   pxSetMsg('');
 
   if(pxMode === 'weak'){
     const weak = gathered.words.filter(w => (wrongCounts[wrongKey(w)]||0) > 0)
       .sort((a,b)=> (wrongCounts[wrongKey(b)]||0) - (wrongCounts[wrongKey(a)]||0));
-    if(weak.length === 0){ pxSetMsg('এই সোর্সে এখনো কোনো দুর্বল শব্দ নেই — MCQ Quiz-এ ভুল হলে সেগুলো এখানে জমা হবে।', true); return; }
-    openFlashcards(weak, 'দুর্বল শব্দ ফোকাস · ' + weak.length + 'টি');
+    if(weak.length === 0){ pxSetMsg(trKey('noWeakWordsYet'), true); return; }
+    openFlashcards(weak, trKey('weakFocus') + ' · ' + weak.length + trKey('weakFocusCountSuffix'));
     return;
   }
 
@@ -2861,7 +3135,7 @@ document.getElementById('pxStartBtn').addEventListener('click', async ()=>{
   let truncNote = '';
   if(words.length > 20){
     words = pxShuffle(words).slice(0, 20);
-    truncNote = ' (এলোমেলোভাবে বাছাই করা ২০টি)';
+    truncNote = trKey('randomlyPicked20');
   } else {
     words = pxShuffle(words);
   }
@@ -2872,7 +3146,7 @@ document.getElementById('pxStartBtn').addEventListener('click', async ()=>{
   document.getElementById('pxTitle').textContent = 'MCQ Quiz';
   document.getElementById('pxOverlay').classList.add('open');
   lockBodyScroll();
-  document.getElementById('pxBody').innerHTML = '<div class="px-loading">প্রশ্ন তৈরি হচ্ছে...</div>';
+  document.getElementById('pxBody').innerHTML = `<div class="px-loading">${escapeHtml(trKey('generatingQuestions'))}</div>`;
 
   // AI দিয়ে প্রশ্ন বানানো শুরু হওয়ার ঠিক আগেই সেশনটা history-তে লগ হয়ে যায়
   pxCreateInProgressEntries();
@@ -2931,16 +3205,18 @@ function pxRenderQuestion(){
   const options = pxShuffle([w.val].concat(distractors.slice(0,3)));
   const correctIndex = options.indexOf(w.val);
 
-  const instr = TYPE_LABELS[w.type] ? ('সঠিক ' + TYPE_LABELS[w.type] + ' বেছে নাও') : 'সঠিক উত্তর বেছে নাও';
+  const instr = TYPE_LABELS[w.type] ? trKey('chooseCorrect', {type: TYPE_LABELS[w.type]}) : trKey('chooseCorrectGeneric');
+  const badgeLetters = ['A','B','C','D'];
 
   document.getElementById('pxBody').innerHTML = `
     <div class="px-card">
+      <div class="px-q-counter">${pxIndex+1} / ${pxQueue.length}</div>
       <div class="px-q-instr">${escapeHtml(instr)}</div>
       <div class="px-q-word">${escapeHtml(w.word)}</div>
       <div class="px-options" id="pxOptionsWrap">
-        ${options.map((opt,i)=>`<button class="px-opt" data-i="${i}">${escapeHtml(opt)}</button>`).join('')}
+        ${options.map((opt,i)=>`<button class="px-opt" data-i="${i}"><span class="opt-badge">${badgeLetters[i]}</span><span class="opt-text">${escapeHtml(opt)}</span><span class="opt-icon">${''}</span></button>`).join('')}
       </div>
-      <button class="px-nextbtn" id="pxNextBtn">পরের প্রশ্ন →</button>
+      <button class="px-nextbtn" id="pxNextBtn">${escapeHtml(trKey('nextQuestion'))} →</button>
     </div>
   `;
 
@@ -2953,8 +3229,9 @@ function pxRenderQuestion(){
 function pxAnswer(selIdx, correctIdx, w){
   document.querySelectorAll('#pxOptionsWrap .px-opt').forEach((btn,i)=>{
     btn.classList.add('disabled');
-    if(i===correctIdx) btn.classList.add('correct');
-    else if(i===selIdx) btn.classList.add('wrong');
+    const iconEl = btn.querySelector('.opt-icon');
+    if(i===correctIdx){ btn.classList.add('correct'); if(iconEl) iconEl.textContent = '✓'; }
+    else if(i===selIdx){ btn.classList.add('wrong'); if(iconEl) iconEl.textContent = '✕'; }
   });
   const isCorrect = selIdx === correctIdx;
   pxAnswered.push({type: w.type, correct: isCorrect});
@@ -3005,21 +3282,41 @@ function pxShowSummary(){
   pxRenderHistory();
   pxSessionActive = false;
 
-  document.getElementById('pxTitle').textContent = 'সেশন শেষ';
+  document.getElementById('pxTitle').textContent = trKey('sessionDone');
   document.getElementById('pxProgress').textContent = '';
   document.getElementById('pxTopProgressFill').style.width = '100%';
+
+  const pct = total ? Math.round(correct/total*100) : 0;
+  const R = 54, C = 2*Math.PI*R;
+  const dash = C * pct/100;
+  let ringColor = 'var(--danger)', gradeClass = 'low';
+  if(pct >= 80){ ringColor = 'var(--teal)'; gradeClass = ''; }
+  else if(pct >= 50){ ringColor = 'var(--gold)'; gradeClass = 'mid'; }
+  const gradeText = pct===100 ? '🏆 ' + trKey('allCorrect').split(' — ')[1] : (pct>=80 ? '🌟' : (pct>=50 ? '👍' : '💪'));
+
   document.getElementById('pxBody').innerHTML = `
     <div class="px-card px-summary">
-      <div class="big">${correct}/${total}</div>
-      <div class="sub" style="margin-top:6px;">${escapeHtml(pxSourceLabel)}</div>
+      <div class="px-score-ring">
+        <svg viewBox="0 0 120 120" width="132" height="132">
+          <circle cx="60" cy="60" r="${R}" fill="none" stroke="var(--panel-2)" stroke-width="10"/>
+          <circle cx="60" cy="60" r="${R}" fill="none" stroke="${ringColor}" stroke-width="10" stroke-linecap="round"
+            stroke-dasharray="${dash} ${C-dash}" style="transition:stroke-dasharray .8s cubic-bezier(.22,1,.36,1); filter:drop-shadow(0 0 6px ${ringColor});"/>
+        </svg>
+        <div class="ring-pct">
+          <div class="big">${pct}%</div>
+          <div class="frac">${correct}/${total}</div>
+        </div>
+      </div>
+      <div class="px-grade-chip ${gradeClass}">${gradeText}</div>
+      <div class="sub" style="margin-top:10px;">${escapeHtml(pxSourceLabel)}</div>
       ${pxWrongThisSession.length ? `<div class="px-wronglist">${pxWrongThisSession.map(w=>`
         <div class="px-wrong-row">
           <div class="w">${escapeHtml(w.word)}<span class="sub2b">${escapeHtml(w.bn||'')}</span></div>
           <div class="a">${escapeHtml(w.val)}</div>
-        </div>`).join('')}</div>` : `<div class="sub" style="margin-top:14px;">সব সঠিক — চমৎকার! 🎉</div>`}
+        </div>`).join('')}</div>` : `<div class="sub" style="margin-top:14px;">${escapeHtml(trKey('allCorrect'))}</div>`}
       <div class="px-summary-btns">
-        ${pxWrongThisSession.length ? `<button id="pxRetryWrong">শুধু ভুলগুলো আবার দাও</button>` : ''}
-        <button id="pxNewSession">নতুন সেশন</button>
+        ${pxWrongThisSession.length ? `<button id="pxRetryWrong">${escapeHtml(trKey('retryWrongOnly'))}</button>` : ''}
+        <button id="pxNewSession">${escapeHtml(trKey('newSession'))}</button>
       </div>
     </div>
   `;
@@ -3027,7 +3324,7 @@ function pxShowSummary(){
     document.getElementById('pxRetryWrong').addEventListener('click', ()=>{
       pxQueue = pxWrongThisSession.map(w=>({type:w.type, no:w.no, word:w.word, bn:w.bn, val:w.val}));
       pxIndex = 0; pxScore = 0; pxWrongThisSession = []; pxAnswered = [];
-      pxSourceLabel = 'ভুল শব্দগুলোর পুনরাবৃত্তি';
+      pxSourceLabel = trKey('repeatWrongWords');
       document.getElementById('pxTitle').textContent = 'MCQ Quiz';
       pxCreateInProgressEntries();
       pxRenderQuestion();
@@ -3044,7 +3341,7 @@ function pxRenderHistory(){
   const tabsWrap = document.getElementById('pxHistoryTabs');
   const countBadge = document.getElementById('pxHistoryCountBadge');
   if(!wrap) return;
-  if(countBadge) countBadge.textContent = practiceHistory.length ? (practiceHistory.length + ' সেশন') : '';
+  if(countBadge) countBadge.textContent = practiceHistory.length ? (practiceHistory.length + ' ' + trKey('histSessionsSuffix')) : '';
   const types = Array.from(new Set(practiceHistory.map(h=>h.type).filter(Boolean)));
   if(tabsWrap){
     if(types.length === 0){
@@ -3052,25 +3349,25 @@ function pxRenderHistory(){
     } else {
       if(pxHistoryTab !== 'all' && !types.includes(pxHistoryTab)) pxHistoryTab = 'all';
       const tabs = ['all'].concat(types);
-      tabsWrap.innerHTML = tabs.map(t=> `<button class="px-hist-tab ${pxHistoryTab===t?'active':''}" data-histtab="${t}">${t==='all'?'সব':escapeHtml(TYPE_LABELS[t]||t)}</button>`).join('');
+      tabsWrap.innerHTML = tabs.map(t=> `<button class="px-hist-tab ${pxHistoryTab===t?'active':''}" data-histtab="${t}">${t==='all'?trKey('histAll'):escapeHtml(TYPE_LABELS[t]||t)}</button>`).join('');
       tabsWrap.querySelectorAll('[data-histtab]').forEach(btn=>{
         btn.addEventListener('click', ()=>{
           if(pxHistoryTab === btn.dataset.histtab) return;
           pxHistoryTab = btn.dataset.histtab;
-          pxHistoryVisibleCount = PX_HIST_PAGE_SIZE; // ট্যাব পাল্টালে পেজিনেশন রিসেট হয়
+          pxHistoryVisibleCount = PX_HIST_PAGE_SIZE; // reset pagination on tab switch
           pxRenderHistory();
         });
       });
     }
   }
   const filtered = pxHistoryTab==='all' ? practiceHistory : practiceHistory.filter(h=>h.type===pxHistoryTab);
-  if(filtered.length === 0){ wrap.innerHTML = '<div class="sub">এখনো কোনো সেশন হয়নি।</div>'; return; }
+  if(filtered.length === 0){ wrap.innerHTML = `<div class="sub">${escapeHtml(trKey('noSessionsYet'))}</div>`; return; }
   const visible = filtered.slice(0, pxHistoryVisibleCount);
   const remaining = filtered.length - visible.length;
   wrap.innerHTML = visible.map(h=>{
     let scoreHtml;
-    if(h.status === 'in-progress') scoreHtml = '⏳ চলছে...';
-    else if(h.status === 'abandoned') scoreHtml = `${h.correct}/${h.total} <span style="color:var(--text-muted);font-size:9px;">(অসম্পূর্ণ)</span>`;
+    if(h.status === 'in-progress') scoreHtml = escapeHtml(trKey('inProgress'));
+    else if(h.status === 'abandoned') scoreHtml = `${h.correct}/${h.total} <span style="color:var(--text-muted);font-size:9px;">${escapeHtml(trKey('incomplete'))}</span>`;
     else scoreHtml = `${h.correct}/${h.total}`;
     const canRetake = h.status !== 'in-progress' && h.words && h.words.length > 0;
     return `<div class="px-hist-row">
@@ -3080,10 +3377,10 @@ function pxRenderHistory(){
       </div>
       <div class="px-hist-right">
         <div class="px-hist-score">${scoreHtml}</div>
-        ${canRetake ? `<button class="px-hist-retake" data-retake="${h.id}" title="একই শব্দ দিয়ে আবার — নতুন token খরচ হবে না">↻ আবার দাও</button>` : ''}
+        ${canRetake ? `<button class="px-hist-retake" data-retake="${h.id}" title="${escapeHtml(trKey('retakeTitle'))}">${escapeHtml(trKey('retakeBtn'))}</button>` : ''}
       </div>
     </div>`;
-  }).join('') + (remaining > 0 ? `<button class="px-hist-more" id="pxHistoryMoreBtn">আরও দেখাও (বাকি ${remaining}টি)</button>` : '');
+  }).join('') + (remaining > 0 ? `<button class="px-hist-more" id="pxHistoryMoreBtn">${escapeHtml(trKey('showMoreRemaining', {n:remaining}))}</button>` : '');
   const moreBtn = document.getElementById('pxHistoryMoreBtn');
   if(moreBtn) moreBtn.addEventListener('click', ()=>{ pxHistoryVisibleCount += PX_HIST_PAGE_SIZE; pxRenderHistory(); });
   wrap.querySelectorAll('[data-retake]').forEach(btn=>{
@@ -3093,17 +3390,17 @@ function pxRenderHistory(){
 pxRenderHistory();
 
 // ============ পুরনো MCQ থেকে re-exam বানানো (উপরের quicklink থেকে খোলা মোডাল) ============
-const pxGoCachedBtn = document.getElementById('pxGoCached');
+const pxHistGoCachedBtn = document.getElementById('pxHistGoCached');
 const pxCachedOverlayEl = document.getElementById('pxCachedOverlay');
-if(pxGoCachedBtn && pxCachedOverlayEl){
-  pxGoCachedBtn.addEventListener('click', ()=>{
-    pxCachedOverlayEl.classList.add('open');
-    lockBodyScroll();
-    pxBuildCachedTypeSelect();
-    pxSetCachedMsg('');
-    pxUpdateCachedPreview();
-  });
+function pxOpenCachedOverlay(){
+  if(!pxCachedOverlayEl) return;
+  pxCachedOverlayEl.classList.add('open');
+  lockBodyScroll();
+  pxBuildCachedTypeSelect();
+  pxSetCachedMsg('');
+  pxUpdateCachedPreview();
 }
+if(pxHistGoCachedBtn) pxHistGoCachedBtn.addEventListener('click', pxOpenCachedOverlay);
 function pxCloseCachedOverlay(){
   pxCachedOverlayEl.classList.remove('open');
   unlockBodyScroll();
@@ -3113,9 +3410,20 @@ if(pxCachedOverlayCloseBtn) pxCachedOverlayCloseBtn.addEventListener('click', px
 if(pxCachedOverlayEl) pxCachedOverlayEl.addEventListener('click', e=>{
   if(e.target.id === 'pxCachedOverlay') pxCloseCachedOverlay();
 });
-['pxCachedTypeSelect','pxCachedFrom','pxCachedTo','pxCachedCount'].forEach(id=>{
+['pxCachedTypeSelect','pxCachedFrom','pxCachedTo','pxCachedCount','pxCachedFromLetter','pxCachedToLetter'].forEach(id=>{
   const el = document.getElementById(id);
   if(el) el.addEventListener('input', pxUpdateCachedPreview);
+});
+let pxCachedRangeMode = 'num';
+document.querySelectorAll('#pxCachedRangeModeTabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#pxCachedRangeModeTabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    pxCachedRangeMode = btn.dataset.rmode;
+    document.getElementById('pxCachedNumRangeRow').style.display = pxCachedRangeMode === 'num' ? 'flex' : 'none';
+    document.getElementById('pxCachedLetterRangeRow').style.display = pxCachedRangeMode === 'letter' ? 'flex' : 'none';
+    pxUpdateCachedPreview();
+  });
 });
 
 function pxSetCachedMsg(msg, isErr){
@@ -3132,14 +3440,24 @@ function pxGatherCachedWords(){
   const type = sel.value;
   const list = getFullList(type);
   if(!list || list.length===0) return {words: [], error: 'টাইপ বেছে নাও।'};
-  const fromVal = document.getElementById('pxCachedFrom').value;
-  const toVal = document.getElementById('pxCachedTo').value;
-  const from = fromVal ? Number(fromVal) : list[0].no;
-  const to = toVal ? Number(toVal) : list[list.length-1].no;
-  let words = normalizeWords(list.filter(w=>w.no>=from && w.no<=to), type);
+  let filtered, rangeLabel;
+  if(pxCachedRangeMode === 'letter'){
+    const fromL = (document.getElementById('pxCachedFromLetter').value || 'A').toUpperCase();
+    const toL = (document.getElementById('pxCachedToLetter').value || 'Z').toUpperCase();
+    filtered = pxFilterByLetterRange(list, fromL, toL);
+    rangeLabel = fromL + '–' + toL;
+  } else {
+    const fromVal = document.getElementById('pxCachedFrom').value;
+    const toVal = document.getElementById('pxCachedTo').value;
+    const from = fromVal ? Number(fromVal) : list[0].no;
+    const to = toVal ? Number(toVal) : list[list.length-1].no;
+    filtered = list.filter(w=>w.no>=from && w.no<=to);
+    rangeLabel = '#' + from + '–' + to;
+  }
+  let words = normalizeWords(filtered, type);
   words = words.filter(w => !!aiCache[pxCacheKey(w)]);
   if(words.length === 0) return {words: [], error: 'এই রেঞ্জে এখনো কোনো MCQ জেনারেট করা হয়নি — আগে একবার "সিরিয়াল রেঞ্জ / টাইপ" দিয়ে কুইজ দাও, তারপর এখান থেকে রি-এক্সাম দেওয়া যাবে।'};
-  return {words, label: (TYPE_LABELS[type]||type) + ' · পুরনো MCQ · #' + from + '–' + to};
+  return {words, label: (TYPE_LABELS[type]||type) + ' · পুরনো MCQ · ' + rangeLabel};
 }
 
 function pxUpdateCachedPreview(){
@@ -3185,7 +3503,7 @@ if(pxCachedStartBtn) pxCachedStartBtn.addEventListener('click', async ()=>{
   document.getElementById('pxTitle').textContent = 'MCQ Quiz';
   document.getElementById('pxOverlay').classList.add('open');
   lockBodyScroll();
-  document.getElementById('pxBody').innerHTML = '<div class="px-loading">প্রশ্ন তৈরি হচ্ছে...</div>';
+  document.getElementById('pxBody').innerHTML = `<div class="px-loading">${escapeHtml(trKey('generatingQuestions'))}</div>`;
 
   pxCreateInProgressEntries();
 
@@ -3534,6 +3852,7 @@ render();
 renderExtra();
 renderCoverage();
 renderRoutine();
+applyLanguage();
 </script>
 </body>
 </html>
