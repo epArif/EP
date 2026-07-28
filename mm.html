@@ -446,7 +446,7 @@
   .add-word-toggle{ background:none; border:1px dashed var(--border); color:var(--teal); border-radius:8px; padding:6px 10px; font-size:11.5px; cursor:pointer; width:100%; }
   .add-word-form{ display:flex; flex-direction:column; gap:6px; margin-top:8px; }
   .add-word-save{ background:var(--teal); border:none; color:#0E0D12; border-radius:8px; padding:8px; font-size:12px; font-weight:700; cursor:pointer; }
-  .px-quicklinks{ display:flex; gap:6px; }
+  .px-quicklinks{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
   .px-quicklinks button{ background:var(--panel-2); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:5px 10px; font-size:11.5px; cursor:pointer; white-space:nowrap; }
   .px-hist-tabs{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
   .px-hist-tab{ background:var(--panel-2); border:1px solid var(--border); color:var(--text-muted); border-radius:20px; padding:5px 12px; font-size:11px; cursor:pointer; }
@@ -596,13 +596,36 @@
     </div>
   </div>
 
+  <div class="px-overlay" id="pxCachedOverlay">
+    <div class="px-box">
+      <div class="px-top">
+        <div class="px-title">🔁 পুরনো MCQ থেকে re-exam</div>
+        <button class="px-close" id="pxCachedOverlayClose">✕</button>
+      </div>
+      <div class="px-card">
+        <select id="pxCachedTypeSelect" class="px-input"></select>
+        <div class="px-range-row" style="margin-top:8px;">
+          <input type="number" id="pxCachedFrom" class="px-input" placeholder="থেকে (নম্বর, ফাঁকা = শুরু থেকে)">
+          <input type="number" id="pxCachedTo" class="px-input" placeholder="পর্যন্ত (নম্বর, ফাঁকা = শেষ পর্যন্ত)">
+        </div>
+        <div class="px-range-row" style="margin-top:8px;">
+          <input type="number" id="pxCachedCount" class="px-input" min="1" placeholder="কয়টা প্রশ্ন চাও (ফাঁকা = সবগুলো, ২০-এর বেশি হলে র‍্যান্ডম ২০)">
+        </div>
+        <div class="px-preview" id="pxCachedPreview" style="margin-top:10px;">🔤 <span class="n" id="pxCachedPreviewN">–</span> টি শব্দ পাওয়া যাচ্ছে</div>
+        <button id="pxCachedStartBtn" class="px-start-btn" type="button">শুরু করো</button>
+        <div id="pxCachedMsg" class="px-msg"></div>
+        <div class="sub" style="margin-top:2px;">✅ শুধু আগে যেসব শব্দের প্রশ্ন একবার AI দিয়ে জেনারেট হয়ে গেছে সেগুলো থেকেই বাছাই হবে — তাই নতুন token খরচ হবে না।</div>
+      </div>
+    </div>
+  </div>
+
   <div class="main-tabs reveal d1">
-    <button class="main-tab-btn active" data-tab="today">আজকের পড়া</button>
-    <button class="main-tab-btn" data-tab="more">রুটিন ও অগ্রগতি</button>
+    <button class="main-tab-btn" data-tab="today">আজকের পড়া</button>
+    <button class="main-tab-btn active" data-tab="more">রুটিন ও অগ্রগতি</button>
     <button class="main-tab-btn" data-tab="practice">অনুশীলন</button>
   </div>
 
-  <div id="tabPane-today" class="tab-pane active">
+  <div id="tabPane-today" class="tab-pane">
 
     <section class="panel reveal d1">
       <div class="panel-title">Overall Stats <span class="tag">Cumulative</span></div>
@@ -650,7 +673,7 @@
 
   </div>
 
-  <div id="tabPane-more" class="tab-pane">
+  <div id="tabPane-more" class="tab-pane active">
 
     <section class="panel reveal d1 routine-panel">
       <div class="panel-title">আজকের রুটিন
@@ -705,7 +728,7 @@
   <div id="tabPane-practice" class="tab-pane">
 
     <section class="panel reveal d1" id="pxSetupPanel">
-      <div class="panel-title"><span>অনুশীলন <span class="tag">Practice</span></span><span class="px-quicklinks"><button id="pxGoProgress" type="button">📊 অগ্রগতি</button><button id="pxGoList" type="button">📋 তালিকা</button></span></div>
+      <div class="panel-title"><span>অনুশীলন <span class="tag">Practice</span></span><span class="px-quicklinks"><button id="pxGoCached" type="button">🔁 পুরনো MCQ</button><button id="pxGoProgress" type="button">📊 অগ্রগতি</button><button id="pxGoList" type="button">📋 তালিকা</button></span></div>
 
       <div class="px-block">
         <div class="px-label">উৎস — কোন শব্দ নিয়ে অনুশীলন হবে</div>
@@ -2540,6 +2563,15 @@ function pxBuildTypeSelect(){
 }
 pxBuildTypeSelect();
 
+function pxBuildCachedTypeSelect(){
+  const sel = document.getElementById('pxCachedTypeSelect');
+  if(!sel) return;
+  const prevVal = sel.value;
+  sel.innerHTML = Object.keys(TYPE_LABELS).map(t => `<option value="${t}">${escapeHtml(TYPE_LABELS[t])}</option>`).join('');
+  if(prevVal) sel.value = prevVal;
+}
+pxBuildCachedTypeSelect();
+
 const pxGoProgressBtn = document.getElementById('pxGoProgress');
 if(pxGoProgressBtn) pxGoProgressBtn.addEventListener('click', ()=>{
   const moreBtn = document.querySelector('.main-tab-btn[data-tab="more"]');
@@ -3005,6 +3037,114 @@ function pxRenderHistory(){
   });
 }
 pxRenderHistory();
+
+// ============ পুরনো MCQ থেকে re-exam বানানো (উপরের quicklink থেকে খোলা মোডাল) ============
+const pxGoCachedBtn = document.getElementById('pxGoCached');
+const pxCachedOverlayEl = document.getElementById('pxCachedOverlay');
+if(pxGoCachedBtn && pxCachedOverlayEl){
+  pxGoCachedBtn.addEventListener('click', ()=>{
+    pxCachedOverlayEl.classList.add('open');
+    lockBodyScroll();
+    pxBuildCachedTypeSelect();
+    pxSetCachedMsg('');
+    pxUpdateCachedPreview();
+  });
+}
+function pxCloseCachedOverlay(){
+  pxCachedOverlayEl.classList.remove('open');
+  unlockBodyScroll();
+}
+const pxCachedOverlayCloseBtn = document.getElementById('pxCachedOverlayClose');
+if(pxCachedOverlayCloseBtn) pxCachedOverlayCloseBtn.addEventListener('click', pxCloseCachedOverlay);
+if(pxCachedOverlayEl) pxCachedOverlayEl.addEventListener('click', e=>{
+  if(e.target.id === 'pxCachedOverlay') pxCloseCachedOverlay();
+});
+['pxCachedTypeSelect','pxCachedFrom','pxCachedTo','pxCachedCount'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('input', pxUpdateCachedPreview);
+});
+
+function pxSetCachedMsg(msg, isErr){
+  const el = document.getElementById('pxCachedMsg');
+  if(!el) return;
+  el.textContent = msg || '';
+  el.className = 'px-msg' + (isErr ? ' err' : '');
+}
+
+// আগে থেকেই AI-generated (cached) MCQ আছে এমন শব্দগুলোর মধ্যে থেকেই টাইপ + সিরিয়াল রেঞ্জ ধরে পুল বানায়
+function pxGatherCachedWords(){
+  const sel = document.getElementById('pxCachedTypeSelect');
+  if(!sel || !sel.value) return {words: [], error: 'টাইপ বেছে নাও।'};
+  const type = sel.value;
+  const list = getFullList(type);
+  if(!list || list.length===0) return {words: [], error: 'টাইপ বেছে নাও।'};
+  const fromVal = document.getElementById('pxCachedFrom').value;
+  const toVal = document.getElementById('pxCachedTo').value;
+  const from = fromVal ? Number(fromVal) : list[0].no;
+  const to = toVal ? Number(toVal) : list[list.length-1].no;
+  let words = normalizeWords(list.filter(w=>w.no>=from && w.no<=to), type);
+  words = words.filter(w => !!aiCache[pxCacheKey(w)]);
+  if(words.length === 0) return {words: [], error: 'এই রেঞ্জে এখনো কোনো MCQ জেনারেট করা হয়নি — আগে একবার "সিরিয়াল রেঞ্জ / টাইপ" দিয়ে কুইজ দাও, তারপর এখান থেকে রি-এক্সাম দেওয়া যাবে।'};
+  return {words, label: (TYPE_LABELS[type]||type) + ' · পুরনো MCQ · #' + from + '–' + to};
+}
+
+function pxUpdateCachedPreview(){
+  const el = document.getElementById('pxCachedPreview');
+  const nEl = document.getElementById('pxCachedPreviewN');
+  if(!el || !nEl) return;
+  const gathered = pxGatherCachedWords();
+  const words = gathered.words || [];
+  nEl.textContent = words.length;
+  el.classList.toggle('zero', words.length === 0);
+  const countVal = document.getElementById('pxCachedCount').value;
+  const wantN = countVal ? Number(countVal) : null;
+  let suffix = ' টি শব্দ পাওয়া যাচ্ছে';
+  if(!gathered.error){
+    if(wantN && wantN < words.length) suffix = ' টি শব্দ পাওয়া যাচ্ছে (কুইজে ' + wantN + ' টি এলোমেলোভাবে বাছাই হবে)';
+    else if(!wantN && words.length > 20) suffix = ' টি শব্দ পাওয়া যাচ্ছে (কুইজে ২০টি এলোমেলোভাবে বাছাই হবে)';
+  }
+  el.lastChild.textContent = suffix;
+}
+
+const pxCachedStartBtn = document.getElementById('pxCachedStartBtn');
+if(pxCachedStartBtn) pxCachedStartBtn.addEventListener('click', async ()=>{
+  const gathered = pxGatherCachedWords();
+  if(gathered.error){ pxSetCachedMsg(gathered.error, true); return; }
+  pxSetCachedMsg('');
+
+  let words = gathered.words;
+  const countVal = document.getElementById('pxCachedCount').value;
+  let cap = 20;
+  if(countVal && Number(countVal) > 0) cap = Number(countVal);
+  let truncNote = '';
+  if(words.length > cap){
+    words = pxShuffle(words).slice(0, cap);
+    truncNote = ' (এলোমেলোভাবে বাছাই করা ' + cap + 'টি)';
+  } else {
+    words = pxShuffle(words);
+  }
+  pxQueue = words;
+  pxIndex = 0; pxScore = 0; pxWrongThisSession = []; pxAnswered = [];
+  pxSourceLabel = gathered.label + truncNote;
+
+  pxCachedOverlayEl.classList.remove('open');
+  document.getElementById('pxTitle').textContent = 'MCQ Quiz';
+  document.getElementById('pxOverlay').classList.add('open');
+  lockBodyScroll();
+  document.getElementById('pxBody').innerHTML = '<div class="px-loading">প্রশ্ন তৈরি হচ্ছে...</div>';
+
+  pxCreateInProgressEntries();
+
+  try{
+    // words গুলো সব আগে থেকেই cache-এ আছে, তাই এটা প্রায় সাথে সাথেই শেষ হয়ে যাবে, নতুন AI কল লাগবে না
+    await pxPrepareDistractors(pxQueue, msg=>{
+      const body = document.getElementById('pxBody');
+      if(body) body.innerHTML = `<div class="px-loading">${escapeHtml(msg)}</div>`;
+    });
+  }catch(e){ /* per-word fallback already applied inside pxPrepareDistractors */ }
+
+  pxRenderQuestion();
+});
 
 // ট্যাব বন্ধ করে দিলে বা রিলোড দিলেও যেন কোনো চলমান সেশন চিরকাল
 // "⏳ চলছে..." অবস্থায় আটকে না থাকে
