@@ -1864,6 +1864,20 @@ function unlockBodyScroll(){
     window.scrollTo(0, __scrollLockY);
   }
 }
+function forceUnlockBodyScroll(){
+  // Safety net: if no overlay is actually open but the body is still locked
+  // (e.g. from a mismatched lock/unlock call), force-clear it so the page
+  // never gets stuck unscrollable.
+  const anyOverlayOpen = document.querySelector('.modal-overlay.open, .fc-overlay.open, .px-overlay.open');
+  if(!anyOverlayOpen && document.body.style.position === 'fixed'){
+    __scrollLockCount = 0;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+  }
+}
 
 // ============ Flashcard revision popup ============
 let fcDeck = [];
@@ -2821,8 +2835,10 @@ document.querySelectorAll('.main-tab-btn').forEach(btn=>{
     btn.classList.add('active');
     document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
     document.getElementById('tabPane-'+btn.dataset.tab).classList.add('active');
+    forceUnlockBodyScroll();
   });
 });
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'visible') forceUnlockBodyScroll(); });
 
 document.querySelectorAll('.filters button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -3500,6 +3516,7 @@ if(pxCachedStartBtn) pxCachedStartBtn.addEventListener('click', async ()=>{
   pxSourceLabel = gathered.label + truncNote;
 
   pxCachedOverlayEl.classList.remove('open');
+  unlockBodyScroll();
   document.getElementById('pxTitle').textContent = 'MCQ Quiz';
   document.getElementById('pxOverlay').classList.add('open');
   lockBodyScroll();
