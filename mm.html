@@ -542,11 +542,11 @@
     <div class="modal-box">
       <div class="modal-title" id="editModalTitle" data-i18n="editModalTitleDefault">এডিট করো</div>
       <label>Word / Term</label>
-      <input type="text" id="editWord">
+      <input type="text" id="editWord" autocorrect="off" autocapitalize="off" spellcheck="false" autocomplete="off">
       <label data-i18n="labelBnSubtext">বাংলা (subtext)</label>
-      <input type="text" id="editBn">
+      <input type="text" id="editBn" autocorrect="off" autocapitalize="off" spellcheck="false" autocomplete="off">
       <label id="editValLabel">Meaning / Value</label>
-      <textarea id="editVal" rows="3"></textarea>
+      <textarea id="editVal" rows="3" autocorrect="off" autocapitalize="off" spellcheck="false" autocomplete="off"></textarea>
       <div class="modal-actions">
         <button id="editReset" class="modal-btn ghost" data-i18n="editReset">মূল অবস্থায় ফেরাও</button>
         <button id="editCancel" class="modal-btn ghost" data-i18n="cancel">বাতিল</button>
@@ -1604,10 +1604,17 @@ document.getElementById('pantryUpload').addEventListener('click', async ()=>{
   settings.pantryId = pantryId; saveSettings(settings);
   setSyncStatus('Upload হচ্ছে...', '');
   try{
+    const remote = await fetchRemoteBackup();
+    const payload = {
+      state: mergeDict(remote && remote.state, state),
+      overrides: mergeDict(remote && remote.overrides, overrides),
+      aiCache: mergeDict(remote && remote.aiCache, aiCache),
+      updatedAt: new Date().toISOString()
+    };
     const res = await fetch(`https://getpantry.cloud/apiv1/pantry/${encodeURIComponent(pantryId)}/basket/${PANTRY_BASKET}`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(buildBackupPayload())
+      body: JSON.stringify(payload)
     });
     if(!res.ok) throw new Error('HTTP ' + res.status);
     setLastBackupISO(new Date().toISOString());
@@ -1626,9 +1633,12 @@ document.getElementById('pantryDownload').addEventListener('click', async ()=>{
     const res = await fetch(`https://getpantry.cloud/apiv1/pantry/${encodeURIComponent(pantryId)}/basket/${PANTRY_BASKET}`);
     if(!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
+    applyingRemoteData = true;
     if(data.state) { state = data.state; saveState(state); }
     if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
     if(data.aiCache) { mergeAiCacheFromCloud(data.aiCache); }
+    applyingRemoteData = false;
+    if(data.updatedAt) setLocalEditTs(new Date(data.updatedAt).getTime());
     refreshAll();
     renderCoverage();
     setSyncStatus('✓ Cloud থেকে progress ও AI answer restore হয়েছে।', 'ok');
@@ -1671,10 +1681,17 @@ document.getElementById('fbUpload').addEventListener('click', async ()=>{
   settings.fbDbUrl = dbUrl; settings.fbApiKey = apiKey; settings.fbDocId = docId; saveSettings(settings);
   setFbStatus('Upload হচ্ছে...', '');
   try{
+    const remote = await fetchRemoteBackup();
+    const payload = {
+      state: mergeDict(remote && remote.state, state),
+      overrides: mergeDict(remote && remote.overrides, overrides),
+      aiCache: mergeDict(remote && remote.aiCache, aiCache),
+      updatedAt: new Date().toISOString()
+    };
     const res = await fetch(fbRtdbUrl(dbUrl, docId, apiKey), {
       method: 'PUT',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(buildBackupPayload())
+      body: JSON.stringify(payload)
     });
     if(!res.ok){ const t = await res.text(); throw new Error('HTTP ' + res.status + ' — ' + t.slice(0,150)); }
     setLastBackupISO(new Date().toISOString());
@@ -1694,9 +1711,12 @@ document.getElementById('fbDownload').addEventListener('click', async ()=>{
     if(!res.ok){ const t = await res.text(); throw new Error('HTTP ' + res.status + ' — ' + t.slice(0,150)); }
     const data = await res.json();
     if(!data) throw new Error('ঐ Sync ID-তে এখনো কোনো data আপলোড করা হয়নি।');
+    applyingRemoteData = true;
     if(data.state) { state = data.state; saveState(state); }
     if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
     if(data.aiCache) { mergeAiCacheFromCloud(data.aiCache); }
+    applyingRemoteData = false;
+    if(data.updatedAt) setLocalEditTs(new Date(data.updatedAt).getTime());
     refreshAll();
     renderCoverage();
     setFbStatus('✓ Firebase থেকে progress ও AI answer restore হয়েছে।', 'ok');
@@ -1711,6 +1731,15 @@ document.getElementById('fbDownload').addEventListener('click', async ()=>{
 const LAST_BACKUP_KEY = 'memoria-last-backup-v1';
 function getLastBackupISO(){ try{ return localStorage.getItem(LAST_BACKUP_KEY) || ''; }catch(e){ return ''; } }
 function setLastBackupISO(iso){ try{ localStorage.setItem(LAST_BACKUP_KEY, iso); }catch(e){} }
+// ---- Local-edit clock: "when did THIS device last change something itself" ----
+// Used to guard against Auto-Pull overwriting a fresh local edit with a stale
+// cloud snapshot (e.g. pull fires on foreground before the 4s auto-backup debounce
+// has had a chance to push). Never touched while we're applying data that came
+// FROM the cloud (see applyingRemoteData below) — only real local edits count.
+const LOCAL_EDIT_TS_KEY = 'memoria-local-edit-ts-v1';
+function getLocalEditTs(){ try{ return Number(localStorage.getItem(LOCAL_EDIT_TS_KEY)) || 0; }catch(e){ return 0; } }
+function setLocalEditTs(ts){ try{ localStorage.setItem(LOCAL_EDIT_TS_KEY, String(ts)); }catch(e){} }
+let applyingRemoteData = false;
 function fmtBackupTime(iso){
   if(!iso) return '';
   const d = new Date(iso);
@@ -1752,8 +1781,35 @@ function mergeAiCacheFromCloud(remote){
   }
   if(changed) saveAiCache(aiCache);
 }
+// Union two flat key→value dictionaries. Keys that exist only in `remote`
+// (someone else's edit this device hasn't pulled yet) are kept; keys that
+// exist in both are decided by `local` since this device is the one actively
+// pushing right now (mirrors EX·PO Vault's "whoever pushes last wins" rule,
+// but per-key instead of whole-blob, since Memoria's state/overrides/aiCache
+// are simple flat dictionaries — no arrays/tombstones needed like EX·PO Vault).
+function mergeDict(remote, local){
+  return Object.assign({}, (remote && typeof remote === 'object') ? remote : {}, local || {});
+}
+async function fetchRemoteBackup(){
+  try{
+    if(settings.fbDbUrl){
+      const res = await fetch(fbRtdbUrl(settings.fbDbUrl, settings.fbDocId || 'default', settings.fbApiKey));
+      if(res.ok) return await res.json();
+    } else if(settings.pantryId){
+      const res = await fetch(`https://getpantry.cloud/apiv1/pantry/${encodeURIComponent(settings.pantryId)}/basket/${PANTRY_BASKET}`);
+      if(res.ok) return await res.json();
+    }
+  }catch(e){ /* no remote reachable — push will fall back to local-only below */ }
+  return null;
+}
 let autoBackupTimer = null;
 function scheduleAutoBackup(){
+  // While remote (pulled/restored) data is being applied to local state, don't
+  // schedule a push at all — pushing back what we just pulled is a redundant
+  // "echo push" that could clobber a genuine edit another device pushes in the
+  // same window. Real local edits (applyingRemoteData === false) still push normally.
+  if(applyingRemoteData) return;
+  setLocalEditTs(Date.now());
   if(settings.autoBackupEnabled === false) return;
   if(!settings.pantryId && !settings.fbDbUrl) return;
   clearTimeout(autoBackupTimer);
@@ -1762,14 +1818,25 @@ function scheduleAutoBackup(){
 async function performAutoBackup(){
   if(settings.autoBackupEnabled === false) return;
   try{
+    // Merge-before-push: fetch whatever is currently in the cloud and union it
+    // key-by-key with local state/overrides/aiCache. Without this, pushing a
+    // whole-blob snapshot could silently erase a *different* word another
+    // device edited and pushed in between (this device never pulled it in).
+    const remote = await fetchRemoteBackup();
+    const payload = {
+      state: mergeDict(remote && remote.state, state),
+      overrides: mergeDict(remote && remote.overrides, overrides),
+      aiCache: mergeDict(remote && remote.aiCache, aiCache),
+      updatedAt: new Date().toISOString()
+    };
     if(settings.fbDbUrl){
       const res = await fetch(fbRtdbUrl(settings.fbDbUrl, settings.fbDocId || 'default', settings.fbApiKey), {
-        method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(buildBackupPayload())
+        method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
       });
       if(!res.ok) throw new Error('HTTP ' + res.status);
     } else if(settings.pantryId){
       const res = await fetch(`https://getpantry.cloud/apiv1/pantry/${encodeURIComponent(settings.pantryId)}/basket/${PANTRY_BASKET}`, {
-        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(buildBackupPayload())
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
       });
       if(!res.ok) throw new Error('HTTP ' + res.status);
     } else { return; }
@@ -1795,6 +1862,15 @@ async function performAutoPull(){
   if(!settings.fbDbUrl && !settings.pantryId) return;
   autoPullInFlight = true;
   try{
+    // Guard A: if a local edit is sitting in the 4s debounce waiting to be pushed,
+    // send it FIRST. Otherwise pulling now would fetch a cloud snapshot that
+    // predates this edit and overwrite it — the exact "edit → gets erased/reverted"
+    // bug. Flushing the pending push means the cloud we then fetch already has it.
+    if(autoBackupTimer){
+      clearTimeout(autoBackupTimer);
+      autoBackupTimer = null;
+      await performAutoBackup();
+    }
     let data = null;
     if(settings.fbDbUrl){
       const res = await fetch(fbRtdbUrl(settings.fbDbUrl, settings.fbDocId || 'default', settings.fbApiKey));
@@ -1804,13 +1880,26 @@ async function performAutoPull(){
       if(res.ok) data = await res.json();
     }
     if(data){
-      if(data.state) { state = data.state; saveState(state); }
-      if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
-      if(data.aiCache) { mergeAiCacheFromCloud(data.aiCache); }
-      if(typeof refreshAll === 'function') refreshAll();
-      if(typeof renderCoverage === 'function') renderCoverage();
-      setLastBackupISO(new Date().toISOString());
-      renderAutoBackupStatus();
+      // Guard B: timestamp check — never let an older cloud snapshot overwrite
+      // a newer local edit (can still happen if Guard A's push failed silently,
+      // e.g. offline). Only pull when the cloud is actually newer than (or equal
+      // to) what this device last changed; otherwise push local instead.
+      const remoteTs = data.updatedAt ? new Date(data.updatedAt).getTime() : 0;
+      const localTs = getLocalEditTs();
+      if(remoteTs > 0 && localTs > 0 && localTs > remoteTs){
+        performAutoBackup(); // local is ahead of cloud — push, don't pull
+      } else {
+        applyingRemoteData = true;
+        if(data.state) { state = data.state; saveState(state); }
+        if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
+        if(data.aiCache) { mergeAiCacheFromCloud(data.aiCache); }
+        applyingRemoteData = false;
+        if(remoteTs > 0) setLocalEditTs(remoteTs); // now in sync with cloud, not "dirty"
+        if(typeof refreshAll === 'function') refreshAll();
+        if(typeof renderCoverage === 'function') renderCoverage();
+        setLastBackupISO(new Date().toISOString());
+        renderAutoBackupStatus();
+      }
     }
   }catch(e){ /* silent — next open/foreground will retry */ }
   autoPullInFlight = false;
@@ -2366,6 +2455,11 @@ function animateNumber(el, from, to, suffix, duration){
 // ---- shared checkbox-pop tracking (works across day-cards and extra lists) ----
 let lastPoppedKey = null;
 
+// ---- accordion open-state, kept OUTSIDE render() so re-renders (checkbox clicks,
+// edits etc.) don't wipe out which block was open. At most one entry = only one
+// block open at a time; clicking a new one auto-closes the previous. ----
+let openBlocks = new Set();
+
 // ---- weekly/monthly progress trend, bucketed by SCHEDULE's own dates so gaps in the calendar don't matter ----
 let trendMode = 'weekly';
 function dayCompletion(day){
@@ -2587,16 +2681,17 @@ function render(){
           </div>`;
         }).join('');
         const wPct = words.length ? Math.round(wDone/words.length*100) : 0;
+        const isOpen = openBlocks.has(blockId);
         return `<div class="item-block ${wPct===100?'complete':''}">
           <div class="item-head" data-toggle="${blockId}">
             <span class="dot ${it.g}"></span>
             <div class="item-label">${it.k}${note}</div>
             <span class="item-progress">${wDone}/${words.length}</span>
             <button class="fc-trigger" data-fcday="${day.date}" data-fcidx="${idx}" title="ফ্ল্যাশকার্ড দিয়ে ঝালাই করো">🎴</button>
-            <span class="caret" id="caret-${blockId}">▸</span>
+            <span class="caret ${isOpen?'open':''}" id="caret-${blockId}">▸</span>
           </div>
           <div class="item-mini-progress"><div class="item-mini-progress-fill" style="width:${wPct}%"></div></div>
-          <div class="word-table" id="${blockId}">${wordRows}</div>
+          <div class="word-table ${isOpen?'open':''}" id="${blockId}">${wordRows}</div>
         </div>`;
       } else {
         const k = itemKey(day.date, idx);
@@ -2651,8 +2746,10 @@ function render(){
   wrap.querySelectorAll('[data-toggle]').forEach(head=>{
     head.addEventListener('click', ()=>{
       const id = head.dataset.toggle;
-      document.getElementById(id).classList.toggle('open');
-      document.getElementById('caret-'+id).classList.toggle('open');
+      const wasOpen = openBlocks.has(id);
+      openBlocks.clear();
+      if(!wasOpen) openBlocks.add(id);
+      render();
     });
   });
   wrap.querySelectorAll('.edit-btn').forEach(btn=>{
@@ -2709,6 +2806,8 @@ const EXTRA_LISTS = [
 
 function extraKey(type, no){ return 'std-' + type + '-' + no; }
 let lastExtraPoppedKey = null;
+// separate accordion state so opening a section here doesn't touch the main list's
+let openExtraBlocks = new Set();
 
 function renderExtra(){
   const wrap = document.getElementById('extraWrap');
@@ -2738,22 +2837,23 @@ function renderExtra(){
       </div>`;
     }).join('');
     const wPct = items.length ? Math.round(done/items.length*100) : 0;
+    const isOpen = openExtraBlocks.has(blockId);
     return `<div class="item-block ${wPct===100?'complete':''}">
       <div class="item-head" data-toggle="${blockId}">
         <span class="dot en"></span>
         <div class="item-label">${sec.label}</div>
         <span class="item-progress">${done}/${items.length}</span>
         <button class="fc-trigger" data-fcextra="${sec.type}" title="ফ্ল্যাশকার্ড দিয়ে ঝালাই করো">🎴</button>
-        <span class="caret" id="caret-${blockId}">▸</span>
+        <span class="caret ${isOpen?'open':''}" id="caret-${blockId}">▸</span>
       </div>
       <div class="item-mini-progress"><div class="item-mini-progress-fill" style="width:${wPct}%"></div></div>
-      <div class="word-table" id="${blockId}">
+      <div class="word-table ${isOpen?'open':''}" id="${blockId}">
         <div class="add-word-row">
           <button class="add-word-toggle" data-addtoggle="${sec.type}" type="button">+ নতুন শব্দ যোগ করো</button>
           <div class="add-word-form" id="addform-${sec.type}" style="display:none;">
-            <input type="text" class="px-input" id="addword-word-${sec.type}" placeholder="শব্দ / Word">
-            <input type="text" class="px-input" id="addword-bn-${sec.type}" placeholder="বাংলা অর্থ (ঐচ্ছিক)">
-            <input type="text" class="px-input" id="addword-val-${sec.type}" placeholder="অর্থ / Meaning">
+            <input type="text" class="px-input" id="addword-word-${sec.type}" placeholder="শব্দ / Word" autocorrect="off" autocapitalize="off" spellcheck="false" autocomplete="off">
+            <input type="text" class="px-input" id="addword-bn-${sec.type}" placeholder="বাংলা অর্থ (ঐচ্ছিক)" autocorrect="off" autocapitalize="off" spellcheck="false" autocomplete="off">
+            <input type="text" class="px-input" id="addword-val-${sec.type}" placeholder="অর্থ / Meaning" autocorrect="off" autocapitalize="off" spellcheck="false" autocomplete="off">
             <button class="add-word-save" data-addsave="${sec.type}" type="button">যোগ করো</button>
           </div>
         </div>
@@ -2783,8 +2883,10 @@ function renderExtra(){
   wrap.querySelectorAll('[data-toggle]').forEach(head=>{
     head.addEventListener('click', ()=>{
       const id = head.dataset.toggle;
-      document.getElementById(id).classList.toggle('open');
-      document.getElementById('caret-'+id).classList.toggle('open');
+      const wasOpen = openExtraBlocks.has(id);
+      openExtraBlocks.clear();
+      if(!wasOpen) openExtraBlocks.add(id);
+      renderExtra();
     });
   });
   wrap.querySelectorAll('.edit-btn').forEach(btn=>{
