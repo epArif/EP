@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ep-v8';
+const CACHE_NAME = 'ep-v9';
 const SYNC_TAG   = 'ep-result-sync';
 const SYNC_DB    = 'ep_sw_sync';
 const SYNC_STORE = 'queue';
@@ -71,7 +71,7 @@ self.addEventListener('install', function(e) {
     caches.open(CACHE_NAME).then(function(cache) {
       // Cache app shell
       var shellCache = Promise.allSettled
-        ? Promise.allSettled(['./','./index.html','./ExamPortal.html','./ev.html','./ejob.html','./manifest.json'].map(function(u){return cache.add(u).catch(function(){});}))
+        ? Promise.allSettled(['./','./index.html','./ExamPortal.html','./ev.html','./ejob.html','./mm.html','./manifest.json'].map(function(u){return cache.add(u).catch(function(){});}))
         : cache.addAll(['./','./index.html']).catch(function(){});
       // Cache logo with no-cors so it works offline on every device
       var logoCache = fetch(new Request(LOGO_URL, { mode: 'no-cors' }))
