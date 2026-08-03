@@ -382,6 +382,14 @@ if('serviceWorker' in navigator){
   .fc-trigger:hover{ color:var(--teal); border-color:var(--teal-dim); }
   .day-fc-btn{ background:none; border:1px solid var(--gold-dim); color:var(--gold); border-radius:8px; font-size:10.5px; padding:4px 9px; cursor:pointer; font-family:'IBM Plex Mono',monospace; white-space:nowrap; }
   .day-fc-btn:hover{ background:rgba(217,168,78,0.12); }
+  .day-golist-icon-btn{ background:none; border:none; color:var(--text-muted); font-size:12.5px; cursor:pointer; padding:0; margin-left:8px; vertical-align:middle; opacity:.75; transition:opacity .15s ease, color .15s ease; }
+  .day-golist-icon-btn:hover{ opacity:1; color:var(--teal); }
+  .scroll-top-btn{ position:fixed; right:16px; bottom:20px; width:40px; height:40px; border-radius:50%; border:1px solid var(--gold-dim); background:var(--panel); color:var(--gold); font-size:17px; line-height:1; cursor:pointer; z-index:60; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(0,0,0,0.35); opacity:0; transform:translateY(8px); pointer-events:none; transition:opacity .3s ease, transform .3s ease; }
+  .scroll-top-btn.show{ opacity:.82; transform:translateY(0); pointer-events:auto; }
+  .scroll-top-btn:hover{ opacity:1; background:rgba(217,168,78,0.12); }
+  body:has(.modal-overlay.open) .scroll-top-btn,
+  body:has(.fc-overlay.open) .scroll-top-btn,
+  body:has(.px-overlay.open) .scroll-top-btn{ display:none; }
 
   /* ===== Practice tab ===== */
   .px-tabs{ display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
@@ -904,6 +912,8 @@ if('serviceWorker' in navigator){
   <footer>
     Memoria — <span data-i18n="footerTagline">প্রতিদিনের অভ্যাসই সবচেয়ে বড় শক্তি।</span>
   </footer>
+
+  <button id="scrollTopBtn" class="scroll-top-btn" type="button" title="উপরে যাও" aria-label="Scroll to top">↑</button>
 
 <script>
 const WM_LIST = [{"no": 1, "word": "Alien", "bn": "বিদেশী", "meaning": "a foreigner"}, {"no": 2, "word": "Ablaze", "bn": "জ্বলন্ত", "meaning": "burning"}, {"no": 3, "word": "Aggravate", "bn": "প্রকোপ বৃদ্ধি করা / উত্তেজিত করা", "meaning": "to make worse"}, {"no": 4, "word": "Allocate", "bn": "বরাদ্দ করা", "meaning": "distribute"}, {"no": 5, "word": "Amnesty", "bn": "ক্ষমা", "meaning": "forgiveness"}, {"no": 6, "word": "Antipathy", "bn": "বিদ্বেষ", "meaning": "grudge"}, {"no": 7, "word": "Amicable", "bn": "বন্ধুত্বপূর্ণ", "meaning": "friendly"}, {"no": 8, "word": "Allegation", "bn": "অভিযোগ", "meaning": "accusation"}, {"no": 9, "word": "Audible", "bn": "শ্রাব্য", "meaning": "can be heard"}, {"no": 10, "word": "Asparagus", "bn": "শতমূলী / ব্রাদ্ধ উদ্ভিদ যার কচি অঙ্কুর সবজিতে রান্না করে খাওয়া হয়", "meaning": "a valuable food"}, {"no": 11, "word": "Ambition", "bn": "উচ্চাকাঙ্ক্ষা", "meaning": "a desire to be successful"}, {"no": 12, "word": "Assiduity", "bn": "অধ্যাবসায়", "meaning": "steadfastness"}, {"no": 13, "word": "Anathema", "bn": "ঘৃণিত বা অভিশপ্ত বস্তু", "meaning": "detested person or thing"}, {"no": 14, "word": "Altitude", "bn": "উচ্চতা", "meaning": "height"}, {"no": 15, "word": "Acumen", "bn": "তীক্ষ্ণ বিচারবুদ্ধি", "meaning": "quick understanding ability"}, {"no": 16, "word": "Apparent", "bn": "প্রকৃত / প্রতীয়মান", "meaning": "obvious"}, {"no": 17, "word": "Afford", "bn": "সামর্থ্য থাকা / যোগান দেওয়া", "meaning": "provide"}, {"no": 18, "word": "Amenable", "bn": "বাধ্য / অনুগত", "meaning": "agreeable"}, {"no": 19, "word": "Adore", "bn": "পূজা করা / গভীরভাবে ভালোবাসা", "meaning": "love dearly"}, {"no": 20, "word": "Audacious", "bn": "দুঃসাহসী", "meaning": "daring"}, {"no": 21, "word": "Analogous", "bn": "অনুরূপ / সাদৃশ্য", "meaning": "similar"}, {"no": 22, "word": "Articulate", "bn": "উচ্চারণ করা / স্পষ্টভাবে বলা", "meaning": "to express clearly"}, {"no": 23, "word": "Arduous", "bn": "দুঃসাধ্য / কষ্টকর", "meaning": "difficult"}, {"no": 24, "word": "Attest", "bn": "সত্যায়িত করা", "meaning": "certifying something as true"}, {"no": 25, "word": "Apartheid", "bn": "বর্ণ বৈষম্য", "meaning": "discrimination"}, {"no": 26, "word": "Allusion", "bn": "পরোক্ষ উল্লেখ", "meaning": "indirect reference"}, {"no": 27, "word": "Abettor", "bn": "সহায়তাকারী", "meaning": "accomplice"}, {"no": 28, "word": "Aristocracy", "bn": "অভিজাত শ্রেণী / অভিজাততন্ত্র", "meaning": "blue blood"}, {"no": 29, "word": "Alluring", "bn": "লুব্ধকর / জাদুকর", "meaning": "tempting"}, {"no": 30, "word": "Appended", "bn": "নোয়ায় বা ছাপায় সংযুক্ত / যোগ করা", "meaning": "joined"}, {"no": 31, "word": "Affluent", "bn": "ধনবান / বিত্তবান", "meaning": "wealthy"}, {"no": 32, "word": "A violent storm", "bn": "তীব্র ঝড়", "meaning": "tempest"}, {"no": 33, "word": "Brevity", "bn": "সংক্ষিপ্ততা", "meaning": "abridgement"}, {"no": 34, "word": "Breathtaking", "bn": "অসাধারণ / বিস্ময়কর", "meaning": "amazing"}, {"no": 35, "word": "Blink", "bn": "চোখ পিটপিট করা / আলো মিটমিট করে জ্বলা", "meaning": "twinkle"}, {"no": 36, "word": "Blend", "bn": "মিশানো / মিশ্রিত করা", "meaning": "mix"}, {"no": 37, "word": "Bibliography", "bn": "কোনো একজন লেখক বা নির্দিষ্ট বিষয়ের উপর গ্রন্থ বা রচনার তালিকা", "meaning": "collection / list of books"}, {"no": 38, "word": "Blockbuster", "bn": "ধ্বংসাত্মক বিস্ফোরক বা বোমা যা প্রায়শই অনেক দালানকোঠা ধ্বংস করতে পারে", "meaning": "a powerful explosive to demolish building"}, {"no": 39, "word": "Blue-Book", "bn": "সরকার প্রকাশিত বিশেষ তথ্য সম্বলিত পুস্তক", "meaning": "government publication"}, {"no": 40, "word": "Brittle", "bn": "ভঙ্গুর", "meaning": "fragile"}, {"no": 41, "word": "Benevolent", "bn": "দয়ালু / সদাশয়", "meaning": "kind"}, {"no": 42, "word": "Bootleg", "bn": "বেআইনিভাবে মদ আমদানি-রপ্তানি করা", "meaning": "smuggle"}, {"no": 43, "word": "Bounty", "bn": "বদান্যতা / উদারতা", "meaning": "generosity"}, {"no": 44, "word": "Bizarre", "bn": "অদ্ভুত / বিচিত্র / উদ্ভুত", "meaning": "strange"}, {"no": 45, "word": "Banish", "bn": "নির্বাসিত করা", "meaning": "exile"}, {"no": 46, "word": "Booming", "bn": "সমৃদ্ধ / দ্রুত সমৃদ্ধিময়", "meaning": "flourishing"}, {"no": 47, "word": "Blasphemy", "bn": "ঈশ্বর বা ধর্মের মহত্ব বা পবিত্রতা নিয়ে ঠাট্টা করা", "meaning": "impious utterance"}, {"no": 48, "word": "Belated", "bn": "সুব দেরিতে আসা", "meaning": "tardy"}, {"no": 49, "word": "Blue blood", "bn": "অভিজাত বা উচ্চ বংশ", "meaning": "aristocratic birth"}, {"no": 50, "word": "Brainchild", "bn": "কারো মস্তিষ্কপ্রসূত পরিকল্পনা বা উদ্ভাবন", "meaning": "a person's idea"}, {"no": 51, "word": "Convict", "bn": "দণ্ডিত অপরাধী", "meaning": "punished"}, {"no": 52, "word": "Counsel", "bn": "উপদেশ", "meaning": "advice"}, {"no": 53, "word": "Competent", "bn": "উপযুক্ত / সমর্থ / দক্ষ", "meaning": "able"}, {"no": 54, "word": "Comprehension", "bn": "উপলব্ধি / উপলব্ধি ক্ষমতা", "meaning": "knowledge / understanding / the ability to understand completely"}, {"no": 55, "word": "Cataclysm", "bn": "আকস্মিক প্রচণ্ড পরিবর্তন", "meaning": "sudden violent change or disaster"}, {"no": 56, "word": "Condemn", "bn": "দোষ দেওয়া / নিন্দা করা", "meaning": "denounce"}, {"no": 57, "word": "Circumvent", "bn": "কোনো উপায়ে পাশ কাটিয়ে যাওয়া", "meaning": "find a way of overcoming or avoiding"}, {"no": 58, "word": "Contaminate", "bn": "দূষিত করা", "meaning": "pollute"}, {"no": 59, "word": "Considerable", "bn": "বিবেচনাযোগ্য", "meaning": "significant"}, {"no": 60, "word": "Cockpit", "bn": "হেলিকপ্টার ইত্যাদিতে বিমানচালকের বসার স্থান", "meaning": "an enclosed area of an aircraft where the pilot sits and steers the plane"}, {"no": 61, "word": "Corpus", "bn": "কোনো বিশেষ বিষয়ের উপর রচনাসমূহের সমষ্টি", "meaning": "a collection of written texts"}, {"no": 62, "word": "Constraint", "bn": "সীমাবদ্ধতা / চাপ / বাধ্যবাধকতা", "meaning": "limitation"}, {"no": 63, "word": "Conflict", "bn": "দ্বন্দ্ব / সংঘাত / বিরোধ", "meaning": "disagreement"}, {"no": 64, "word": "Concentrate", "bn": "পূর্ণ মনোযোগ দেওয়া", "meaning": "focus"}, {"no": 65, "word": "Commonplace", "bn": "সাধারণগোছের / বৈশিষ্ট্যহীন", "meaning": "ordinary"}, {"no": 66, "word": "Charitable", "bn": "পরোপকারী / পরহিতৈষী", "meaning": "generous"}, {"no": 67, "word": "Cascade", "bn": "জলপ্রপাত", "meaning": "waterfall"}, {"no": 68, "word": "Camouflage", "bn": "ছদ্মবেশ / বুটিবেশ", "meaning": "disguise"}, {"no": 69, "word": "Corpulent", "bn": "স্থূল ও ভারী", "meaning": "fat / obese"}, {"no": 70, "word": "Contemporary", "bn": "সমসাময়িক / সমকালীন", "meaning": "belonging to the same time"}, {"no": 71, "word": "Considerable", "bn": "বিবেচনাযোগ্য / বেশ কিছু পরিমাণ / গুরুত্বপূর্ণ", "meaning": "substantial (প্রচুর)"}, {"no": 72, "word": "Coherent", "bn": "সঙ্গতিপূর্ণ", "meaning": "consistent"}, {"no": 73, "word": "Conjecture", "bn": "অনুমান", "meaning": "guess"}, {"no": 74, "word": "Capital", "bn": "রাজধানী / শীর্ষনীয়", "meaning": "head"}, {"no": 75, "word": "Crying", "bn": "কান্না করা / আর্তনাদ করা", "meaning": "stinking"}, {"no": 76, "word": "Cryptic", "bn": "গুপ্ত / দুর্বোধ্য", "meaning": "obscure"}, {"no": 77, "word": "Dilettante", "bn": "কাব্য বা সংগীত ইত্যাদির অনুরাগী কিন্তু স্বল্প বিষয়ে অগভীর জ্ঞানসম্পন্ন", "meaning": "amateur"}, {"no": 78, "word": "Disburse", "bn": "প্রাপ্য অর্থ দেওয়া / বিতরণ করা", "meaning": "distribute"}, {"no": 79, "word": "Domicile", "bn": "স্থায়ীভাবে নিবাসিত করা বা হওয়া", "meaning": "permanent residence of a person"}, {"no": 80, "word": "Dexterous", "bn": "দক্ষ", "meaning": "skilful"}, {"no": 81, "word": "Day Dream", "bn": "দিবা স্বপ্ন", "meaning": "reverie"}, {"no": 82, "word": "Dilemma", "bn": "উভয় সংকট", "meaning": "choice only between unfavourable alternative"}, {"no": 83, "word": "Dogmatic", "bn": "মূল্যহীন বা গোঁড়া মতবাদ প্রকাশ করে এমন", "meaning": "narrow minded"}, {"no": 84, "word": "Diversify", "bn": "বিভিন্ন রকম করা / বহুমুখী হওয়া", "meaning": "branch out"}, {"no": 85, "word": "Drizzling", "bn": "গুড়ি গুড়ি বৃষ্টি", "meaning": "raining"}, {"no": 86, "word": "Derogatory", "bn": "অবমাননা / হানিকর", "meaning": "disrespectful"}, {"no": 87, "word": "Discernible", "bn": "চোখ বা বোধশক্তি দ্বারা দেখা বা উপলব্ধি করতে পারা", "meaning": "noticeable"}, {"no": 88, "word": "Disinterested", "bn": "নির্বিলাষ", "meaning": "neutral"}, {"no": 89, "word": "Deter", "bn": "বাধা দেওয়া", "meaning": "impede"}, {"no": 90, "word": "Detest", "bn": "তীব্র ঘৃণা করা", "meaning": "abhorred"}, {"no": 91, "word": "Discuss", "bn": "আলোচনা করা", "meaning": "talk"}, {"no": 92, "word": "Doctrine", "bn": "মতবাদ", "meaning": "principle"}, {"no": 93, "word": "Dominant", "bn": "প্রভাবশালী / কর্তৃত্বময়", "meaning": "powerful"}, {"no": 94, "word": "Day-break", "bn": "ভোর / প্রভাত", "meaning": "morning"}, {"no": 95, "word": "Disguise", "bn": "ছদ্মবেশ ধারণ করা / প্রতারণা করতে নিজের পরিচয় গোপন করা", "meaning": "hide"}, {"no": 96, "word": "Decade", "bn": "দশক", "meaning": "a period of ten years"}, {"no": 97, "word": "Die hard", "bn": "কট্টর সমর্থক", "meaning": "a strong supporter"}, {"no": 98, "word": "Durable", "bn": "টিকসই / মজবুত", "meaning": "capable of lasting"}, {"no": 99, "word": "Duress", "bn": "জবরদস্তি করা / ভয় দেখিয়ে কোনো কিছু করতে বাধ্য করা", "meaning": "constraint"}, {"no": 100, "word": "Docile", "bn": "সহজে বশ মানে এমন বা বাধ্য", "meaning": "tame"}, {"no": 101, "word": "Dearth", "bn": "অভাব / অনটন", "meaning": "scarcity"}, {"no": 102, "word": "Deliberate", "bn": "ইচ্ছাকৃত", "meaning": "intentional"}, {"no": 103, "word": "Dearness", "bn": "মহার্ঘতা / দুর্মূল্যতা", "meaning": "high price"}, {"no": 104, "word": "Dye", "bn": "রং করা", "meaning": "color"}, {"no": 105, "word": "Discipline", "bn": "নিয়মানুবর্তিতা / শাস্তি", "meaning": "punish"}, {"no": 106, "word": "Equity", "bn": "ন্যায়পরায়ণতা", "meaning": "justice"}, {"no": 107, "word": "Enquiry", "bn": "তদন্ত / অনুসন্ধান করা", "meaning": "a body of voters"}, {"no": 108, "word": "Equivocation", "bn": "দ্ব্যর্থবোধক / একই কথায় অর্থ বিরোধী দুইটি বিপরীত ভাব", "meaning": "two contrary thing in the same statement"}, {"no": 109, "word": "Electorate", "bn": "নির্বাচকমণ্ডলী", "meaning": "voters"}, {"no": 110, "word": "Embassy", "bn": "দূতাবাস", "meaning": "the group of people who represent their country in the foreign country"}, {"no": 111, "word": "Etiquette", "bn": "বিশেষ খেলায় বা সমাজের বিশেষ ক্ষেত্রে প্রচলিত আদবকায়দা", "meaning": "formal rules for polite behaviour in the society"}, {"no": 112, "word": "Epitome", "bn": "নিদর্শনাবলির প্রতীক / সারসংক্ষেপ", "meaning": "a perfect example of something"}, {"no": 113, "word": "Enlarge", "bn": "প্রসারিত করা / বড় করা", "meaning": "expand"}, {"no": 114, "word": "Exorbitant", "bn": "অতিরিক্ত বা মাত্রাতিরিক্ত", "meaning": "excessive"}, {"no": 115, "word": "Exponentially", "bn": "দ্রুতগতিতে", "meaning": "rapidly"}, {"no": 116, "word": "Enticing", "bn": "প্রলোভিত করা / প্রলুব্ধ করা", "meaning": "alluring"}, {"no": 117, "word": "Encounter", "bn": "বিপদের মুখোমুখি হওয়া বা শত্রুর সামনে পড়া", "meaning": "battle"}, {"no": 118, "word": "Evasive", "bn": "এড়িয়ে যেতে সচেষ্ট", "meaning": "elusive"}, {"no": 119, "word": "Ensure", "bn": "নিশ্চিত করা", "meaning": "make certain"}, {"no": 120, "word": "Entreaty", "bn": "সনির্বন্ধ অনুরোধ", "meaning": "earnest request"}, {"no": 121, "word": "Excess", "bn": "অতিরিক্ত", "meaning": "surplus"}, {"no": 122, "word": "Eternal", "bn": "চিরন্তন", "meaning": "everlasting"}, {"no": 123, "word": "Eliminate", "bn": "বর্জন করা / উচ্ছেদ করা", "meaning": "remove"}, {"no": 124, "word": "Emancipation", "bn": "মুক্তি", "meaning": "freedom"}, {"no": 125, "word": "Expunge", "bn": "মুছে ফেলা / কোনো কিছু বাদ দেওয়া", "meaning": "eradicate / remove"}, {"no": 126, "word": "Economical", "bn": "মিতব্যয়ী", "meaning": "frugal"}, {"no": 127, "word": "Electrifying", "bn": "সহসা উত্তেজিত করা / বিদ্যুতায়িত করা", "meaning": "very exciting"}, {"no": 128, "word": "Exotic", "bn": "বিদেশী", "meaning": "foreign"}, {"no": 129, "word": "Edifice", "bn": "প্রাসাদ / অট্টালিকা", "meaning": "a large impressive building"}, {"no": 130, "word": "Edible", "bn": "ভোজ্য / আহারযোগ্য", "meaning": "a type of flower that can be eaten"}, {"no": 131, "word": "Embargo", "bn": "নিষেধাজ্ঞা", "meaning": "restriction on foreign trade and investment"}, {"no": 132, "word": "Experiment", "bn": "পরীক্ষা বা গবেষণা করা", "meaning": "trial"}, {"no": 133, "word": "Fall", "bn": "শরৎকাল", "meaning": "autumn"}, {"no": 134, "word": "Felicitation", "bn": "অভিনন্দন", "meaning": "expression of good wish"}, {"no": 135, "word": "Flora", "bn": "কোনো বিশেষ অঞ্চল বা যুগের সব গাছগাছড়া / উদ্ভিদকুল", "meaning": "all the plants of an area / a particular area"}, {"no": 136, "word": "Fatal", "bn": "মারাত্মক / প্রাণনাশক", "meaning": "that which ends in death"}, {"no": 137, "word": "Flamboyance", "bn": "বর্ণাঢ্যতা / জাঁকজমকতা", "meaning": "showy"}, {"no": 138, "word": "Fast track", "bn": "দ্রুতগতির অনুকূল কোনো পথ", "meaning": "a quick path to achieve something"}, {"no": 139, "word": "Frighten", "bn": "ভীত করা / ভয় পাইয়ে দেওয়া", "meaning": "to make someone feel fear"}, {"no": 140, "word": "Fortitude", "bn": "বিপদ, প্রলোভন বা অসুবিধার মুখে ধৈর্য / বীরত্বপূর্ণ সহিষ্ণুতা", "meaning": "the quality of courage in adverse circumstances"}, {"no": 141, "word": "Frugal", "bn": "মিতব্যয়ী", "meaning": "parsimonious"}, {"no": 142, "word": "Foes", "bn": "শত্রু", "meaning": "rivals"}, {"no": 143, "word": "Found", "bn": "প্রতিষ্ঠা করা / ভিত্তি স্থাপন করা", "meaning": "establish"}, {"no": 144, "word": "Fluctuate", "bn": "ওঠানামা করা / হ্রাস-বৃদ্ধি হওয়া", "meaning": "vary"}, {"no": 145, "word": "Frugal", "bn": "মিতব্যয়ী", "meaning": "economical"}, {"no": 146, "word": "Fallacy", "bn": "ভুল বা মিথ্যা বিশ্বাস / মিথ্যা ধারণা", "meaning": "a false belief"}, {"no": 147, "word": "Flimsy", "bn": "হালকা ও পাতলা / ফিনফিনে", "meaning": "dilute / tenuous"}, {"no": 148, "word": "Foe", "bn": "শত্রু", "meaning": "enemy"}, {"no": 149, "word": "Fabricate", "bn": "মিথ্যা কিছু উদ্ভাবন করা / জাল করা / জোড়া লাগানো", "meaning": "concoct / manufacture-falsely"}, {"no": 150, "word": "Forgo", "bn": "ত্যাগ করা / বর্জন করা / ছেড়ে যাওয়া", "meaning": "renounce / do without"}, {"no": 151, "word": "Fragile", "bn": "ভঙ্গুর / নাজুক / ঠুনকো", "meaning": "weak"}, {"no": 152, "word": "Forthcoming", "bn": "আসন্ন / প্রকাশিতব্য", "meaning": "approaching"}, {"no": 153, "word": "Gratis", "bn": "বিনামূল্যে", "meaning": "without making any payment"}, {"no": 154, "word": "Gullible", "bn": "সহজে প্রতারণাযোগ্য", "meaning": "credulous / easily deceived"}, {"no": 155, "word": "Crumble", "bn": "বিড়বিড়িয়ে ক্ষোভ বা অসন্তোষ প্রকাশ করা", "meaning": "mutter / whine complains"}, {"no": 156, "word": "Geriatric", "bn": "বৃদ্ধদের চিকিৎসাব্যবস্থা", "meaning": "old people"}, {"no": 157, "word": "Gravity", "bn": "গুরুতর অবস্থা / গম্ভীর্য", "meaning": "seriousness"}, {"no": 158, "word": "Gorgeous", "bn": "জমকালো / চমৎকার", "meaning": "splendid"}, {"no": 159, "word": "Genocide", "bn": "গণহত্যা", "meaning": "mass killing"}, {"no": 160, "word": "Garrulous", "bn": "বাচাল", "meaning": "loquacious / talkative"}, {"no": 161, "word": "Glowing", "bn": "উজ্জ্বল ও উদ্দীপ্ত বা আবেগোচ্ছল", "meaning": "shining"}, {"no": 162, "word": "Gesture", "bn": "ইশারা / অঙ্গভঙ্গি", "meaning": "indication / body movement"}, {"no": 163, "word": "Hamlet", "bn": "ছোট গ্রাম", "meaning": "a small village"}, {"no": 164, "word": "Heroic", "bn": "বীরত্বপূর্ণ / বীরত্বগাথা বিষয়ক", "meaning": "epic"}, {"no": 165, "word": "Hazardous", "bn": "ঝুঁকিপূর্ণ", "meaning": "dangerous"}, {"no": 166, "word": "Homogeneous", "bn": "সমজাতীয়", "meaning": "of the same kind"}, {"no": 167, "word": "Homicide", "bn": "নরহত্যা", "meaning": "the killing of one person by another"}, {"no": 168, "word": "High handed", "bn": "উদ্ধত", "meaning": "arrogant / cavalier"}, {"no": 169, "word": "Heptagon", "bn": "সপ্তভুজ / সাতটি বাহুবিশিষ্ট ক্ষেত্র", "meaning": "seven sides"}, {"no": 170, "word": "Handy", "bn": "দরকারি / সুবিধাজনক", "meaning": "useful"}, {"no": 171, "word": "Hardly", "bn": "প্রায় না / বললে চলে না / কদাচিৎ", "meaning": "scarcely / rare"}, {"no": 172, "word": "Hospitality", "bn": "আতিথেয়তা / মেহমানদারি", "meaning": "entertainment"}, {"no": 173, "word": "Humility", "bn": "বিনয় / বিনম্রতা", "meaning": "modesty"}, {"no": 174, "word": "Homestead", "bn": "বসতবাড়ি / আমারবাড়ি", "meaning": "a house with outer building and land around it"}, {"no": 175, "word": "Incite", "bn": "প্ররোচিত করা / উত্তেজিত করা", "meaning": "instigate"}, {"no": 176, "word": "Impromptu", "bn": "প্রস্তুতি ছাড়া / স্বতঃপ্রণোদিত মাত্র", "meaning": "extempore / unrehearsed"}, {"no": 177, "word": "Indiscreet", "bn": "অসতর্ক / অবিচক্ষণ / অবিবেচক", "meaning": "imprudent"}, {"no": 178, "word": "Illuminate", "bn": "আলোকিত করা", "meaning": "brighten"}, {"no": 179, "word": "Integrate", "bn": "একত্রীভূত করা / সম্প্রসারণ করা", "meaning": "consolidate / merge / unit"}, {"no": 180, "word": "Incredibly", "bn": "অবিশ্বাস্যভাবে", "meaning": "unbelievably"}, {"no": 181, "word": "Idiosyncratic", "bn": "স্বভাবিক", "meaning": "peculiar"}, {"no": 182, "word": "Indigenous", "bn": "দেশি / দেশজ / স্থানীয়", "meaning": "native"}, {"no": 183, "word": "Intricate", "bn": "জটিল / দুর্বোধ্য", "meaning": "complicated"}, {"no": 184, "word": "Ingenious", "bn": "চতুর / অপ্রতিদ্বন্দ্বী", "meaning": "(meaning not given in original)"}, {"no": 185, "word": "Independence", "bn": "স্বাধীনতা", "meaning": "freedom"}, {"no": 186, "word": "Inaudible", "bn": "শ্রবণাতীত / অশ্রবণীয়", "meaning": "that cannot be heard"}, {"no": 187, "word": "Indolent", "bn": "অলস", "meaning": "lazy"}, {"no": 188, "word": "Icon", "bn": "প্রতিমা / কোনো প্রিয় ব্যক্তির চিহ্নিত বা শ্রদ্ধা করা মূর্তি", "meaning": "symbol"}, {"no": 189, "word": "Inept", "bn": "অযোগ্য / অপটু", "meaning": "incomplete / incompetent"}, {"no": 190, "word": "Imbibe", "bn": "পান করা", "meaning": "to drink"}, {"no": 191, "word": "Irrevocable", "bn": "প্রত্যাহার করা যায় না এমন / চূড়ান্ত ও অপরিবর্তনীয়", "meaning": "unalterable"}, {"no": 192, "word": "Innate", "bn": "সহজাত / স্বভাবগত / সহগত", "meaning": "intrinsic / congenital / inherent"}, {"no": 193, "word": "Intrepid", "bn": "অকুতোভয় / অসমসাহসিক", "meaning": "fearless / brave"}, {"no": 194, "word": "Insane", "bn": "উন্মাদ / পাগল / কান্ডজ্ঞানহীন", "meaning": "crazy"}, {"no": 195, "word": "Impeach", "bn": "অভিসংশন করা / অভিযোগ করা", "meaning": "charge"}, {"no": 196, "word": "Innuendo", "bn": "ব্যঙ্গোক্তি / কটাক্ষ", "meaning": "an indirect insinuation or suggestion about person"}, {"no": 197, "word": "Inauguration", "bn": "উদ্বোধন", "meaning": "opening ceremony"}, {"no": 198, "word": "Irreproachable", "bn": "অনবদ্য / অনিন্দ্য", "meaning": "unshakable"}, {"no": 199, "word": "Introspective", "bn": "আত্মবিশ্লেষণপ্রবণ", "meaning": "thoughtful"}, {"no": 200, "word": "Delinquency", "bn": "কিশোর অপরাধ", "meaning": "crimes committed by adolescents or young people"}, {"no": 201, "word": "Judicious", "bn": "বিচক্ষণ", "meaning": "sensible"}, {"no": 202, "word": "Jovial", "bn": "হাসিখুশি / আমুদে", "meaning": "merry"}, {"no": 203, "word": "Kidding", "bn": "ঠাট্টা করা", "meaning": "joking"}, {"no": 204, "word": "Kinship", "bn": "রক্তের সম্পর্ক", "meaning": "blood relation"}, {"no": 205, "word": "Kindred", "bn": "আত্মীয় / আত্মিক / স্বজাতীয়", "meaning": "relationship by birth or descent"}, {"no": 206, "word": "Knowledge", "bn": "জ্ঞান / অবগতি / অভিজ্ঞতা", "meaning": "awareness"}, {"no": 207, "word": "Litigant", "bn": "মামলার ব্যক্তি", "meaning": "a party to a case"}, {"no": 208, "word": "Luminous", "bn": "আলোকোজ্জ্বল / দ্যুতিময়", "meaning": "shining"}, {"no": 209, "word": "Lavatory", "bn": "শৌচাগার / স্নানাগার", "meaning": "a place of discharge from the bowels"}, {"no": 210, "word": "Lack of equality", "bn": "সমন্বয়তার অভাব", "meaning": "disparity"}, {"no": 211, "word": "Lucrative", "bn": "লাভজনক / আর্থিকভাবে লোভনীয়", "meaning": "profitable"}, {"no": 212, "word": "Lunar", "bn": "চন্দ্র সংক্রান্ত", "meaning": "moon"}, {"no": 213, "word": "Literacy", "bn": "সাক্ষরতা", "meaning": "the ability to read and write"}, {"no": 214, "word": "Longing", "bn": "আকাঙ্ক্ষা", "meaning": "desiring"}, {"no": 215, "word": "Laughing", "bn": "হাস্যকর / হাস্যোদ্দীপক", "meaning": "drab / stinking"}, {"no": 216, "word": "Lack of rainfall", "bn": "বৃষ্টির অভাব", "meaning": "drought"}, {"no": 217, "word": "Latent", "bn": "সুপ্ত", "meaning": "dormant"}, {"no": 218, "word": "Morbidity", "bn": "বিষণ্ণতা / অসুস্থতা", "meaning": "melancholy"}, {"no": 219, "word": "Mankind", "bn": "মানবজাতি", "meaning": "the human race"}, {"no": 220, "word": "Murky", "bn": "তমসাচ্ছন্ন / ঘোর অন্ধকার", "meaning": "gloomy"}, {"no": 221, "word": "Mental", "bn": "মানসিক", "meaning": "cerebral"}, {"no": 222, "word": "Minutes", "bn": "মন্তব্য ও মতামতের দাপ্তরিক লেখাপ্রমাণ / কার্যবিবরণী", "meaning": "written record"}, {"no": 223, "word": "Malignancy", "bn": "চরম ক্ষতিকর অবস্থা / মারাত্মক অবস্থা", "meaning": "the state of a disease likely to cause death"}, {"no": 224, "word": "Manifesto", "bn": "ইস্তাহার / উদ্দেশ্য ও কর্মসূচি সম্পর্কে প্রকাশ্য লিখিত ঘোষণা", "meaning": "policy statement"}, {"no": 225, "word": "Mammal", "bn": "স্তন্যপায়ী প্রাণী", "meaning": "an animal that feeds its baby with its milk"}, {"no": 226, "word": "Mayhem", "bn": "ভয়ংকর বিশৃঙ্খলা / ক্ষয়ক্ষতি বা অঙ্গচ্ছেদ করার উপায়", "meaning": "confusion and fear caused by violent behaviour"}, {"no": 227, "word": "Menacing", "bn": "ভীতিকর / বিপজ্জনক", "meaning": "alarming"}, {"no": 228, "word": "Mandatory", "bn": "বাধ্যতামূলক", "meaning": "obligatory"}, {"no": 229, "word": "Musk", "bn": "কস্তুরী / বিশেষ প্রাণীর ত্বক-নিঃসৃত সুবাসিত পদার্থ", "meaning": "a substance used in making perfume"}, {"no": 230, "word": "Magnificent", "bn": "জাঁকজমকপূর্ণ", "meaning": "splendid"}, {"no": 231, "word": "Miscellaneous", "bn": "বিবিধ", "meaning": "varied"}, {"no": 232, "word": "Matrimony", "bn": "বিবাহ / বিয়ে / পরিণয়", "meaning": "marriage"}, {"no": 233, "word": "Niche", "bn": "মূর্তি / অলংকার ইত্যাদি রাখার জন্য দেয়ালের ফোকর", "meaning": "hollow"}, {"no": 234, "word": "Nepotism", "bn": "স্বজনপ্রীতি", "meaning": "undue favour shown by a person in power"}, {"no": 235, "word": "Narcissism", "bn": "নিজের মধ্যে একান্ত আত্মনিবিষ্টতা / আত্মরতি", "meaning": "the habit of admiring one's own appearance"}, {"no": 236, "word": "Notion", "bn": "ধারণা / ভাব / অভিমত", "meaning": "impression"}, {"no": 237, "word": "Nocturnal", "bn": "নৈশ / নিশাচর", "meaning": "occurring or active at night"}, {"no": 238, "word": "Nascent", "bn": "জন্ম নিচ্ছে এমন / জায়মান", "meaning": "beginning"}, {"no": 239, "word": "Nuptial", "bn": "বিয়ে সংক্রান্ত", "meaning": "marriage"}, {"no": 240, "word": "Outcome", "bn": "পরিণতি / ফলাফল", "meaning": "result"}, {"no": 241, "word": "Ordinance", "bn": "অধ্যাদেশ", "meaning": "a law"}, {"no": 242, "word": "Officialese", "bn": "আমলাদের লেখায় ব্যবহৃত অতিরিক্ত কেতাবি বা দুর্বোধ্য ভাষা", "meaning": "language used in offices"}, {"no": 243, "word": "Open question", "bn": "যে প্রশ্নের উত্তর বা সমাধান নেই", "meaning": "a question not yet decided"}, {"no": 244, "word": "Offspring", "bn": "সন্তান / সন্তানসন্ততি", "meaning": "children"}, {"no": 245, "word": "Omnivorous", "bn": "সর্বভুক", "meaning": "eating all types of food"}, {"no": 246, "word": "Obese", "bn": "স্থূলকায় / মোটা", "meaning": "fat / very fat"}, {"no": 247, "word": "Oral", "bn": "মৌখিক / মুখ বিষয়ক", "meaning": "mouth"}, {"no": 248, "word": "Oriental", "bn": "প্রাচ্য সম্বন্ধীয়", "meaning": "eastern"}, {"no": 249, "word": "Loyal", "bn": "বিশ্বাসী ও অনুগত", "meaning": "faithful"}, {"no": 250, "word": "Occupied", "bn": "অধিগৃহীত / অধিকৃত", "meaning": "engaged"}, {"no": 251, "word": "Omnipotent", "bn": "সর্বশক্তিমান", "meaning": "almighty"}, {"no": 252, "word": "Overpopulated", "bn": "অতিরিক্ত জনবহুল", "meaning": "too many people"}, {"no": 253, "word": "Pilferage", "bn": "চুরি", "meaning": "stealing"}, {"no": 254, "word": "Periphery", "bn": "বাহ্যসীমা / চৌহদ্দি / পরিধি", "meaning": "marginal areas"}, {"no": 255, "word": "Proscribe", "bn": "অধিকারচ্যুত করা / নিষেধ করা / নির্বাসিত করা", "meaning": "prohibit"}, {"no": 256, "word": "Precedence", "bn": "অগ্রাধিকার / অগ্রবর্তিতার অধিকার", "meaning": "priority"}, {"no": 257, "word": "Prior to", "bn": "পূর্বে / আগে", "meaning": "before"}, {"no": 258, "word": "Proclaim", "bn": "ঘোষণা করা", "meaning": "declare"}, {"no": 259, "word": "Panacea", "bn": "সব ঐরনের রোগ নিরাময়যোগ্য ঔষধ", "meaning": "cure all"}, {"no": 260, "word": "Pensive", "bn": "চিন্তাক্লিষ্ট / বিষণ্ণ", "meaning": "thoughtful"}, {"no": 261, "word": "Permissive", "bn": "অনুমতিদায়ক / অনুমতিদত্ত", "meaning": "liberal"}, {"no": 262, "word": "Plagiarism", "bn": "ছুরি / চৌর্যবৃত্তি", "meaning": "copying unlawfully"}, {"no": 263, "word": "Posterity", "bn": "বংশধর / ভবিষ্যৎ প্রজন্ম পরম্পরা", "meaning": "later generations"}, {"no": 264, "word": "Philanthropist", "bn": "জনহিতৈষী ব্যক্তি", "meaning": "a person of charity"}, {"no": 265, "word": "Philatelist", "bn": "ডাকটিকিট সংগ্রাহক", "meaning": "stamp collector"}, {"no": 266, "word": "Protocol", "bn": "শিষ্টাচার রীতি / সম্মত চুক্তি", "meaning": "record of rules"}, {"no": 267, "word": "Pneumatic", "bn": "সংকুচিত বায়ু দ্বারা চালিত / বায়ুচালিত", "meaning": "filled with compressed air"}, {"no": 268, "word": "Parent", "bn": "বাবা ও মা", "meaning": "father or mother"}, {"no": 269, "word": "Plurality", "bn": "বহুপদাধিকার / বহুত্ব", "meaning": "the holding of more than one office at a time"}, {"no": 270, "word": "Prerogative", "bn": "বিশেষ কর্তৃত্ব / প্রাধিকার", "meaning": "an exclusive right or privilege"}, {"no": 271, "word": "Plenipotentiary", "bn": "পূর্ণক্ষমতাপ্রাপ্ত", "meaning": "a person who has full power to take action and decision"}, {"no": 272, "word": "Pedagogue", "bn": "স্কুল শিক্ষক এবং লেখিয়ে অতিরিক্তি শিক্ষক", "meaning": "education"}, {"no": 273, "word": "A profiteer", "bn": "মুনাফাখোর / অতিরিক্ত সুযোগ নিয়ে অত্যধিক মুনাফা করা", "meaning": "a person who makes excessive profits by charging inflated rate"}, {"no": 274, "word": "Prejudice", "bn": "পূর্বসংস্কার", "meaning": "bigotry"}, {"no": 275, "word": "Paradigm", "bn": "আদর্শ", "meaning": "example"}, {"no": 276, "word": "Pesticide", "bn": "কীটনাশক", "meaning": "insecticide"}, {"no": 277, "word": "Panegyric", "bn": "প্রশস্তিগাথা", "meaning": "elaborate"}, {"no": 278, "word": "Parsimony", "bn": "কৃপণতা", "meaning": "miserliness"}, {"no": 279, "word": "Privilege", "bn": "বিশেষাধিকার / নির্দিষ্ট অনুগ্রহ বা লাভ", "meaning": "special favour or right"}, {"no": 280, "word": "Pragmatic", "bn": "প্রয়োগবাদী / ব্যবহারবাদী", "meaning": "practical"}, {"no": 281, "word": "Perturb", "bn": "উত্তেজিত করা", "meaning": "agitate"}, {"no": 282, "word": "Proviso", "bn": "বিশেষ চুক্তি / দলিল", "meaning": "stipulation"}, {"no": 283, "word": "Progressive", "bn": "প্রগতিশীল / উদারনীল", "meaning": "open to change"}, {"no": 284, "word": "Resounding", "bn": "উচ্চঃস্বরে আলোচিত হওয়া / প্রতিধ্বনিত করা", "meaning": "huge"}, {"no": 285, "word": "Renaissance", "bn": "নবজাগরণ / পুনর্জন্ম", "meaning": "rebirth"}, {"no": 286, "word": "Ruminant", "bn": "জাবর কাটা প্রাণী", "meaning": "cud chewing animal"}, {"no": 287, "word": "Razzmatazz", "bn": "উপবাজি / ছিটেফোঁটা আকর্ষণীয়", "meaning": "a noisy activity"}, {"no": 288, "word": "Rendezvous", "bn": "মিলনস্থান", "meaning": "an appointed meeting place for troops"}, {"no": 289, "word": "Rhetoric", "bn": "অলংকারবহুল ও আন্তরিকতাহীন ভাষা", "meaning": "the art of effective or persuasive delivery of speech"}, {"no": 290, "word": "Regicide", "bn": "রাজহত্যা", "meaning": "the act of killing of a king or queen"}, {"no": 291, "word": "Revenge", "bn": "প্রতিশোধ নেওয়া / প্রতিহিংসাপরায়ণতা", "meaning": "an action against harassment"}, {"no": 292, "word": "Returns", "bn": "বিনিয়োগ লাভ", "meaning": "getting money as profit"}, {"no": 293, "word": "Reliance", "bn": "আস্থা / ভরসা", "meaning": "dependence"}, {"no": 294, "word": "Recalcitrant", "bn": "অবাধ্য / শৃঙ্খলাভঙ্গকারী", "meaning": "mutinous"}, {"no": 295, "word": "Rusticated", "bn": "শাস্তি হিসেবে কোনো ছাত্রকে বিশ্ববিদ্যালয় থেকে সাময়িকভাবে বহিষ্কার করা", "meaning": "expelled"}, {"no": 296, "word": "Stupendous", "bn": "বিপুল", "meaning": "huge"}, {"no": 297, "word": "Stupendous", "bn": "প্রকান্ড", "meaning": "awesome"}, {"no": 298, "word": "Rapidly", "bn": "দ্রুততার সাথে / ক্ষণাদি", "meaning": "quickly"}, {"no": 299, "word": "Randomly", "bn": "এলোমেলোভাবে", "meaning": "indiscriminately"}, {"no": 300, "word": "Room", "bn": "জায়গা / স্থান / কক্ষ", "meaning": "space"}, {"no": 301, "word": "Sibling", "bn": "একই মাতাপিতার সন্তান / ভাই বা বোন", "meaning": "brother or sister"}, {"no": 302, "word": "Squander", "bn": "অপচয় করা / বেহিসাবি খরচ করা", "meaning": "waste / spend lavishly"}, {"no": 303, "word": "Sensational", "bn": "চাঞ্চল্যকর / রোমাঞ্চকর", "meaning": "shocking"}, {"no": 304, "word": "Subsistence", "bn": "জীবন নির্বাহ / অস্তিত্ব", "meaning": "ability to survive"}, {"no": 305, "word": "Steady", "bn": "স্থির / দৃঢ়ভাবে প্রতিষ্ঠিত / অটল", "meaning": "stable"}, {"no": 306, "word": "Sluggish", "bn": "নিষ্ক্রিয় / মন্থরগতি", "meaning": "lethargic"}, {"no": 307, "word": "Stubborn", "bn": "গোঁয়ার্তুমিপূর্ণ / জেদি", "meaning": "obstinate / obdurate"}, {"no": 308, "word": "Subterfuge", "bn": "ছল / চতুরী / প্রতারণা", "meaning": "deception / trickery"}, {"no": 309, "word": "Syntax", "bn": "বাক্যরীতি / বাক্য গঠন", "meaning": "sentence construction / construction / sentence building"}, {"no": 310, "word": "Stagflation", "bn": "যে বিশেষ সময়সীমার মধ্যে মূল্যস্ফীতি দেখা দেয় কিন্তু উৎপাদন বৃদ্ধি পায় না", "meaning": "economic slow down"}, {"no": 311, "word": "Stalwart", "bn": "কোনো রাজনৈতিক দল বা গোষ্ঠীর অনুগত অনিষ্ঠ সমর্থক", "meaning": "reliable supporter"}, {"no": 312, "word": "Scourge", "bn": "যাতনাদায়ক / যাতক", "meaning": "person or thing that causes suffering"}, {"no": 313, "word": "Sedative", "bn": "স্নায়বিক উত্তেজনা ও মানসিক অস্থিরতা প্রশমিত করে এমন ঔষধ", "meaning": "a drug used to calm a person or animal to make them sleep"}, {"no": 314, "word": "Somnambulist", "bn": "ঘুমপ্রচারী / নিদ্রিত অবস্থায় হেঁটে বেড়ানো ব্যক্তি", "meaning": "a sleep walker"}, {"no": 315, "word": "Scarce", "bn": "অপ্রতুল / বিরল / দুর্লভ", "meaning": "short"}, {"no": 316, "word": "Solar", "bn": "সূর্য সংক্রান্ত / সৌর", "meaning": "sun"}, {"no": 317, "word": "Soothing", "bn": "প্রশান্ত করা / উপশম করা", "meaning": "comfortable"}, {"no": 318, "word": "Siesta", "bn": "দিবানিদ্রা / দুপুরের ঘুম", "meaning": "a short nap"}, {"no": 319, "word": "Spouse", "bn": "স্বামী বা স্ত্রী", "meaning": "husband or wife"}, {"no": 320, "word": "Seldom", "bn": "কদাচিৎ", "meaning": "hardly"}, {"no": 321, "word": "Synopsis", "bn": "সারাংশ", "meaning": "summary"}, {"no": 322, "word": "Sumptuous", "bn": "মহার্ঘ / মহার্য / ব্যয়বহুল", "meaning": "lavish"}, {"no": 323, "word": "Scuttle", "bn": "দ্রুত পলায়ন / তড়িঘড়ি করে পালানো", "meaning": "abandon"}, {"no": 324, "word": "Supportive", "bn": "সহায়ক", "meaning": "helpful"}, {"no": 325, "word": "Stanch", "bn": "কোনো কিছুর প্রবাহমান স্রোত বা রোধ করা", "meaning": "put an end to"}, {"no": 326, "word": "Sequence", "bn": "ক্রম / অনুক্রম / পরম্পরা", "meaning": "to follow"}, {"no": 327, "word": "Secluded", "bn": "নির্জন / নিভৃত", "meaning": "quiet"}, {"no": 328, "word": "Terrible", "bn": "ভয়ানক / ভয়াবহ", "meaning": "awful"}, {"no": 329, "word": "Tenable", "bn": "সমর্থনযোগ্য / রক্ষাযোগ্য", "meaning": "defensible"}, {"no": 330, "word": "Temporal", "bn": "পার্থিব", "meaning": "worldly"}, {"no": 331, "word": "Termination", "bn": "সমাপ্তি", "meaning": "to end"}, {"no": 332, "word": "To replicate", "bn": "হুবহু নকল করা", "meaning": "to copy"}, {"no": 333, "word": "To foresee", "bn": "আগেই জানা / আগেই বোঝা", "meaning": "anticipate"}, {"no": 334, "word": "Tranquil", "bn": "শান্ত", "meaning": "placid"}, {"no": 335, "word": "Thesaurus", "bn": "অর্থের সাদৃশ্য অনুযায়ী বর্গীকৃত শব্দ ও তাদের প্রতিশব্দাদির তালিকা / ভাব-অভিধান", "meaning": "a dictionary of words arranged in group that have similar meaning"}, {"no": 336, "word": "Tertiary", "bn": "তৃতীয় পর্যায়ভুক্ত", "meaning": "third in order"}, {"no": 337, "word": "To doctor an animal", "bn": "জীবাণুমুক্ত করা", "meaning": "to sterilize it"}, {"no": 338, "word": "To taunt someone", "bn": "কোনো অনুভূতি আঘাত দেওয়ার উদ্দেশ্যে মন্তব্য / বিদ্রুপ", "meaning": "tease"}, {"no": 339, "word": "Turbid", "bn": "অস্বচ্ছ / ঘোলা / বিশৃঙ্খল", "meaning": "murky"}, {"no": 340, "word": "Tenuous", "bn": "ক্ষীণ ও সরু", "meaning": "weak"}, {"no": 341, "word": "Tributary", "bn": "উপনদী", "meaning": "rivulet"}, {"no": 342, "word": "Untidy", "bn": "অপরিপাটি / অগোছালো", "meaning": "messy / mangy"}, {"no": 343, "word": "Unprecedented", "bn": "নজিরবিহীন / অভূতপূর্ব", "meaning": "without any example set before"}, {"no": 344, "word": "Unorganized", "bn": "বিশৃঙ্খল", "meaning": "haphazard"}, {"no": 345, "word": "Via", "bn": "মধ্য দিয়ে / হয়ে", "meaning": "through"}, {"no": 346, "word": "Venerate", "bn": "গভীরভাবে শ্রদ্ধা করা / পূজা করা", "meaning": "respect"}, {"no": 347, "word": "Veracity", "bn": "সত্য / সত্যনিষ্ঠি", "meaning": "authenticity"}, {"no": 348, "word": "Vengeance", "bn": "প্রতিশোধ / প্রতিহিংসা", "meaning": "revenge"}, {"no": 349, "word": "Verdict", "bn": "রায়", "meaning": "judgement"}, {"no": 350, "word": "Vertex", "bn": "শীর্ষ / চূড়া", "meaning": "highest point"}, {"no": 351, "word": "Wink", "bn": "চোখ পিটপিট করা", "meaning": "to close one eye briefly"}, {"no": 352, "word": "Wander", "bn": "উদ্দেশ্যহীনভাবে এক জায়গা থেকে অন্য জায়গায় ঘুরে বেড়ানো", "meaning": "walk aimlessly"}, {"no": 353, "word": "Waive", "bn": "পরিত্যাগ করা / ছেড়ে দেওয়া", "meaning": "forgo"}, {"no": 354, "word": "Yield", "bn": "উৎপাদন করা / উৎপন্ন হওয়া", "meaning": "produce"}, {"no": 355, "word": "Zoonotic transmission", "bn": "প্রাণী থেকে আগত রোগ", "meaning": "coming from an animal"}];
@@ -1619,6 +1629,9 @@ document.getElementById('pantryUpload').addEventListener('click', async ()=>{
       state: mergeDict(remote && remote.state, state),
       overrides: mergeDict(remote && remote.overrides, overrides),
       aiCache: mergeDict(remote && remote.aiCache, aiCache),
+      practiceHistory: mergeHistoryArr(remote && remote.practiceHistory, practiceHistory, 150),
+      wrongCounts: mergeMaxDict(remote && remote.wrongCounts, wrongCounts),
+      routineState: mergeNestedDict(remote && remote.routineState, routineState),
       updatedAt: new Date().toISOString()
     };
     const res = await fetch(`https://getpantry.cloud/apiv1/pantry/${encodeURIComponent(pantryId)}/basket/${PANTRY_BASKET}`, {
@@ -1647,6 +1660,9 @@ document.getElementById('pantryDownload').addEventListener('click', async ()=>{
     if(data.state) { state = data.state; saveState(state); }
     if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
     if(data.aiCache) { mergeAiCacheFromCloud(data.aiCache); }
+    if(data.practiceHistory) { practiceHistory = data.practiceHistory; savePracticeHistory(practiceHistory); if(typeof pxRenderHistory==='function') try{ pxRenderHistory(); }catch(e){} }
+    if(data.wrongCounts) { wrongCounts = data.wrongCounts; saveWrongCounts(wrongCounts); }
+    if(data.routineState) { routineState = data.routineState; saveRoutineState(routineState); if(typeof renderRoutine==='function') try{ renderRoutine(); }catch(e){} }
     applyingRemoteData = false;
     if(data.updatedAt) setLocalEditTs(new Date(data.updatedAt).getTime());
     refreshAll();
@@ -1696,6 +1712,9 @@ document.getElementById('fbUpload').addEventListener('click', async ()=>{
       state: mergeDict(remote && remote.state, state),
       overrides: mergeDict(remote && remote.overrides, overrides),
       aiCache: mergeDict(remote && remote.aiCache, aiCache),
+      practiceHistory: mergeHistoryArr(remote && remote.practiceHistory, practiceHistory, 150),
+      wrongCounts: mergeMaxDict(remote && remote.wrongCounts, wrongCounts),
+      routineState: mergeNestedDict(remote && remote.routineState, routineState),
       updatedAt: new Date().toISOString()
     };
     const res = await fetch(fbRtdbUrl(dbUrl, docId, apiKey), {
@@ -1725,6 +1744,9 @@ document.getElementById('fbDownload').addEventListener('click', async ()=>{
     if(data.state) { state = data.state; saveState(state); }
     if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
     if(data.aiCache) { mergeAiCacheFromCloud(data.aiCache); }
+    if(data.practiceHistory) { practiceHistory = data.practiceHistory; savePracticeHistory(practiceHistory); if(typeof pxRenderHistory==='function') try{ pxRenderHistory(); }catch(e){} }
+    if(data.wrongCounts) { wrongCounts = data.wrongCounts; saveWrongCounts(wrongCounts); }
+    if(data.routineState) { routineState = data.routineState; saveRoutineState(routineState); if(typeof renderRoutine==='function') try{ renderRoutine(); }catch(e){} }
     applyingRemoteData = false;
     if(data.updatedAt) setLocalEditTs(new Date(data.updatedAt).getTime());
     refreshAll();
@@ -1773,12 +1795,12 @@ function renderAutoBackupStatus(){
   el.textContent = last ? ('✓ সর্বশেষ auto-backup: ' + fmtBackupTime(last)) : 'এখনো auto-backup হয়নি — কিছু একটা tick/edit করলেই প্রথম backup হয়ে যাবে।';
   el.className = last ? 'sync-status ok' : 'sync-status';
 }
-// {state, overrides, aiCache} leave the device — settings (API keys/IDs) never included.
+// {state, overrides, aiCache, practiceHistory, wrongCounts, routineState} leave the device — settings (API keys/IDs) never included.
 // aiCache is the AI-generated word explanations; syncing it means a word explained
 // once on Phone A shows up instantly (and offline, without spending a new API call)
 // on Phone B too.
 function buildBackupPayload(){
-  return { state, overrides, aiCache, updatedAt: new Date().toISOString() };
+  return { state, overrides, aiCache, practiceHistory, wrongCounts, routineState, updatedAt: new Date().toISOString() };
 }
 // Merge cloud aiCache into local aiCache instead of overwriting — so an answer
 // generated on this device (maybe not uploaded yet) never gets erased by a restore,
@@ -1799,6 +1821,46 @@ function mergeAiCacheFromCloud(remote){
 // are simple flat dictionaries — no arrays/tombstones needed like EX·PO Vault).
 function mergeDict(remote, local){
   return Object.assign({}, (remote && typeof remote === 'object') ? remote : {}, local || {});
+}
+// wrongCounts: প্রতিটা key-এর জন্য বেশিটাই রাখা হয় (max) — যাতে দুই ডিভাইসে আলাদাভাবে
+// বাড়তে থাকা ভুলের count-এর কোনো একটা overwrite-এ হারিয়ে না যায়।
+function mergeMaxDict(remote, local){
+  const out = Object.assign({}, (remote && typeof remote === 'object') ? remote : {});
+  const loc = local || {};
+  for(const k in loc){ out[k] = Math.max(out[k]||0, loc[k]||0); }
+  return out;
+}
+// routineState: দুই লেভেল অবজেক্ট ({date: {key:true}}) — প্রতিটা তারিখের ভেতরের টিক
+// (key:true) গুলো union করা হয়, পুরো তারিখটাই replace না করে — তাই একদিনের কিছু টিক
+// এক ডিভাইসে আর বাকিটা অন্য ডিভাইসে দিলেও কোনোটা হারায় না।
+function mergeNestedDict(remote, local){
+  const out = {};
+  const r = (remote && typeof remote === 'object') ? remote : {};
+  const l = local || {};
+  const keys = new Set(Object.keys(r).concat(Object.keys(l)));
+  keys.forEach(k=>{
+    if(r[k] && typeof r[k]==='object' && l[k] && typeof l[k]==='object'){
+      out[k] = Object.assign({}, r[k], l[k]);
+    } else {
+      out[k] = (k in l) ? l[k] : r[k];
+    }
+  });
+  return out;
+}
+// practiceHistory: id দিয়ে union (id-তে টাইমস্ট্যাম্প এমবেড থাকে বলেই নতুন-আগে সর্ট করা
+// যায়), একই id দুই জায়গায় থাকলে local-টা রাখা হয়, ১৫০-এ ক্যাপ করা হয় (savePracticeHistory
+// যেভাবে করে সেভাবেই)।
+function mergeHistoryArr(remote, local, cap){
+  const map = new Map();
+  (Array.isArray(remote) ? remote : []).forEach(e=>{ if(e && e.id) map.set(e.id, e); });
+  (Array.isArray(local) ? local : []).forEach(e=>{ if(e && e.id) map.set(e.id, e); });
+  const merged = Array.from(map.values());
+  merged.sort((a,b)=>{
+    const ta = parseInt(String(a.id).replace(/^px/,'').split('-')[0], 10) || 0;
+    const tb = parseInt(String(b.id).replace(/^px/,'').split('-')[0], 10) || 0;
+    return tb - ta;
+  });
+  return cap ? merged.slice(0, cap) : merged;
 }
 async function fetchRemoteBackup(){
   try{
@@ -1837,6 +1899,9 @@ async function performAutoBackup(){
       state: mergeDict(remote && remote.state, state),
       overrides: mergeDict(remote && remote.overrides, overrides),
       aiCache: mergeDict(remote && remote.aiCache, aiCache),
+      practiceHistory: mergeHistoryArr(remote && remote.practiceHistory, practiceHistory, 150),
+      wrongCounts: mergeMaxDict(remote && remote.wrongCounts, wrongCounts),
+      routineState: mergeNestedDict(remote && remote.routineState, routineState),
       updatedAt: new Date().toISOString()
     };
     if(settings.fbDbUrl){
@@ -1903,6 +1968,9 @@ async function performAutoPull(){
         if(data.state) { state = data.state; saveState(state); }
         if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
         if(data.aiCache) { mergeAiCacheFromCloud(data.aiCache); }
+        if(data.practiceHistory) { practiceHistory = data.practiceHistory; savePracticeHistory(practiceHistory); if(typeof pxRenderHistory==='function') try{ pxRenderHistory(); }catch(e){} }
+        if(data.wrongCounts) { wrongCounts = data.wrongCounts; saveWrongCounts(wrongCounts); }
+        if(data.routineState) { routineState = data.routineState; saveRoutineState(routineState); if(typeof renderRoutine==='function') try{ renderRoutine(); }catch(e){} }
         applyingRemoteData = false;
         if(remoteTs > 0) setLocalEditTs(remoteTs); // now in sync with cloud, not "dirty"
         if(typeof refreshAll === 'function') refreshAll();
@@ -2309,6 +2377,17 @@ function nextDayISO(iso){
   return dt.toISOString().slice(0,10);
 }
 const TOMORROW = nextDayISO(TODAY);
+// "আজকের পড়া" ট্যাবের কন্টেন্ট ইচ্ছাকৃতভাবে ১ দিন পিছিয়ে দেখানো হয় (আজ ৪/০৮ হলে
+// ৩/০৮-এর পড়া দেখাবে) — কিন্তু TODAY (রুটিন, উইকলি চেকার, স্ট্রিক, ট্রেন্ড, কভারেজ)
+// অপরিবর্তিত থাকে, শুধু কন্টেন্ট সিলেকশনেই CONTENT_TODAY ব্যবহার হয়।
+function prevDayISO(iso){
+  const [y,m,d] = iso.split('-').map(Number);
+  const dt = new Date(Date.UTC(y,m-1,d));
+  dt.setUTCDate(dt.getUTCDate()-1);
+  return dt.toISOString().slice(0,10);
+}
+const CONTENT_TODAY = prevDayISO(TODAY);
+const CONTENT_TOMORROW = TODAY; // CONTENT_TODAY-র পরের দিন আসলে real TODAY
 
 function itemKey(dateStr, idx){ return dateStr + '-' + idx; }
 function wordKey(dateStr, idx, no){ return dateStr + '-' + idx + '-w' + no; }
@@ -2653,13 +2732,13 @@ function render(){
 
   const wrap = document.getElementById('daysWrap');
   let days = allDaysFull;
-  if(filter === 'today') days = days.filter(d=>d.date===TODAY);
+  if(filter === 'today') days = days.filter(d=>d.date===CONTENT_TODAY);
   if(filter === 'note') days = days.filter(d=>d.items.some(it=>it.note));
   if(filter === 'pending') days = days.filter(isPendingDay);
 
   wrap.innerHTML = days.map(day=>{
-    const isToday = day.date === TODAY;
-    const isTomorrow = day.date === TOMORROW;
+    const isToday = day.date === CONTENT_TODAY;
+    const isTomorrow = day.date === CONTENT_TOMORROW;
     const [y,m,d] = day.date.split('-').map(Number);
     const wd = WEEKDAYS_BN[new Date(Date.UTC(y,m-1,d)).getUTCDay()];
     const rows = day.items.map((it, idx)=>{
@@ -2721,9 +2800,9 @@ function render(){
     const revisionTag = day.revision ? '<span class="revision-tag">🔁 রিভিশন ডে</span>' : '';
     const tomorrowTag = isTomorrow ? '<span class="missed-tag" style="color:var(--gold);border-color:var(--gold-dim);">আগামীকাল</span>' : '';
     const dayHasWords = day.items.some(it=>it.type && getWords(it).length>0);
-    return `<div class="day-card ${isToday?'today':''} ${isTomorrow?'is-tomorrow':''} ${day.missed?'past-missed':''} ${day.revision?'is-revision':''}">
+    return `<div class="day-card ${isToday?'today':''} ${isTomorrow?'is-tomorrow':''} ${day.missed?'past-missed':''} ${day.revision?'is-revision':''}" data-date="${day.date}">
       <div class="day-head">
-        <div>${isToday?'<span class="day-live-dot"></span>':''}<span class="day-date">${dd}/${mm}/${y}</span> <span class="day-weekday">${wd}</span>${missedTag}${revisionTag}${tomorrowTag}</div>
+        <div>${isToday?'<span class="day-live-dot"></span>':''}<span class="day-date">${dd}/${mm}/${y}</span> <span class="day-weekday">${wd}</span>${filter==='today' ? `<button class="day-golist-icon-btn" data-golistday="${day.date}" title="সব তালিকায় দেখো">🔎</button>` : ''}${missedTag}${revisionTag}${tomorrowTag}</div>
         ${dayHasWords ? `<button class="day-fc-btn" data-fcdayall="${day.date}">🎴 আজকের পড়া ঝালাই করো</button>` : ''}
       </div>
       ${rows}
@@ -2783,6 +2862,20 @@ function render(){
       let words = [];
       day.items.forEach(it=>{ if(it.type) words = words.concat(normalizeWords(getWords(it), it.type)); });
       openFlashcards(words, 'আজকের পড়া · ' + formatDMY(day.date));
+    });
+  });
+  // "আজকে" কার্ড থেকে এক ক্লিকে "সব" ফিল্টারে গিয়ে সেই দিনের কার্ডেই স্ক্রল করে (isToday
+  // থাকায় গোল্ড বর্ডার দিয়ে আপনাআপনি হাইলাইট হয়ে থাকবে)
+  wrap.querySelectorAll('.day-golist-icon-btn[data-golistday]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const targetDate = btn.dataset.golistday;
+      const allFilterBtn = document.querySelector('.filters button[data-f="all"]');
+      if(allFilterBtn) allFilterBtn.click();
+      setTimeout(()=>{
+        const card = document.querySelector(`.day-card[data-date="${targetDate}"]`);
+        if(card) card.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 50);
     });
   });
 }
@@ -3054,6 +3147,7 @@ if(pxGoListBtn) pxGoListBtn.addEventListener('click', ()=>{
   if(extraSection) extraSection.scrollIntoView({behavior:'smooth'});
 });
 
+
 document.querySelectorAll('#pxSourceTabs button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('#pxSourceTabs button').forEach(b=>b.classList.remove('active'));
@@ -3136,11 +3230,11 @@ function pxSetMsg(msg, isErr){
 // {no, word, bn, val, type} shape used everywhere else (normalizeWords)
 function pxGatherWords(){
   if(pxSource === 'today'){
-    const day = getDisplaySchedule().find(d=>d.date === TODAY);
+    const day = getDisplaySchedule().find(d=>d.date === CONTENT_TODAY);
     if(!day) return {words: [], error: 'আজকের জন্য কোনো শিডিউল পাওয়া যায়নি।'};
     let words = [];
     day.items.forEach(it=>{ if(it.type) words = words.concat(normalizeWords(getWords(it), it.type)); });
-    return {words, label: 'আজকের পড়া · ' + formatDMY(TODAY)};
+    return {words, label: 'আজকের পড়া · ' + formatDMY(CONTENT_TODAY)};
   }
   if(pxSource === 'date'){
     const dateVal = document.getElementById('pxDateInput').value;
@@ -4203,6 +4297,30 @@ function renderRoutine(){
 const routineTabBtn = document.querySelector('.main-tab-btn[data-tab="more"]');
 if(routineTabBtn) routineTabBtn.addEventListener('click', renderRoutine);
 setInterval(renderRoutine, 60000);
+
+// ---- Scroll-to-top button: থাকে না ঘুরঘুর করে, ১০ সেকেন্ড স্ক্রল না করলেই আস্তে আস্তে
+// দেখা যায় (নিচে-ডানে, ছোট, কোনো লেখা/আইকন ঢাকে না) — flashcard/exam ওভারলে খোলা থাকলে
+// CSS (body:has(...open)) দিয়েই hide থাকে, আলাদা করে JS হ্যান্ডল করতে হয় না ----
+(function(){
+  const btn = document.getElementById('scrollTopBtn');
+  if(!btn) return;
+  let idleTimer = null;
+  function showIfScrolled(){
+    if((window.scrollY || window.pageYOffset || 0) > 400) btn.classList.add('show');
+  }
+  function onScroll(){
+    btn.classList.remove('show');
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(showIfScrolled, 10000);
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  btn.addEventListener('click', ()=>{
+    window.scrollTo({top:0, behavior:'smooth'});
+    btn.classList.remove('show');
+    clearTimeout(idleTimer);
+  });
+  idleTimer = setTimeout(showIfScrolled, 10000);
+})();
 
 render();
 renderExtra();
