@@ -282,6 +282,8 @@ if('serviceWorker' in navigator){
   .modal-btn.ghost{ background:transparent; color:var(--text-muted); }
   .modal-btn.primary{ background:var(--gold); color:var(--bg); border-color:var(--gold); font-weight:600; }
   .modal-btn.teal{ background:var(--teal); color:var(--bg); border-color:var(--teal); font-weight:600; }
+  .modal-btn.danger{ background:transparent; color:var(--danger); border-color:var(--danger); font-weight:600; }
+  .modal-btn.danger:hover{ background:var(--danger); color:#fff; }
 
   /* settings gear */
   .header-actions{ position:absolute; top:6px; right:0; display:flex; align-items:center; gap:7px; }
@@ -640,6 +642,13 @@ if('serviceWorker' in navigator){
         <div class="settings-hint" data-i18n="backfillHint">আগে যেসব MCQ শব্দের distractor জেনারেট হয়ে গেছে কিন্তু ব্যাখ্যা (explanation) নেই — এই বাটনে চাপলে শুধু ওগুলোর জন্যই নতুন করে AI থেকে ব্যাখ্যাসহ regenerate হবে। উপরের Gemini key/model লাগবে।</div>
         <button id="backfillExplainBtn" class="modal-btn teal" type="button" data-i18n="backfillBtn">🔄 পুরনো MCQ-এর ব্যাখ্যা আনো</button>
         <div id="backfillExplainStatus" class="sync-status"></div>
+      </div>
+
+      <div class="settings-section">
+        <h4>⚠️ <span data-i18n="resetSectionTitle">রিসেট</span></h4>
+        <div class="settings-hint" data-i18n="resetHint">এতে তোমার সব পড়া/মুখস্থ progress (কোনটা পড়া হয়েছে, override, MCQ practice history, ভুল হওয়ার হিসাব, দৈনিক রুটিন-চেকলিস্ট) সম্পূর্ণ মুছে যাবে এবং আজকের তারিখ থেকে সব প্রথম থেকে শুরু হবে। তোমার নিজের যোগ করা শব্দ, শব্দের ক্রম, Settings/API key — এগুলো অক্ষত থাকবে।</div>
+        <button id="fullResetBtn" class="modal-btn danger" type="button" data-i18n="resetBtn">🗑️ সব প্রোগ্রেস রিসেট করো</button>
+        <div class="sync-status" id="fullResetStatus"></div>
       </div>
 
       <div class="modal-actions">
@@ -1362,6 +1371,12 @@ const I18N = {
   backfillTitle: {bn:'MCQ ব্যাখ্যা Backfill', en:'MCQ Explanation Backfill'},
   backfillHint: {bn:'আগে যেসব MCQ শব্দের distractor জেনারেট হয়ে গেছে কিন্তু ব্যাখ্যা (explanation) নেই — এই বাটনে চাপলে শুধু ওগুলোর জন্যই নতুন করে AI থেকে ব্যাখ্যাসহ regenerate হবে। উপরের Gemini key/model লাগবে।', en:'For MCQ words whose distractors were already generated but have no explanation — pressing this button regenerates only those, with explanations, using AI. Needs the Gemini key/model above.'},
   backfillBtn: {bn:'🔄 পুরনো MCQ-এর ব্যাখ্যা আনো', en:'🔄 Fetch explanations for old MCQs'},
+  resetSectionTitle: {bn:'রিসেট', en:'Reset'},
+  resetHint: {bn:'এতে তোমার সব পড়া/মুখস্থ progress (কোনটা পড়া হয়েছে, override, MCQ practice history, ভুল হওয়ার হিসাব, দৈনিক রুটিন-চেকলিস্ট) সম্পূর্ণ মুছে যাবে এবং আজকের তারিখ থেকে সব প্রথম থেকে শুরু হবে। তোমার নিজের যোগ করা শব্দ, শব্দের ক্রম, Settings/API key — এগুলো অক্ষত থাকবে।', en:'This permanently erases all your reading/memorization progress (read status, overrides, MCQ practice history, wrong-answer counts, daily routine checklist) and starts everything over from today. Your own added words, word order, and Settings/API keys stay untouched.'},
+  resetBtn: {bn:'🗑️ সব প্রোগ্রেস রিসেট করো', en:'🗑️ Reset all progress'},
+  resetConfirm1: {bn:'তুমি কি নিশ্চিত? তোমার সব পড়া progress, MCQ history, ভুলের হিসাব আর রুটিন চেকলিস্ট চিরতরে মুছে যাবে। এটা ফেরানো যাবে না।', en:'Are you sure? All your reading progress, MCQ history, wrong-answer counts and routine checklist will be permanently erased. This cannot be undone.'},
+  resetConfirm2: {bn:'একদম শেষবারের মতো জিজ্ঞেস করছি — সত্যিই সব রিসেট করে আজকের তারিখ থেকে নতুন করে শুরু করতে চাও?', en:'Last confirmation — do you really want to reset everything and start fresh from today?'},
+  resetDone: {bn:'✅ রিসেট সম্পন্ন — পাতাটি রিলোড হচ্ছে...', en:'✅ Reset complete — reloading page...'},
   backfillNone: {bn:'সব MCQ-এর ব্যাখ্যা আগে থেকেই আছে — backfill করার কিছু নেই।', en:'All MCQs already have explanations — nothing to backfill.'},
   backfillProgress: {bn:'ব্যাখ্যা আনা হচ্ছে... ({done}/{total})', en:'Fetching explanations... ({done}/{total})'},
   backfillDone: {bn:'✅ {n}টি শব্দের ব্যাখ্যা backfill হয়ে গেছে।', en:'✅ Explanations backfilled for {n} words.'},
@@ -1601,6 +1616,20 @@ document.getElementById('autoBackupToggle').addEventListener('change', e=>{
   settings.autoBackupEnabled = e.target.checked;
   saveSettings(settings);
   renderAutoBackupStatus();
+});
+document.getElementById('fullResetBtn').addEventListener('click', ()=>{
+  if(!confirm(trKey('resetConfirm1'))) return;
+  if(!confirm(trKey('resetConfirm2'))) return;
+  saveState({});
+  saveOverrides({});
+  savePracticeHistory([]);
+  saveWrongCounts({});
+  saveRoutineState({});
+  try{ localStorage.removeItem(LAST_BACKUP_KEY); }catch(e){}
+  try{ localStorage.removeItem(LOCAL_EDIT_TS_KEY); }catch(e){}
+  const statusEl = document.getElementById('fullResetStatus');
+  if(statusEl) statusEl.textContent = trKey('resetDone');
+  setTimeout(()=>location.reload(), 600);
 });
 
 // ---- getPantry.cloud sync (free JSON key-value store, no signup key needed beyond a pantry id) ----
