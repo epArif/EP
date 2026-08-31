@@ -1664,6 +1664,34 @@ document.getElementById('fullResetBtn').addEventListener('click', ()=>{
   setTimeout(()=>location.reload(), 600);
 });
 
+// Firebase Realtime Database forbids '.', '$', '#', '[', ']', '/' inside any
+// JSON object key (every key becomes part of a database path). aiCache is
+// keyed by the raw word/phrase text, and some words contain '/' (e.g.
+// "Quarrel/Quarrelsome") — pushing that key as-is makes Firebase reject the
+// WHOLE upload with an "Invalid data; couldn't parse key..." error. These
+// two functions swap only the forbidden characters for a %XX escape before
+// sending to Firebase, and reverse it after reading back, so the local
+// aiCache (keyed by the real word) never needs to change. Pantry has no such
+// restriction, so its payloads keep using the raw keys untouched.
+function fbEncodeAiKey(k){
+  return String(k).replace(/[.$#\[\]\/]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase());
+}
+function fbDecodeAiKey(k){
+  return String(k).replace(/%([0-9A-Fa-f]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+}
+function fbEncodeAiCache(cache){
+  if(!cache || typeof cache !== 'object') return cache;
+  const out = {};
+  for(const k in cache) out[fbEncodeAiKey(k)] = cache[k];
+  return out;
+}
+function fbDecodeAiCache(cache){
+  if(!cache || typeof cache !== 'object') return cache;
+  const out = {};
+  for(const k in cache) out[fbDecodeAiKey(k)] = cache[k];
+  return out;
+}
+
 // ---- getPantry.cloud sync (free JSON key-value store, no signup key needed beyond a pantry id) ----
 const PANTRY_BASKET = 'memoria-progress';
 function setSyncStatus(msg, kind){
@@ -1778,10 +1806,11 @@ document.getElementById('fbUpload').addEventListener('click', async ()=>{
       routineState: mergeNestedDict(remote && remote.routineState, routineState),
       updatedAt: new Date().toISOString()
     };
+    const fbPayload = { ...payload, aiCache: fbEncodeAiCache(payload.aiCache) };
     const res = await fetch(fbRtdbUrl(dbUrl, docId, apiKey), {
       method: 'PUT',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
+      body: JSON.stringify(fbPayload)
     });
     if(!res.ok){ const t = await res.text(); throw new Error('HTTP ' + res.status + ' — ' + t.slice(0,150)); }
     setLastBackupISO(new Date().toISOString());
@@ -1801,6 +1830,7 @@ document.getElementById('fbDownload').addEventListener('click', async ()=>{
     if(!res.ok){ const t = await res.text(); throw new Error('HTTP ' + res.status + ' — ' + t.slice(0,150)); }
     const data = await res.json();
     if(!data) throw new Error('ঐ Sync ID-তে এখনো কোনো data আপলোড করা হয়নি।');
+    if(data.aiCache) data.aiCache = fbDecodeAiCache(data.aiCache);
     applyingRemoteData = true;
     if(data.state) { state = data.state; saveState(state); }
     if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
@@ -1927,7 +1957,11 @@ async function fetchRemoteBackup(){
   try{
     if(settings.fbDbUrl){
       const res = await fetch(fbRtdbUrl(settings.fbDbUrl, settings.fbDocId || 'default', settings.fbApiKey));
-      if(res.ok) return await res.json();
+      if(res.ok){
+        const json = await res.json();
+        if(json && json.aiCache) json.aiCache = fbDecodeAiCache(json.aiCache);
+        return json;
+      }
     } else if(settings.pantryId){
       const res = await fetch(`https://getpantry.cloud/apiv1/pantry/${encodeURIComponent(settings.pantryId)}/basket/${PANTRY_BASKET}`);
       if(res.ok) return await res.json();
@@ -1966,8 +2000,9 @@ async function performAutoBackup(){
       updatedAt: new Date().toISOString()
     };
     if(settings.fbDbUrl){
+      const fbPayload = { ...payload, aiCache: fbEncodeAiCache(payload.aiCache) };
       const res = await fetch(fbRtdbUrl(settings.fbDbUrl, settings.fbDocId || 'default', settings.fbApiKey), {
-        method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+        method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(fbPayload)
       });
       if(!res.ok) throw new Error('HTTP ' + res.status);
     } else if(settings.pantryId){
@@ -2011,6 +2046,7 @@ async function performAutoPull(){
     if(settings.fbDbUrl){
       const res = await fetch(fbRtdbUrl(settings.fbDbUrl, settings.fbDocId || 'default', settings.fbApiKey));
       if(res.ok) data = await res.json();
+      if(data && data.aiCache) data.aiCache = fbDecodeAiCache(data.aiCache);
     } else if(settings.pantryId){
       const res = await fetch(`https://getpantry.cloud/apiv1/pantry/${encodeURIComponent(settings.pantryId)}/basket/${PANTRY_BASKET}`);
       if(res.ok) data = await res.json();
