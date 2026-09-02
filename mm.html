@@ -1992,6 +1992,20 @@ async function fetchRemoteBackup(){
   return null;
 }
 let autoBackupTimer = null;
+// ---- Pause cloud backup while AI generation is in flight ----
+// A single word's AI fetch, or a bulk AI fetch across many words, can take a
+// while (several seconds to minutes). We don't want a cloud push firing in
+// the middle of that run — it's wasted network activity mid-generation, and
+// on slower connections competing with the AI request isn't worth it. This
+// counter (supports overlapping/nested AI calls) blocks any push from
+// starting while >0, then fires one catch-up backup the moment it drops to 0
+// so nothing generated during the pause is left unsynced.
+let aiBackupPauseCount = 0;
+function pauseAutoBackupForAi(){ aiBackupPauseCount++; }
+function resumeAutoBackupForAi(){
+  aiBackupPauseCount = Math.max(0, aiBackupPauseCount - 1);
+  if(aiBackupPauseCount === 0) scheduleAutoBackup(); // catch-up push now that AI work is done
+}
 function scheduleAutoBackup(){
   // While remote (pulled/restored) data is being applied to local state, don't
   // schedule a push at all — pushing back what we just pulled is a redundant
@@ -2001,11 +2015,13 @@ function scheduleAutoBackup(){
   setLocalEditTs(Date.now());
   if(settings.autoBackupEnabled === false) return;
   if(!settings.pantryId && !settings.fbDbUrl) return;
+  if(aiBackupPauseCount > 0) return; // AI generation running — hold off, will catch up after
   clearTimeout(autoBackupTimer);
   autoBackupTimer = setTimeout(performAutoBackup, 4000);
 }
 async function performAutoBackup(){
   if(settings.autoBackupEnabled === false) return;
+  if(aiBackupPauseCount > 0) return; // AI generation running — skip this tick, will catch up after
   flushAllWrites(); // make sure localStorage has the latest state before we read it below
   try{
     // Merge-before-push: fetch whatever is currently in the cloud and union it
@@ -2393,6 +2409,7 @@ document.getElementById('fcAi').addEventListener('click', async (e)=>{
 
   aiBox.innerHTML = '<p class="fc-ai-loading">AI ভাবছে...</p>';
   const prompt = buildAiPrompt(w);
+  pauseAutoBackupForAi();
   try{
     const answer = await callGeminiText(prompt, msg => { aiBox.innerHTML = `<p class="fc-ai-loading">${escapeHtml(msg)}</p>`; });
     aiCache[cacheKey] = answer;
@@ -2400,6 +2417,8 @@ document.getElementById('fcAi').addEventListener('click', async (e)=>{
     renderAiAnswer(aiBox, answer);
   }catch(err){
     aiBox.innerHTML = `<p class="fc-ai-error">⚠️ ${escapeHtml(err.message)}</p>`;
+  }finally{
+    resumeAutoBackupForAi();
   }
 });
 
@@ -2435,24 +2454,29 @@ document.getElementById('fcAiAll').addEventListener('click', async (e)=>{
   let done = 0, failed = 0;
   const prevText = label.textContent;
 
-  for(let i = 0; i < pending.length; i++){
-    const w = pending[i];
-    label.textContent = `আনা হচ্ছে... (${done + 1}/${total})`;
-    try{
-      const answer = await callGeminiText(buildAiPrompt(w));
-      aiCache[aiCacheKey(w)] = answer;
-      saveAiCache(aiCache);
-      // if this exact card is on screen right now, show it immediately
-      if(fcDeck[fcIndex] === w){
-        const aiBox = document.getElementById('fcAiBox');
-        aiBox.classList.add('show');
-        renderAiAnswer(aiBox, answer);
+  pauseAutoBackupForAi();
+  try{
+    for(let i = 0; i < pending.length; i++){
+      const w = pending[i];
+      label.textContent = `আনা হচ্ছে... (${done + 1}/${total})`;
+      try{
+        const answer = await callGeminiText(buildAiPrompt(w));
+        aiCache[aiCacheKey(w)] = answer;
+        saveAiCache(aiCache);
+        // if this exact card is on screen right now, show it immediately
+        if(fcDeck[fcIndex] === w){
+          const aiBox = document.getElementById('fcAiBox');
+          aiBox.classList.add('show');
+          renderAiAnswer(aiBox, answer);
+        }
+      }catch(err){
+        failed++;
       }
-    }catch(err){
-      failed++;
+      done++;
+      if(i < pending.length - 1) await sleep(400); // small gap between calls, gentle on rate limits
     }
-    done++;
-    if(i < pending.length - 1) await sleep(400); // small gap between calls, gentle on rate limits
+  }finally{
+    resumeAutoBackupForAi();
   }
 
   btn.disabled = false;
@@ -3475,10 +3499,15 @@ async function pxPrepareDistractors(words, onProgress){
   const uncached = words.filter(w => !aiCache[pxCacheKey(w)]);
   if(uncached.length === 0) return;
   const CHUNK = 15;
-  for(let i=0;i<uncached.length;i+=CHUNK){
-    const chunk = uncached.slice(i, i+CHUNK);
-    if(onProgress) onProgress(`${trKey('generatingQuestions')} (${Math.min(i+CHUNK, uncached.length)}/${uncached.length})`);
-    await pxRunDistractorChunk(chunk, words, onProgress);
+  pauseAutoBackupForAi();
+  try{
+    for(let i=0;i<uncached.length;i+=CHUNK){
+      const chunk = uncached.slice(i, i+CHUNK);
+      if(onProgress) onProgress(`${trKey('generatingQuestions')} (${Math.min(i+CHUNK, uncached.length)}/${uncached.length})`);
+      await pxRunDistractorChunk(chunk, words, onProgress);
+    }
+  }finally{
+    resumeAutoBackupForAi();
   }
 }
 
@@ -3536,10 +3565,15 @@ async function pxPrepareSentenceQuestions(words, onProgress){
   const uncached = words.filter(w => !pxReadSentenceCache(w));
   if(uncached.length === 0) return;
   const CHUNK = 10; // smaller than plain distractors since each item now carries a full sentence too
-  for(let i=0;i<uncached.length;i+=CHUNK){
-    const chunk = uncached.slice(i, i+CHUNK);
-    if(onProgress) onProgress(`${trKey('generatingQuestions')} (${Math.min(i+CHUNK, uncached.length)}/${uncached.length})`);
-    await pxRunSentenceChunk(chunk, onProgress);
+  pauseAutoBackupForAi();
+  try{
+    for(let i=0;i<uncached.length;i+=CHUNK){
+      const chunk = uncached.slice(i, i+CHUNK);
+      if(onProgress) onProgress(`${trKey('generatingQuestions')} (${Math.min(i+CHUNK, uncached.length)}/${uncached.length})`);
+      await pxRunSentenceChunk(chunk, onProgress);
+    }
+  }finally{
+    resumeAutoBackupForAi();
   }
 }
 
