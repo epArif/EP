@@ -629,13 +629,25 @@ if('serviceWorker' in navigator){
       </div>
 
       <div class="settings-section">
-        <h4>🧠 Gemini API (Flashcard AI-এর জন্য) <span class="section-status" id="geminiStatusChip">0/8 key দেওয়া আছে</span></h4>
-        <div class="settings-hint" data-i18n-html="hintGemini">নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ৮টা API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে (কোনো wait ছাড়াই); একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। সব key + সব মডেল একবার করে fail হয়ে গেলে rate-limit এড়াতে ১ মিনিট wait করে আবার প্রথম থেকে try করবে। প্রতিটা শব্দের AI উত্তর একবার আনলে save হয়ে থাকবে (ফোনেই), পরে আবার একই শব্দ দেখলে offline-এও কাজ করবে আর নতুন করে token খরচ হবে না। <b>এই key গুলো শুধু এই ডিভাইসের ব্রাউজারে (localStorage) সংরক্ষিত থাকে — কোনো sync/backup/cloud-এ কখনো পাঠানো হয় না, এমনকি Auto-Backup চালু থাকলেও না।</b></div>
+        <h4>🧠 Gemini API (Flashcard AI-এর জন্য) <span class="section-status" id="geminiStatusChip">0/10 key দেওয়া আছে</span></h4>
+        <div class="settings-hint" data-i18n-html="hintGemini">নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ১০টা পর্যন্ত API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে (কোনো wait ছাড়াই); একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। সব key + সব মডেল একবার করে fail হয়ে গেলে rate-limit এড়াতে ১ মিনিট wait করে আবার প্রথম থেকে try করবে। প্রতিটা শব্দের AI উত্তর একবার আনলে save হয়ে থাকবে (ফোনেই), পরে আবার একই শব্দ দেখলে offline-এও কাজ করবে আর নতুন করে token খরচ হবে না। <b>এই key গুলো শুধু এই ডিভাইসের ব্রাউজারে (localStorage) সংরক্ষিত থাকে — কোনো sync/backup/cloud-এ কখনো পাঠানো হয় না, এমনকি Auto-Backup চালু থাকলেও না।</b></div>
         <label style="font-size:11px;color:var(--text-muted);" data-i18n="labelModelsOrder">মডেল (ক্রম অনুযায়ী try হবে)</label>
         <div id="apiModelsWrap"></div>
-        <label style="font-size:11px;color:var(--text-muted);margin-top:6px;display:block;" data-i18n="labelKeysOrder">API Key (ক্রম অনুযায়ী try হবে)</label>
+        <label style="font-size:11px;color:var(--text-muted);margin-top:6px;display:block;" data-i18n="labelKeysOrder">API Key (ক্রম অনুযায়ী try হবে, সর্বোচ্চ ১০টা)</label>
         <div id="apiKeysWrap"></div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button id="addKeyRowBtn" class="modal-btn ghost" type="button" style="flex:0 0 auto;" data-i18n="btnAddKeyRow">➕ আরেকটা key ঘর</button>
+        </div>
+        <div style="margin-top:10px;border-top:1px dashed var(--border,#3a3a3a);padding-top:10px;">
+          <label style="font-size:11px;color:var(--text-muted);display:block;" data-i18n="labelBulkPaste">একসাথে অনেকগুলো key পেস্ট করো (নতুন লাইনে/কমা/স্পেস দিয়ে আলাদা — যেভাবেই পেস্ট করো, নিজে থেকে ভাগ হয়ে যাবে)</label>
+          <textarea id="bulkKeyPasteBox" rows="3" placeholder="AIzaSy...&#10;AIzaSy...&#10;AIzaSy..." style="width:100%;box-sizing:border-box;margin-top:4px;resize:vertical;font-family:inherit;font-size:12.5px;"></textarea>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <button id="bulkKeyApplyBtn" class="modal-btn teal" type="button" data-i18n="btnBulkKeyApply">📋 সব key বসাও</button>
+          </div>
+          <div id="bulkKeyStatus" class="sync-status"></div>
+        </div>
       </div>
+
 
       <div class="settings-section">
         <h4>💡 <span data-i18n="backfillTitle">MCQ ব্যাখ্যা Backfill</span> <span class="section-status" id="backfillCountChip"></span></h4>
@@ -1368,19 +1380,22 @@ function defaultSettings(){
       {key:'', enabled:true},
       {key:'', enabled:true},
       {key:'', enabled:true},
+      {key:'', enabled:true},
+      {key:'', enabled:true},
       {key:'', enabled:true}
     ]
   };
 }
+const MAX_GEMINI_KEYS = 10;
 function loadSettings(){
   try{
     const raw = localStorage.getItem(SETTINGS_KEY);
     if(!raw) return defaultSettings();
     const parsed = JSON.parse(raw);
     const merged = Object.assign(defaultSettings(), parsed);
-    // পুরোনো সেভ করা settings-এ ৪টা key থাকলে সেটা ৮টা স্লটে পূরণ করে দেয়
+    // পুরোনো সেভ করা settings-এ কম key থাকলে সেটা ১০টা স্লট পর্যন্ত পূরণ করে দেয়
     const keys = Array.isArray(parsed.geminiKeys) ? parsed.geminiKeys.slice() : [];
-    while(keys.length < 8){ keys.push({key:'', enabled:true}); }
+    while(keys.length < MAX_GEMINI_KEYS){ keys.push({key:'', enabled:true}); }
     merged.geminiKeys = keys;
     return merged;
   }catch(e){ return defaultSettings(); }
@@ -1419,7 +1434,10 @@ const I18N = {
     en:'Give the names of 3 models below (whatever latest version is current — flash/pro/flash-lite) and 8 API keys. Each key tries the 3 models in order (no waiting); if all models fail for a key, the next key tries all 3 again. If every key + model combination fails once, it waits 1 minute to avoid rate-limits and tries again from the top. Each word answer from AI is saved once fetched (on this phone), so seeing the same word again later works offline too and spends no new tokens. <b>These keys are stored only in this device browser (localStorage) — never sent to any sync/backup/cloud, even with Auto-Backup on.</b>'
   },
   labelModelsOrder: {bn:'মডেল (ক্রম অনুযায়ী try হবে)', en:'Models (tried in this order)'},
-  labelKeysOrder: {bn:'API Key (ক্রম অনুযায়ী try হবে)', en:'API Keys (tried in this order)'},
+  labelKeysOrder: {bn:'API Key (ক্রম অনুযায়ী try হবে, সর্বোচ্চ ১০টা)', en:'API Keys (tried in this order, up to 10)'},
+  btnAddKeyRow: {bn:'➕ আরেকটা key ঘর', en:'➕ Add key slot'},
+  labelBulkPaste: {bn:'একসাথে অনেকগুলো key পেস্ট করো (নতুন লাইনে/কমা/স্পেস দিয়ে আলাদা — যেভাবেই পেস্ট করো, নিজে থেকে ভাগ হয়ে যাবে)', en:'Paste many keys at once (newline/comma/space separated — auto-splits however you paste it)'},
+  btnBulkKeyApply: {bn:'📋 সব key বসাও', en:'📋 Apply all keys'},
   btnSaveAll: {bn:'সংরক্ষণ করো', en:'Save'},
   backfillTitle: {bn:'MCQ ব্যাখ্যা Backfill', en:'MCQ Explanation Backfill'},
   backfillHint: {bn:'আগে যেসব MCQ শব্দের distractor জেনারেট হয়ে গেছে কিন্তু ব্যাখ্যা (explanation) নেই — এই বাটনে চাপলে শুধু ওগুলোর জন্যই নতুন করে AI থেকে ব্যাখ্যাসহ regenerate হবে। উপরের Gemini key/model লাগবে।', en:'For MCQ words whose distractors were already generated but have no explanation — pressing this button regenerates only those, with explanations, using AI. Needs the Gemini key/model above.'},
@@ -1559,7 +1577,7 @@ function updateSettingsStatusIndicators(){
   const geminiChip = document.getElementById('geminiStatusChip');
   if(geminiChip){
     const n = (settings.geminiKeys||[]).filter(k=>k.key && k.enabled).length;
-    geminiChip.textContent = n + '/8 key সক্রিয়';
+    geminiChip.textContent = n + '/' + MAX_GEMINI_KEYS + ' key সক্রিয়';
     geminiChip.classList.toggle('on', n>0);
   }
 }
@@ -1586,7 +1604,72 @@ function renderApiKeyRows(){
         <input type="checkbox" class="kr-toggle" data-kenabled="${i}" ${k.enabled?'checked':''}> সক্রিয়
       </label>
     </div>`).join('');
+  const addBtn = document.getElementById('addKeyRowBtn');
+  if(addBtn) addBtn.disabled = settings.geminiKeys.length >= MAX_GEMINI_KEYS;
 }
+
+// ---- Add one more empty key row (up to MAX_GEMINI_KEYS) ----
+document.getElementById('addKeyRowBtn').addEventListener('click', ()=>{
+  // grab whatever's currently typed in the form first, so adding a row doesn't wipe unsaved edits
+  const current = collectSettingsFromForm();
+  if(current.geminiKeys.length >= MAX_GEMINI_KEYS) return;
+  current.geminiKeys.push({key:'', enabled:true});
+  settings = Object.assign(settings, current);
+  saveSettings(settings);
+  renderApiKeyRows();
+  updateSettingsStatusIndicators();
+});
+
+// ---- Bulk-paste API keys: paste a whole block (newline/comma/space-separated,
+// pasted straight from wherever the keys were copied from) and it auto-splits,
+// dedupes, and drops one key per row — up to MAX_GEMINI_KEYS. Existing filled
+// rows are kept first, empty rows are topped up, extra pasted keys beyond the
+// row limit are just skipped so nothing crashes or gets silently truncated
+// without saying so.
+function parseBulkKeys(raw){
+  return raw
+    .split(/[\s,;]+/)          // newline, space, comma, semicolon — whatever the paste used
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
+}
+document.getElementById('bulkKeyApplyBtn').addEventListener('click', ()=>{
+  const box = document.getElementById('bulkKeyPasteBox');
+  const status = document.getElementById('bulkKeyStatus');
+  const pasted = parseBulkKeys(box.value);
+  if(pasted.length === 0){
+    status.textContent = 'কোনো key খুঁজে পাইনি — আগে বক্সে key(গুলো) পেস্ট করো।';
+    status.className = 'sync-status err';
+    return;
+  }
+  // de-dupe the pasted batch itself
+  const uniquePasted = [...new Set(pasted)];
+  // keep whatever is already filled in the form (so this doesn't wipe existing keys),
+  // then fill remaining empty slots with the newly pasted ones, growing rows if needed
+  const current = collectSettingsFromForm();
+  const existingKeys = new Set(current.geminiKeys.map(k=>k.key).filter(Boolean));
+  const toAdd = uniquePasted.filter(k => !existingKeys.has(k));
+  let slot = 0;
+  let added = 0;
+  for(const newKey of toAdd){
+    // find next empty row
+    while(slot < current.geminiKeys.length && current.geminiKeys[slot].key) slot++;
+    if(slot >= MAX_GEMINI_KEYS) break; // no more room
+    if(slot >= current.geminiKeys.length) current.geminiKeys.push({key:'', enabled:true});
+    current.geminiKeys[slot] = {key:newKey, enabled:true};
+    slot++;
+    added++;
+  }
+  settings = Object.assign(settings, current);
+  saveSettings(settings);
+  renderApiKeyRows();
+  updateSettingsStatusIndicators();
+  box.value = '';
+  const skipped = toAdd.length - added;
+  status.textContent = skipped > 0
+    ? `${added}টা key যোগ হয়েছে ✓ (${skipped}টা বাদ পড়েছে — ${MAX_GEMINI_KEYS}টার ঘর ভরে গেছে)`
+    : `${added}টা key যোগ হয়েছে ✓${uniquePasted.length - toAdd.length > 0 ? ' (আগে থেকে থাকা ' + (uniquePasted.length - toAdd.length) + 'টা বাদ দেওয়া হয়েছে)' : ''}`;
+  status.className = 'sync-status ok';
+});
 
 function renderLangModeTabs(){
   const wrap = document.getElementById('langModeTabs');
