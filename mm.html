@@ -389,9 +389,27 @@ if('serviceWorker' in navigator){
   .scroll-top-btn{ position:fixed; right:16px; bottom:20px; width:40px; height:40px; border-radius:50%; border:1px solid var(--gold-dim); background:var(--panel); color:var(--gold); font-size:17px; line-height:1; cursor:pointer; z-index:60; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(0,0,0,0.35); opacity:0; transform:translateY(8px); pointer-events:none; transition:opacity .3s ease, transform .3s ease; }
   .scroll-top-btn.show{ opacity:.82; transform:translateY(0); pointer-events:auto; }
   .scroll-top-btn:hover{ opacity:1; background:rgba(217,168,78,0.12); }
+  .global-search-btn{ position:fixed; right:16px; bottom:70px; width:44px; height:44px; border-radius:50%; border:1px solid var(--teal-dim); background:var(--panel); color:var(--teal); font-size:18px; line-height:1; cursor:pointer; z-index:60; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(0,0,0,0.35); opacity:.88; transition:opacity .2s ease, transform .15s ease; }
+  .global-search-btn:hover{ opacity:1; transform:translateY(-1px); background:rgba(45,166,153,0.12); }
   body:has(.modal-overlay.open) .scroll-top-btn,
   body:has(.fc-overlay.open) .scroll-top-btn,
-  body:has(.px-overlay.open) .scroll-top-btn{ display:none; }
+  body:has(.px-overlay.open) .scroll-top-btn,
+  body:has(.modal-overlay.open) .global-search-btn,
+  body:has(.fc-overlay.open) .global-search-btn,
+  body:has(.px-overlay.open) .global-search-btn{ display:none; }
+  .wl-word-header{ display:flex; align-items:baseline; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+  .wl-word-header .wl-word{ font-family:'Fraunces','Noto Sans Bengali',serif; font-size:20px; color:var(--gold); font-weight:600; }
+  .wl-pos-badge{ font-size:10px; padding:2px 9px; border-radius:999px; border:1px solid var(--border); color:var(--text-muted); font-family:'IBM Plex Mono',monospace; white-space:nowrap; }
+  .wl-chip-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
+  .wl-chip{ font-size:12px; padding:4px 11px; border-radius:999px; border:1px solid; font-family:'Noto Sans Bengali','Inter',sans-serif; }
+  .wl-chip.syn{ border-color:var(--teal-dim); color:var(--teal); }
+  .wl-chip.ant{ border-color:var(--danger); color:var(--danger); }
+  .search-result-item{ padding:9px 6px; border-bottom:1px solid var(--border); cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .search-result-item:hover{ background:rgba(255,255,255,0.03); }
+  .search-result-word{ font-size:13px; }
+  .search-result-word b{ color:var(--gold); }
+  .search-result-bn{ font-size:11px; color:var(--text-muted); }
+  .search-result-badge{ font-size:9.5px; padding:2px 7px; border-radius:999px; border:1px solid var(--border); color:var(--text-muted); white-space:nowrap; font-family:'IBM Plex Mono',monospace; }
 
   /* ===== Practice tab ===== */
   .px-tabs{ display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
@@ -670,6 +688,31 @@ if('serviceWorker' in navigator){
     </div>
   </div>
 
+  <div class="modal-overlay" id="wordLookupModalOverlay">
+    <div class="modal-box" style="max-width:480px;max-height:85vh;overflow-y:auto;">
+      <div class="modal-title">🔍 <span data-i18n="wordLookupTitle">শব্দ খুঁজুন</span></div>
+      <div style="display:flex;gap:6px;">
+        <input type="text" id="wordLookupInput" placeholder="যেকোনো শব্দ লেখো (ইংরেজি/বাংলা)" style="flex:1;">
+        <button id="wordLookupGoBtn" class="modal-btn teal" type="button" style="flex:0 0 auto;min-width:70px;">খুঁজো</button>
+      </div>
+      <div class="fc-ai-box show" id="wordLookupBox" style="margin-top:12px;min-height:24px;"></div>
+      <div class="modal-actions">
+        <button id="wordLookupClose" class="modal-btn ghost" type="button" data-i18n="btnCloseModal">বন্ধ করো</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="archiveModalOverlay">
+    <div class="modal-box" style="max-width:480px;max-height:85vh;overflow-y:auto;">
+      <div class="modal-title">📜 <span data-i18n="archiveTitle">আর্কাইভ (আগের খোঁজা শব্দ)</span></div>
+      <div id="archiveEmptyMsg" style="display:none;font-size:12.5px;color:var(--text-muted);padding:10px 0;">এখনো কোনো শব্দ খোঁজা হয়নি।</div>
+      <div id="archiveListWrap"></div>
+      <div class="modal-actions">
+        <button id="archiveClose" class="modal-btn ghost" type="button" data-i18n="btnCloseModal">বন্ধ করো</button>
+      </div>
+    </div>
+  </div>
+
   <div class="fc-overlay" id="fcOverlay">
     <div class="fc-box">
       <div class="fc-top">
@@ -858,7 +901,7 @@ if('serviceWorker' in navigator){
   <div id="tabPane-practice" class="tab-pane">
 
     <section class="panel reveal d1" id="pxSetupPanel">
-      <div class="panel-title"><span><span data-i18n="tabPractice">অনুশীলন</span> <span class="tag">Practice</span></span><span class="px-quicklinks"><button id="pxGoProgress" type="button">📊 <span data-i18n="btnProgress">অগ্রগতি</span></button><button id="pxGoList" type="button">📋 <span data-i18n="btnList">তালিকা</span></button></span></div>
+      <div class="panel-title"><span><span data-i18n="tabPractice">অনুশীলন</span> <span class="tag">Practice</span></span><span class="px-quicklinks"><button id="pxWordLookupBtn" type="button">🔍 <span data-i18n="btnWordLookup">শব্দ খুঁজুন</span></button><button id="pxArchiveBtn" type="button">📜 <span data-i18n="btnArchive">আর্কাইভ</span></button></span></div>
 
       <div class="px-block">
         <div class="px-label" data-i18n="sourceLabel">উৎস — কোন শব্দ নিয়ে অনুশীলন হবে</div>
@@ -935,6 +978,18 @@ if('serviceWorker' in navigator){
   </footer>
 
   <button id="scrollTopBtn" class="scroll-top-btn" type="button" title="উপরে যাও" aria-label="Scroll to top">↑</button>
+  <button id="globalSearchBtn" class="global-search-btn" type="button" title="শব্দ খুঁজুন" aria-label="Search">🔍</button>
+
+  <div class="modal-overlay" id="globalSearchModalOverlay">
+    <div class="modal-box" style="max-width:480px;max-height:85vh;overflow-y:auto;">
+      <div class="modal-title">🔍 <span data-i18n="globalSearchTitle">যেকোনো শব্দ খুঁজুন</span></div>
+      <input type="text" id="globalSearchInput" placeholder="শব্দ লেখা শুরু করো...">
+      <div id="globalSearchResults" style="margin-top:10px;"></div>
+      <div class="modal-actions">
+        <button id="globalSearchClose" class="modal-btn ghost" type="button" data-i18n="btnCloseModal">বন্ধ করো</button>
+      </div>
+    </div>
+  </div>
 
 <script>
 const WM_LIST = [{"no": 1, "word": "Alien", "bn": "বিদেশী", "meaning": "a foreigner"}, {"no": 2, "word": "Ablaze", "bn": "জ্বলন্ত", "meaning": "burning"}, {"no": 3, "word": "Aggravate", "bn": "প্রকোপ বৃদ্ধি করা / উত্তেজিত করা", "meaning": "to make worse"}, {"no": 4, "word": "Allocate", "bn": "বরাদ্দ করা", "meaning": "distribute"}, {"no": 5, "word": "Amnesty", "bn": "ক্ষমা", "meaning": "forgiveness"}, {"no": 6, "word": "Antipathy", "bn": "বিদ্বেষ", "meaning": "grudge"}, {"no": 7, "word": "Amicable", "bn": "বন্ধুত্বপূর্ণ", "meaning": "friendly"}, {"no": 8, "word": "Allegation", "bn": "অভিযোগ", "meaning": "accusation"}, {"no": 9, "word": "Audible", "bn": "শ্রাব্য", "meaning": "can be heard"}, {"no": 10, "word": "Asparagus", "bn": "শতমূলী / ব্রাদ্ধ উদ্ভিদ যার কচি অঙ্কুর সবজিতে রান্না করে খাওয়া হয়", "meaning": "a valuable food"}, {"no": 11, "word": "Ambition", "bn": "উচ্চাকাঙ্ক্ষা", "meaning": "a desire to be successful"}, {"no": 12, "word": "Assiduity", "bn": "অধ্যাবসায়", "meaning": "steadfastness"}, {"no": 13, "word": "Anathema", "bn": "ঘৃণিত বা অভিশপ্ত বস্তু", "meaning": "detested person or thing"}, {"no": 14, "word": "Altitude", "bn": "উচ্চতা", "meaning": "height"}, {"no": 15, "word": "Acumen", "bn": "তীক্ষ্ণ বিচারবুদ্ধি", "meaning": "quick understanding ability"}, {"no": 16, "word": "Apparent", "bn": "প্রকৃত / প্রতীয়মান", "meaning": "obvious"}, {"no": 17, "word": "Afford", "bn": "সামর্থ্য থাকা / যোগান দেওয়া", "meaning": "provide"}, {"no": 18, "word": "Amenable", "bn": "বাধ্য / অনুগত", "meaning": "agreeable"}, {"no": 19, "word": "Adore", "bn": "পূজা করা / গভীরভাবে ভালোবাসা", "meaning": "love dearly"}, {"no": 20, "word": "Audacious", "bn": "দুঃসাহসী", "meaning": "daring"}, {"no": 21, "word": "Analogous", "bn": "অনুরূপ / সাদৃশ্য", "meaning": "similar"}, {"no": 22, "word": "Articulate", "bn": "উচ্চারণ করা / স্পষ্টভাবে বলা", "meaning": "to express clearly"}, {"no": 23, "word": "Arduous", "bn": "দুঃসাধ্য / কষ্টকর", "meaning": "difficult"}, {"no": 24, "word": "Attest", "bn": "সত্যায়িত করা", "meaning": "certifying something as true"}, {"no": 25, "word": "Apartheid", "bn": "বর্ণ বৈষম্য", "meaning": "discrimination"}, {"no": 26, "word": "Allusion", "bn": "পরোক্ষ উল্লেখ", "meaning": "indirect reference"}, {"no": 27, "word": "Abettor", "bn": "সহায়তাকারী", "meaning": "accomplice"}, {"no": 28, "word": "Aristocracy", "bn": "অভিজাত শ্রেণী / অভিজাততন্ত্র", "meaning": "blue blood"}, {"no": 29, "word": "Alluring", "bn": "লুব্ধকর / জাদুকর", "meaning": "tempting"}, {"no": 30, "word": "Appended", "bn": "নোয়ায় বা ছাপায় সংযুক্ত / যোগ করা", "meaning": "joined"}, {"no": 31, "word": "Affluent", "bn": "ধনবান / বিত্তবান", "meaning": "wealthy"}, {"no": 32, "word": "A violent storm", "bn": "তীব্র ঝড়", "meaning": "tempest"}, {"no": 33, "word": "Brevity", "bn": "সংক্ষিপ্ততা", "meaning": "abridgement"}, {"no": 34, "word": "Breathtaking", "bn": "অসাধারণ / বিস্ময়কর", "meaning": "amazing"}, {"no": 35, "word": "Blink", "bn": "চোখ পিটপিট করা / আলো মিটমিট করে জ্বলা", "meaning": "twinkle"}, {"no": 36, "word": "Blend", "bn": "মিশানো / মিশ্রিত করা", "meaning": "mix"}, {"no": 37, "word": "Bibliography", "bn": "কোনো একজন লেখক বা নির্দিষ্ট বিষয়ের উপর গ্রন্থ বা রচনার তালিকা", "meaning": "collection / list of books"}, {"no": 38, "word": "Blockbuster", "bn": "ধ্বংসাত্মক বিস্ফোরক বা বোমা যা প্রায়শই অনেক দালানকোঠা ধ্বংস করতে পারে", "meaning": "a powerful explosive to demolish building"}, {"no": 39, "word": "Blue-Book", "bn": "সরকার প্রকাশিত বিশেষ তথ্য সম্বলিত পুস্তক", "meaning": "government publication"}, {"no": 40, "word": "Brittle", "bn": "ভঙ্গুর", "meaning": "fragile"}, {"no": 41, "word": "Benevolent", "bn": "দয়ালু / সদাশয়", "meaning": "kind"}, {"no": 42, "word": "Bootleg", "bn": "বেআইনিভাবে মদ আমদানি-রপ্তানি করা", "meaning": "smuggle"}, {"no": 43, "word": "Bounty", "bn": "বদান্যতা / উদারতা", "meaning": "generosity"}, {"no": 44, "word": "Bizarre", "bn": "অদ্ভুত / বিচিত্র / উদ্ভুত", "meaning": "strange"}, {"no": 45, "word": "Banish", "bn": "নির্বাসিত করা", "meaning": "exile"}, {"no": 46, "word": "Booming", "bn": "সমৃদ্ধ / দ্রুত সমৃদ্ধিময়", "meaning": "flourishing"}, {"no": 47, "word": "Blasphemy", "bn": "ঈশ্বর বা ধর্মের মহত্ব বা পবিত্রতা নিয়ে ঠাট্টা করা", "meaning": "impious utterance"}, {"no": 48, "word": "Belated", "bn": "সুব দেরিতে আসা", "meaning": "tardy"}, {"no": 49, "word": "Blue blood", "bn": "অভিজাত বা উচ্চ বংশ", "meaning": "aristocratic birth"}, {"no": 50, "word": "Brainchild", "bn": "কারো মস্তিষ্কপ্রসূত পরিকল্পনা বা উদ্ভাবন", "meaning": "a person's idea"}, {"no": 51, "word": "Convict", "bn": "দণ্ডিত অপরাধী", "meaning": "punished"}, {"no": 52, "word": "Counsel", "bn": "উপদেশ", "meaning": "advice"}, {"no": 53, "word": "Competent", "bn": "উপযুক্ত / সমর্থ / দক্ষ", "meaning": "able"}, {"no": 54, "word": "Comprehension", "bn": "উপলব্ধি / উপলব্ধি ক্ষমতা", "meaning": "knowledge / understanding / the ability to understand completely"}, {"no": 55, "word": "Cataclysm", "bn": "আকস্মিক প্রচণ্ড পরিবর্তন", "meaning": "sudden violent change or disaster"}, {"no": 56, "word": "Condemn", "bn": "দোষ দেওয়া / নিন্দা করা", "meaning": "denounce"}, {"no": 57, "word": "Circumvent", "bn": "কোনো উপায়ে পাশ কাটিয়ে যাওয়া", "meaning": "find a way of overcoming or avoiding"}, {"no": 58, "word": "Contaminate", "bn": "দূষিত করা", "meaning": "pollute"}, {"no": 59, "word": "Considerable", "bn": "বিবেচনাযোগ্য", "meaning": "significant"}, {"no": 60, "word": "Cockpit", "bn": "হেলিকপ্টার ইত্যাদিতে বিমানচালকের বসার স্থান", "meaning": "an enclosed area of an aircraft where the pilot sits and steers the plane"}, {"no": 61, "word": "Corpus", "bn": "কোনো বিশেষ বিষয়ের উপর রচনাসমূহের সমষ্টি", "meaning": "a collection of written texts"}, {"no": 62, "word": "Constraint", "bn": "সীমাবদ্ধতা / চাপ / বাধ্যবাধকতা", "meaning": "limitation"}, {"no": 63, "word": "Conflict", "bn": "দ্বন্দ্ব / সংঘাত / বিরোধ", "meaning": "disagreement"}, {"no": 64, "word": "Concentrate", "bn": "পূর্ণ মনোযোগ দেওয়া", "meaning": "focus"}, {"no": 65, "word": "Commonplace", "bn": "সাধারণগোছের / বৈশিষ্ট্যহীন", "meaning": "ordinary"}, {"no": 66, "word": "Charitable", "bn": "পরোপকারী / পরহিতৈষী", "meaning": "generous"}, {"no": 67, "word": "Cascade", "bn": "জলপ্রপাত", "meaning": "waterfall"}, {"no": 68, "word": "Camouflage", "bn": "ছদ্মবেশ / বুটিবেশ", "meaning": "disguise"}, {"no": 69, "word": "Corpulent", "bn": "স্থূল ও ভারী", "meaning": "fat / obese"}, {"no": 70, "word": "Contemporary", "bn": "সমসাময়িক / সমকালীন", "meaning": "belonging to the same time"}, {"no": 71, "word": "Considerable", "bn": "বিবেচনাযোগ্য / বেশ কিছু পরিমাণ / গুরুত্বপূর্ণ", "meaning": "substantial (প্রচুর)"}, {"no": 72, "word": "Coherent", "bn": "সঙ্গতিপূর্ণ", "meaning": "consistent"}, {"no": 73, "word": "Conjecture", "bn": "অনুমান", "meaning": "guess"}, {"no": 74, "word": "Capital", "bn": "রাজধানী / শীর্ষনীয়", "meaning": "head"}, {"no": 75, "word": "Crying", "bn": "কান্না করা / আর্তনাদ করা", "meaning": "stinking"}, {"no": 76, "word": "Cryptic", "bn": "গুপ্ত / দুর্বোধ্য", "meaning": "obscure"}, {"no": 77, "word": "Dilettante", "bn": "কাব্য বা সংগীত ইত্যাদির অনুরাগী কিন্তু স্বল্প বিষয়ে অগভীর জ্ঞানসম্পন্ন", "meaning": "amateur"}, {"no": 78, "word": "Disburse", "bn": "প্রাপ্য অর্থ দেওয়া / বিতরণ করা", "meaning": "distribute"}, {"no": 79, "word": "Domicile", "bn": "স্থায়ীভাবে নিবাসিত করা বা হওয়া", "meaning": "permanent residence of a person"}, {"no": 80, "word": "Dexterous", "bn": "দক্ষ", "meaning": "skilful"}, {"no": 81, "word": "Day Dream", "bn": "দিবা স্বপ্ন", "meaning": "reverie"}, {"no": 82, "word": "Dilemma", "bn": "উভয় সংকট", "meaning": "choice only between unfavourable alternative"}, {"no": 83, "word": "Dogmatic", "bn": "মূল্যহীন বা গোঁড়া মতবাদ প্রকাশ করে এমন", "meaning": "narrow minded"}, {"no": 84, "word": "Diversify", "bn": "বিভিন্ন রকম করা / বহুমুখী হওয়া", "meaning": "branch out"}, {"no": 85, "word": "Drizzling", "bn": "গুড়ি গুড়ি বৃষ্টি", "meaning": "raining"}, {"no": 86, "word": "Derogatory", "bn": "অবমাননা / হানিকর", "meaning": "disrespectful"}, {"no": 87, "word": "Discernible", "bn": "চোখ বা বোধশক্তি দ্বারা দেখা বা উপলব্ধি করতে পারা", "meaning": "noticeable"}, {"no": 88, "word": "Disinterested", "bn": "নির্বিলাষ", "meaning": "neutral"}, {"no": 89, "word": "Deter", "bn": "বাধা দেওয়া", "meaning": "impede"}, {"no": 90, "word": "Detest", "bn": "তীব্র ঘৃণা করা", "meaning": "abhorred"}, {"no": 91, "word": "Discuss", "bn": "আলোচনা করা", "meaning": "talk"}, {"no": 92, "word": "Doctrine", "bn": "মতবাদ", "meaning": "principle"}, {"no": 93, "word": "Dominant", "bn": "প্রভাবশালী / কর্তৃত্বময়", "meaning": "powerful"}, {"no": 94, "word": "Day-break", "bn": "ভোর / প্রভাত", "meaning": "morning"}, {"no": 95, "word": "Disguise", "bn": "ছদ্মবেশ ধারণ করা / প্রতারণা করতে নিজের পরিচয় গোপন করা", "meaning": "hide"}, {"no": 96, "word": "Decade", "bn": "দশক", "meaning": "a period of ten years"}, {"no": 97, "word": "Die hard", "bn": "কট্টর সমর্থক", "meaning": "a strong supporter"}, {"no": 98, "word": "Durable", "bn": "টিকসই / মজবুত", "meaning": "capable of lasting"}, {"no": 99, "word": "Duress", "bn": "জবরদস্তি করা / ভয় দেখিয়ে কোনো কিছু করতে বাধ্য করা", "meaning": "constraint"}, {"no": 100, "word": "Docile", "bn": "সহজে বশ মানে এমন বা বাধ্য", "meaning": "tame"}, {"no": 101, "word": "Dearth", "bn": "অভাব / অনটন", "meaning": "scarcity"}, {"no": 102, "word": "Deliberate", "bn": "ইচ্ছাকৃত", "meaning": "intentional"}, {"no": 103, "word": "Dearness", "bn": "মহার্ঘতা / দুর্মূল্যতা", "meaning": "high price"}, {"no": 104, "word": "Dye", "bn": "রং করা", "meaning": "color"}, {"no": 105, "word": "Discipline", "bn": "নিয়মানুবর্তিতা / শাস্তি", "meaning": "punish"}, {"no": 106, "word": "Equity", "bn": "ন্যায়পরায়ণতা", "meaning": "justice"}, {"no": 107, "word": "Enquiry", "bn": "তদন্ত / অনুসন্ধান করা", "meaning": "a body of voters"}, {"no": 108, "word": "Equivocation", "bn": "দ্ব্যর্থবোধক / একই কথায় অর্থ বিরোধী দুইটি বিপরীত ভাব", "meaning": "two contrary thing in the same statement"}, {"no": 109, "word": "Electorate", "bn": "নির্বাচকমণ্ডলী", "meaning": "voters"}, {"no": 110, "word": "Embassy", "bn": "দূতাবাস", "meaning": "the group of people who represent their country in the foreign country"}, {"no": 111, "word": "Etiquette", "bn": "বিশেষ খেলায় বা সমাজের বিশেষ ক্ষেত্রে প্রচলিত আদবকায়দা", "meaning": "formal rules for polite behaviour in the society"}, {"no": 112, "word": "Epitome", "bn": "নিদর্শনাবলির প্রতীক / সারসংক্ষেপ", "meaning": "a perfect example of something"}, {"no": 113, "word": "Enlarge", "bn": "প্রসারিত করা / বড় করা", "meaning": "expand"}, {"no": 114, "word": "Exorbitant", "bn": "অতিরিক্ত বা মাত্রাতিরিক্ত", "meaning": "excessive"}, {"no": 115, "word": "Exponentially", "bn": "দ্রুতগতিতে", "meaning": "rapidly"}, {"no": 116, "word": "Enticing", "bn": "প্রলোভিত করা / প্রলুব্ধ করা", "meaning": "alluring"}, {"no": 117, "word": "Encounter", "bn": "বিপদের মুখোমুখি হওয়া বা শত্রুর সামনে পড়া", "meaning": "battle"}, {"no": 118, "word": "Evasive", "bn": "এড়িয়ে যেতে সচেষ্ট", "meaning": "elusive"}, {"no": 119, "word": "Ensure", "bn": "নিশ্চিত করা", "meaning": "make certain"}, {"no": 120, "word": "Entreaty", "bn": "সনির্বন্ধ অনুরোধ", "meaning": "earnest request"}, {"no": 121, "word": "Excess", "bn": "অতিরিক্ত", "meaning": "surplus"}, {"no": 122, "word": "Eternal", "bn": "চিরন্তন", "meaning": "everlasting"}, {"no": 123, "word": "Eliminate", "bn": "বর্জন করা / উচ্ছেদ করা", "meaning": "remove"}, {"no": 124, "word": "Emancipation", "bn": "মুক্তি", "meaning": "freedom"}, {"no": 125, "word": "Expunge", "bn": "মুছে ফেলা / কোনো কিছু বাদ দেওয়া", "meaning": "eradicate / remove"}, {"no": 126, "word": "Economical", "bn": "মিতব্যয়ী", "meaning": "frugal"}, {"no": 127, "word": "Electrifying", "bn": "সহসা উত্তেজিত করা / বিদ্যুতায়িত করা", "meaning": "very exciting"}, {"no": 128, "word": "Exotic", "bn": "বিদেশী", "meaning": "foreign"}, {"no": 129, "word": "Edifice", "bn": "প্রাসাদ / অট্টালিকা", "meaning": "a large impressive building"}, {"no": 130, "word": "Edible", "bn": "ভোজ্য / আহারযোগ্য", "meaning": "a type of flower that can be eaten"}, {"no": 131, "word": "Embargo", "bn": "নিষেধাজ্ঞা", "meaning": "restriction on foreign trade and investment"}, {"no": 132, "word": "Experiment", "bn": "পরীক্ষা বা গবেষণা করা", "meaning": "trial"}, {"no": 133, "word": "Fall", "bn": "শরৎকাল", "meaning": "autumn"}, {"no": 134, "word": "Felicitation", "bn": "অভিনন্দন", "meaning": "expression of good wish"}, {"no": 135, "word": "Flora", "bn": "কোনো বিশেষ অঞ্চল বা যুগের সব গাছগাছড়া / উদ্ভিদকুল", "meaning": "all the plants of an area / a particular area"}, {"no": 136, "word": "Fatal", "bn": "মারাত্মক / প্রাণনাশক", "meaning": "that which ends in death"}, {"no": 137, "word": "Flamboyance", "bn": "বর্ণাঢ্যতা / জাঁকজমকতা", "meaning": "showy"}, {"no": 138, "word": "Fast track", "bn": "দ্রুতগতির অনুকূল কোনো পথ", "meaning": "a quick path to achieve something"}, {"no": 139, "word": "Frighten", "bn": "ভীত করা / ভয় পাইয়ে দেওয়া", "meaning": "to make someone feel fear"}, {"no": 140, "word": "Fortitude", "bn": "বিপদ, প্রলোভন বা অসুবিধার মুখে ধৈর্য / বীরত্বপূর্ণ সহিষ্ণুতা", "meaning": "the quality of courage in adverse circumstances"}, {"no": 141, "word": "Frugal", "bn": "মিতব্যয়ী", "meaning": "parsimonious"}, {"no": 142, "word": "Foes", "bn": "শত্রু", "meaning": "rivals"}, {"no": 143, "word": "Found", "bn": "প্রতিষ্ঠা করা / ভিত্তি স্থাপন করা", "meaning": "establish"}, {"no": 144, "word": "Fluctuate", "bn": "ওঠানামা করা / হ্রাস-বৃদ্ধি হওয়া", "meaning": "vary"}, {"no": 145, "word": "Frugal", "bn": "মিতব্যয়ী", "meaning": "economical"}, {"no": 146, "word": "Fallacy", "bn": "ভুল বা মিথ্যা বিশ্বাস / মিথ্যা ধারণা", "meaning": "a false belief"}, {"no": 147, "word": "Flimsy", "bn": "হালকা ও পাতলা / ফিনফিনে", "meaning": "dilute / tenuous"}, {"no": 148, "word": "Foe", "bn": "শত্রু", "meaning": "enemy"}, {"no": 149, "word": "Fabricate", "bn": "মিথ্যা কিছু উদ্ভাবন করা / জাল করা / জোড়া লাগানো", "meaning": "concoct / manufacture-falsely"}, {"no": 150, "word": "Forgo", "bn": "ত্যাগ করা / বর্জন করা / ছেড়ে যাওয়া", "meaning": "renounce / do without"}, {"no": 151, "word": "Fragile", "bn": "ভঙ্গুর / নাজুক / ঠুনকো", "meaning": "weak"}, {"no": 152, "word": "Forthcoming", "bn": "আসন্ন / প্রকাশিতব্য", "meaning": "approaching"}, {"no": 153, "word": "Gratis", "bn": "বিনামূল্যে", "meaning": "without making any payment"}, {"no": 154, "word": "Gullible", "bn": "সহজে প্রতারণাযোগ্য", "meaning": "credulous / easily deceived"}, {"no": 155, "word": "Crumble", "bn": "বিড়বিড়িয়ে ক্ষোভ বা অসন্তোষ প্রকাশ করা", "meaning": "mutter / whine complains"}, {"no": 156, "word": "Geriatric", "bn": "বৃদ্ধদের চিকিৎসাব্যবস্থা", "meaning": "old people"}, {"no": 157, "word": "Gravity", "bn": "গুরুতর অবস্থা / গম্ভীর্য", "meaning": "seriousness"}, {"no": 158, "word": "Gorgeous", "bn": "জমকালো / চমৎকার", "meaning": "splendid"}, {"no": 159, "word": "Genocide", "bn": "গণহত্যা", "meaning": "mass killing"}, {"no": 160, "word": "Garrulous", "bn": "বাচাল", "meaning": "loquacious / talkative"}, {"no": 161, "word": "Glowing", "bn": "উজ্জ্বল ও উদ্দীপ্ত বা আবেগোচ্ছল", "meaning": "shining"}, {"no": 162, "word": "Gesture", "bn": "ইশারা / অঙ্গভঙ্গি", "meaning": "indication / body movement"}, {"no": 163, "word": "Hamlet", "bn": "ছোট গ্রাম", "meaning": "a small village"}, {"no": 164, "word": "Heroic", "bn": "বীরত্বপূর্ণ / বীরত্বগাথা বিষয়ক", "meaning": "epic"}, {"no": 165, "word": "Hazardous", "bn": "ঝুঁকিপূর্ণ", "meaning": "dangerous"}, {"no": 166, "word": "Homogeneous", "bn": "সমজাতীয়", "meaning": "of the same kind"}, {"no": 167, "word": "Homicide", "bn": "নরহত্যা", "meaning": "the killing of one person by another"}, {"no": 168, "word": "High handed", "bn": "উদ্ধত", "meaning": "arrogant / cavalier"}, {"no": 169, "word": "Heptagon", "bn": "সপ্তভুজ / সাতটি বাহুবিশিষ্ট ক্ষেত্র", "meaning": "seven sides"}, {"no": 170, "word": "Handy", "bn": "দরকারি / সুবিধাজনক", "meaning": "useful"}, {"no": 171, "word": "Hardly", "bn": "প্রায় না / বললে চলে না / কদাচিৎ", "meaning": "scarcely / rare"}, {"no": 172, "word": "Hospitality", "bn": "আতিথেয়তা / মেহমানদারি", "meaning": "entertainment"}, {"no": 173, "word": "Humility", "bn": "বিনয় / বিনম্রতা", "meaning": "modesty"}, {"no": 174, "word": "Homestead", "bn": "বসতবাড়ি / আমারবাড়ি", "meaning": "a house with outer building and land around it"}, {"no": 175, "word": "Incite", "bn": "প্ররোচিত করা / উত্তেজিত করা", "meaning": "instigate"}, {"no": 176, "word": "Impromptu", "bn": "প্রস্তুতি ছাড়া / স্বতঃপ্রণোদিত মাত্র", "meaning": "extempore / unrehearsed"}, {"no": 177, "word": "Indiscreet", "bn": "অসতর্ক / অবিচক্ষণ / অবিবেচক", "meaning": "imprudent"}, {"no": 178, "word": "Illuminate", "bn": "আলোকিত করা", "meaning": "brighten"}, {"no": 179, "word": "Integrate", "bn": "একত্রীভূত করা / সম্প্রসারণ করা", "meaning": "consolidate / merge / unit"}, {"no": 180, "word": "Incredibly", "bn": "অবিশ্বাস্যভাবে", "meaning": "unbelievably"}, {"no": 181, "word": "Idiosyncratic", "bn": "স্বভাবিক", "meaning": "peculiar"}, {"no": 182, "word": "Indigenous", "bn": "দেশি / দেশজ / স্থানীয়", "meaning": "native"}, {"no": 183, "word": "Intricate", "bn": "জটিল / দুর্বোধ্য", "meaning": "complicated"}, {"no": 184, "word": "Ingenious", "bn": "চতুর / অপ্রতিদ্বন্দ্বী", "meaning": "(meaning not given in original)"}, {"no": 185, "word": "Independence", "bn": "স্বাধীনতা", "meaning": "freedom"}, {"no": 186, "word": "Inaudible", "bn": "শ্রবণাতীত / অশ্রবণীয়", "meaning": "that cannot be heard"}, {"no": 187, "word": "Indolent", "bn": "অলস", "meaning": "lazy"}, {"no": 188, "word": "Icon", "bn": "প্রতিমা / কোনো প্রিয় ব্যক্তির চিহ্নিত বা শ্রদ্ধা করা মূর্তি", "meaning": "symbol"}, {"no": 189, "word": "Inept", "bn": "অযোগ্য / অপটু", "meaning": "incomplete / incompetent"}, {"no": 190, "word": "Imbibe", "bn": "পান করা", "meaning": "to drink"}, {"no": 191, "word": "Irrevocable", "bn": "প্রত্যাহার করা যায় না এমন / চূড়ান্ত ও অপরিবর্তনীয়", "meaning": "unalterable"}, {"no": 192, "word": "Innate", "bn": "সহজাত / স্বভাবগত / সহগত", "meaning": "intrinsic / congenital / inherent"}, {"no": 193, "word": "Intrepid", "bn": "অকুতোভয় / অসমসাহসিক", "meaning": "fearless / brave"}, {"no": 194, "word": "Insane", "bn": "উন্মাদ / পাগল / কান্ডজ্ঞানহীন", "meaning": "crazy"}, {"no": 195, "word": "Impeach", "bn": "অভিসংশন করা / অভিযোগ করা", "meaning": "charge"}, {"no": 196, "word": "Innuendo", "bn": "ব্যঙ্গোক্তি / কটাক্ষ", "meaning": "an indirect insinuation or suggestion about person"}, {"no": 197, "word": "Inauguration", "bn": "উদ্বোধন", "meaning": "opening ceremony"}, {"no": 198, "word": "Irreproachable", "bn": "অনবদ্য / অনিন্দ্য", "meaning": "unshakable"}, {"no": 199, "word": "Introspective", "bn": "আত্মবিশ্লেষণপ্রবণ", "meaning": "thoughtful"}, {"no": 200, "word": "Delinquency", "bn": "কিশোর অপরাধ", "meaning": "crimes committed by adolescents or young people"}, {"no": 201, "word": "Judicious", "bn": "বিচক্ষণ", "meaning": "sensible"}, {"no": 202, "word": "Jovial", "bn": "হাসিখুশি / আমুদে", "meaning": "merry"}, {"no": 203, "word": "Kidding", "bn": "ঠাট্টা করা", "meaning": "joking"}, {"no": 204, "word": "Kinship", "bn": "রক্তের সম্পর্ক", "meaning": "blood relation"}, {"no": 205, "word": "Kindred", "bn": "আত্মীয় / আত্মিক / স্বজাতীয়", "meaning": "relationship by birth or descent"}, {"no": 206, "word": "Knowledge", "bn": "জ্ঞান / অবগতি / অভিজ্ঞতা", "meaning": "awareness"}, {"no": 207, "word": "Litigant", "bn": "মামলার ব্যক্তি", "meaning": "a party to a case"}, {"no": 208, "word": "Luminous", "bn": "আলোকোজ্জ্বল / দ্যুতিময়", "meaning": "shining"}, {"no": 209, "word": "Lavatory", "bn": "শৌচাগার / স্নানাগার", "meaning": "a place of discharge from the bowels"}, {"no": 210, "word": "Lack of equality", "bn": "সমন্বয়তার অভাব", "meaning": "disparity"}, {"no": 211, "word": "Lucrative", "bn": "লাভজনক / আর্থিকভাবে লোভনীয়", "meaning": "profitable"}, {"no": 212, "word": "Lunar", "bn": "চন্দ্র সংক্রান্ত", "meaning": "moon"}, {"no": 213, "word": "Literacy", "bn": "সাক্ষরতা", "meaning": "the ability to read and write"}, {"no": 214, "word": "Longing", "bn": "আকাঙ্ক্ষা", "meaning": "desiring"}, {"no": 215, "word": "Laughing", "bn": "হাস্যকর / হাস্যোদ্দীপক", "meaning": "drab / stinking"}, {"no": 216, "word": "Lack of rainfall", "bn": "বৃষ্টির অভাব", "meaning": "drought"}, {"no": 217, "word": "Latent", "bn": "সুপ্ত", "meaning": "dormant"}, {"no": 218, "word": "Morbidity", "bn": "বিষণ্ণতা / অসুস্থতা", "meaning": "melancholy"}, {"no": 219, "word": "Mankind", "bn": "মানবজাতি", "meaning": "the human race"}, {"no": 220, "word": "Murky", "bn": "তমসাচ্ছন্ন / ঘোর অন্ধকার", "meaning": "gloomy"}, {"no": 221, "word": "Mental", "bn": "মানসিক", "meaning": "cerebral"}, {"no": 222, "word": "Minutes", "bn": "মন্তব্য ও মতামতের দাপ্তরিক লেখাপ্রমাণ / কার্যবিবরণী", "meaning": "written record"}, {"no": 223, "word": "Malignancy", "bn": "চরম ক্ষতিকর অবস্থা / মারাত্মক অবস্থা", "meaning": "the state of a disease likely to cause death"}, {"no": 224, "word": "Manifesto", "bn": "ইস্তাহার / উদ্দেশ্য ও কর্মসূচি সম্পর্কে প্রকাশ্য লিখিত ঘোষণা", "meaning": "policy statement"}, {"no": 225, "word": "Mammal", "bn": "স্তন্যপায়ী প্রাণী", "meaning": "an animal that feeds its baby with its milk"}, {"no": 226, "word": "Mayhem", "bn": "ভয়ংকর বিশৃঙ্খলা / ক্ষয়ক্ষতি বা অঙ্গচ্ছেদ করার উপায়", "meaning": "confusion and fear caused by violent behaviour"}, {"no": 227, "word": "Menacing", "bn": "ভীতিকর / বিপজ্জনক", "meaning": "alarming"}, {"no": 228, "word": "Mandatory", "bn": "বাধ্যতামূলক", "meaning": "obligatory"}, {"no": 229, "word": "Musk", "bn": "কস্তুরী / বিশেষ প্রাণীর ত্বক-নিঃসৃত সুবাসিত পদার্থ", "meaning": "a substance used in making perfume"}, {"no": 230, "word": "Magnificent", "bn": "জাঁকজমকপূর্ণ", "meaning": "splendid"}, {"no": 231, "word": "Miscellaneous", "bn": "বিবিধ", "meaning": "varied"}, {"no": 232, "word": "Matrimony", "bn": "বিবাহ / বিয়ে / পরিণয়", "meaning": "marriage"}, {"no": 233, "word": "Niche", "bn": "মূর্তি / অলংকার ইত্যাদি রাখার জন্য দেয়ালের ফোকর", "meaning": "hollow"}, {"no": 234, "word": "Nepotism", "bn": "স্বজনপ্রীতি", "meaning": "undue favour shown by a person in power"}, {"no": 235, "word": "Narcissism", "bn": "নিজের মধ্যে একান্ত আত্মনিবিষ্টতা / আত্মরতি", "meaning": "the habit of admiring one's own appearance"}, {"no": 236, "word": "Notion", "bn": "ধারণা / ভাব / অভিমত", "meaning": "impression"}, {"no": 237, "word": "Nocturnal", "bn": "নৈশ / নিশাচর", "meaning": "occurring or active at night"}, {"no": 238, "word": "Nascent", "bn": "জন্ম নিচ্ছে এমন / জায়মান", "meaning": "beginning"}, {"no": 239, "word": "Nuptial", "bn": "বিয়ে সংক্রান্ত", "meaning": "marriage"}, {"no": 240, "word": "Outcome", "bn": "পরিণতি / ফলাফল", "meaning": "result"}, {"no": 241, "word": "Ordinance", "bn": "অধ্যাদেশ", "meaning": "a law"}, {"no": 242, "word": "Officialese", "bn": "আমলাদের লেখায় ব্যবহৃত অতিরিক্ত কেতাবি বা দুর্বোধ্য ভাষা", "meaning": "language used in offices"}, {"no": 243, "word": "Open question", "bn": "যে প্রশ্নের উত্তর বা সমাধান নেই", "meaning": "a question not yet decided"}, {"no": 244, "word": "Offspring", "bn": "সন্তান / সন্তানসন্ততি", "meaning": "children"}, {"no": 245, "word": "Omnivorous", "bn": "সর্বভুক", "meaning": "eating all types of food"}, {"no": 246, "word": "Obese", "bn": "স্থূলকায় / মোটা", "meaning": "fat / very fat"}, {"no": 247, "word": "Oral", "bn": "মৌখিক / মুখ বিষয়ক", "meaning": "mouth"}, {"no": 248, "word": "Oriental", "bn": "প্রাচ্য সম্বন্ধীয়", "meaning": "eastern"}, {"no": 249, "word": "Loyal", "bn": "বিশ্বাসী ও অনুগত", "meaning": "faithful"}, {"no": 250, "word": "Occupied", "bn": "অধিগৃহীত / অধিকৃত", "meaning": "engaged"}, {"no": 251, "word": "Omnipotent", "bn": "সর্বশক্তিমান", "meaning": "almighty"}, {"no": 252, "word": "Overpopulated", "bn": "অতিরিক্ত জনবহুল", "meaning": "too many people"}, {"no": 253, "word": "Pilferage", "bn": "চুরি", "meaning": "stealing"}, {"no": 254, "word": "Periphery", "bn": "বাহ্যসীমা / চৌহদ্দি / পরিধি", "meaning": "marginal areas"}, {"no": 255, "word": "Proscribe", "bn": "অধিকারচ্যুত করা / নিষেধ করা / নির্বাসিত করা", "meaning": "prohibit"}, {"no": 256, "word": "Precedence", "bn": "অগ্রাধিকার / অগ্রবর্তিতার অধিকার", "meaning": "priority"}, {"no": 257, "word": "Prior to", "bn": "পূর্বে / আগে", "meaning": "before"}, {"no": 258, "word": "Proclaim", "bn": "ঘোষণা করা", "meaning": "declare"}, {"no": 259, "word": "Panacea", "bn": "সব ঐরনের রোগ নিরাময়যোগ্য ঔষধ", "meaning": "cure all"}, {"no": 260, "word": "Pensive", "bn": "চিন্তাক্লিষ্ট / বিষণ্ণ", "meaning": "thoughtful"}, {"no": 261, "word": "Permissive", "bn": "অনুমতিদায়ক / অনুমতিদত্ত", "meaning": "liberal"}, {"no": 262, "word": "Plagiarism", "bn": "ছুরি / চৌর্যবৃত্তি", "meaning": "copying unlawfully"}, {"no": 263, "word": "Posterity", "bn": "বংশধর / ভবিষ্যৎ প্রজন্ম পরম্পরা", "meaning": "later generations"}, {"no": 264, "word": "Philanthropist", "bn": "জনহিতৈষী ব্যক্তি", "meaning": "a person of charity"}, {"no": 265, "word": "Philatelist", "bn": "ডাকটিকিট সংগ্রাহক", "meaning": "stamp collector"}, {"no": 266, "word": "Protocol", "bn": "শিষ্টাচার রীতি / সম্মত চুক্তি", "meaning": "record of rules"}, {"no": 267, "word": "Pneumatic", "bn": "সংকুচিত বায়ু দ্বারা চালিত / বায়ুচালিত", "meaning": "filled with compressed air"}, {"no": 268, "word": "Parent", "bn": "বাবা ও মা", "meaning": "father or mother"}, {"no": 269, "word": "Plurality", "bn": "বহুপদাধিকার / বহুত্ব", "meaning": "the holding of more than one office at a time"}, {"no": 270, "word": "Prerogative", "bn": "বিশেষ কর্তৃত্ব / প্রাধিকার", "meaning": "an exclusive right or privilege"}, {"no": 271, "word": "Plenipotentiary", "bn": "পূর্ণক্ষমতাপ্রাপ্ত", "meaning": "a person who has full power to take action and decision"}, {"no": 272, "word": "Pedagogue", "bn": "স্কুল শিক্ষক এবং লেখিয়ে অতিরিক্তি শিক্ষক", "meaning": "education"}, {"no": 273, "word": "A profiteer", "bn": "মুনাফাখোর / অতিরিক্ত সুযোগ নিয়ে অত্যধিক মুনাফা করা", "meaning": "a person who makes excessive profits by charging inflated rate"}, {"no": 274, "word": "Prejudice", "bn": "পূর্বসংস্কার", "meaning": "bigotry"}, {"no": 275, "word": "Paradigm", "bn": "আদর্শ", "meaning": "example"}, {"no": 276, "word": "Pesticide", "bn": "কীটনাশক", "meaning": "insecticide"}, {"no": 277, "word": "Panegyric", "bn": "প্রশস্তিগাথা", "meaning": "elaborate"}, {"no": 278, "word": "Parsimony", "bn": "কৃপণতা", "meaning": "miserliness"}, {"no": 279, "word": "Privilege", "bn": "বিশেষাধিকার / নির্দিষ্ট অনুগ্রহ বা লাভ", "meaning": "special favour or right"}, {"no": 280, "word": "Pragmatic", "bn": "প্রয়োগবাদী / ব্যবহারবাদী", "meaning": "practical"}, {"no": 281, "word": "Perturb", "bn": "উত্তেজিত করা", "meaning": "agitate"}, {"no": 282, "word": "Proviso", "bn": "বিশেষ চুক্তি / দলিল", "meaning": "stipulation"}, {"no": 283, "word": "Progressive", "bn": "প্রগতিশীল / উদারনীল", "meaning": "open to change"}, {"no": 284, "word": "Resounding", "bn": "উচ্চঃস্বরে আলোচিত হওয়া / প্রতিধ্বনিত করা", "meaning": "huge"}, {"no": 285, "word": "Renaissance", "bn": "নবজাগরণ / পুনর্জন্ম", "meaning": "rebirth"}, {"no": 286, "word": "Ruminant", "bn": "জাবর কাটা প্রাণী", "meaning": "cud chewing animal"}, {"no": 287, "word": "Razzmatazz", "bn": "উপবাজি / ছিটেফোঁটা আকর্ষণীয়", "meaning": "a noisy activity"}, {"no": 288, "word": "Rendezvous", "bn": "মিলনস্থান", "meaning": "an appointed meeting place for troops"}, {"no": 289, "word": "Rhetoric", "bn": "অলংকারবহুল ও আন্তরিকতাহীন ভাষা", "meaning": "the art of effective or persuasive delivery of speech"}, {"no": 290, "word": "Regicide", "bn": "রাজহত্যা", "meaning": "the act of killing of a king or queen"}, {"no": 291, "word": "Revenge", "bn": "প্রতিশোধ নেওয়া / প্রতিহিংসাপরায়ণতা", "meaning": "an action against harassment"}, {"no": 292, "word": "Returns", "bn": "বিনিয়োগ লাভ", "meaning": "getting money as profit"}, {"no": 293, "word": "Reliance", "bn": "আস্থা / ভরসা", "meaning": "dependence"}, {"no": 294, "word": "Recalcitrant", "bn": "অবাধ্য / শৃঙ্খলাভঙ্গকারী", "meaning": "mutinous"}, {"no": 295, "word": "Rusticated", "bn": "শাস্তি হিসেবে কোনো ছাত্রকে বিশ্ববিদ্যালয় থেকে সাময়িকভাবে বহিষ্কার করা", "meaning": "expelled"}, {"no": 296, "word": "Stupendous", "bn": "বিপুল", "meaning": "huge"}, {"no": 297, "word": "Stupendous", "bn": "প্রকান্ড", "meaning": "awesome"}, {"no": 298, "word": "Rapidly", "bn": "দ্রুততার সাথে / ক্ষণাদি", "meaning": "quickly"}, {"no": 299, "word": "Randomly", "bn": "এলোমেলোভাবে", "meaning": "indiscriminately"}, {"no": 300, "word": "Room", "bn": "জায়গা / স্থান / কক্ষ", "meaning": "space"}, {"no": 301, "word": "Sibling", "bn": "একই মাতাপিতার সন্তান / ভাই বা বোন", "meaning": "brother or sister"}, {"no": 302, "word": "Squander", "bn": "অপচয় করা / বেহিসাবি খরচ করা", "meaning": "waste / spend lavishly"}, {"no": 303, "word": "Sensational", "bn": "চাঞ্চল্যকর / রোমাঞ্চকর", "meaning": "shocking"}, {"no": 304, "word": "Subsistence", "bn": "জীবন নির্বাহ / অস্তিত্ব", "meaning": "ability to survive"}, {"no": 305, "word": "Steady", "bn": "স্থির / দৃঢ়ভাবে প্রতিষ্ঠিত / অটল", "meaning": "stable"}, {"no": 306, "word": "Sluggish", "bn": "নিষ্ক্রিয় / মন্থরগতি", "meaning": "lethargic"}, {"no": 307, "word": "Stubborn", "bn": "গোঁয়ার্তুমিপূর্ণ / জেদি", "meaning": "obstinate / obdurate"}, {"no": 308, "word": "Subterfuge", "bn": "ছল / চতুরী / প্রতারণা", "meaning": "deception / trickery"}, {"no": 309, "word": "Syntax", "bn": "বাক্যরীতি / বাক্য গঠন", "meaning": "sentence construction / construction / sentence building"}, {"no": 310, "word": "Stagflation", "bn": "যে বিশেষ সময়সীমার মধ্যে মূল্যস্ফীতি দেখা দেয় কিন্তু উৎপাদন বৃদ্ধি পায় না", "meaning": "economic slow down"}, {"no": 311, "word": "Stalwart", "bn": "কোনো রাজনৈতিক দল বা গোষ্ঠীর অনুগত অনিষ্ঠ সমর্থক", "meaning": "reliable supporter"}, {"no": 312, "word": "Scourge", "bn": "যাতনাদায়ক / যাতক", "meaning": "person or thing that causes suffering"}, {"no": 313, "word": "Sedative", "bn": "স্নায়বিক উত্তেজনা ও মানসিক অস্থিরতা প্রশমিত করে এমন ঔষধ", "meaning": "a drug used to calm a person or animal to make them sleep"}, {"no": 314, "word": "Somnambulist", "bn": "ঘুমপ্রচারী / নিদ্রিত অবস্থায় হেঁটে বেড়ানো ব্যক্তি", "meaning": "a sleep walker"}, {"no": 315, "word": "Scarce", "bn": "অপ্রতুল / বিরল / দুর্লভ", "meaning": "short"}, {"no": 316, "word": "Solar", "bn": "সূর্য সংক্রান্ত / সৌর", "meaning": "sun"}, {"no": 317, "word": "Soothing", "bn": "প্রশান্ত করা / উপশম করা", "meaning": "comfortable"}, {"no": 318, "word": "Siesta", "bn": "দিবানিদ্রা / দুপুরের ঘুম", "meaning": "a short nap"}, {"no": 319, "word": "Spouse", "bn": "স্বামী বা স্ত্রী", "meaning": "husband or wife"}, {"no": 320, "word": "Seldom", "bn": "কদাচিৎ", "meaning": "hardly"}, {"no": 321, "word": "Synopsis", "bn": "সারাংশ", "meaning": "summary"}, {"no": 322, "word": "Sumptuous", "bn": "মহার্ঘ / মহার্য / ব্যয়বহুল", "meaning": "lavish"}, {"no": 323, "word": "Scuttle", "bn": "দ্রুত পলায়ন / তড়িঘড়ি করে পালানো", "meaning": "abandon"}, {"no": 324, "word": "Supportive", "bn": "সহায়ক", "meaning": "helpful"}, {"no": 325, "word": "Stanch", "bn": "কোনো কিছুর প্রবাহমান স্রোত বা রোধ করা", "meaning": "put an end to"}, {"no": 326, "word": "Sequence", "bn": "ক্রম / অনুক্রম / পরম্পরা", "meaning": "to follow"}, {"no": 327, "word": "Secluded", "bn": "নির্জন / নিভৃত", "meaning": "quiet"}, {"no": 328, "word": "Terrible", "bn": "ভয়ানক / ভয়াবহ", "meaning": "awful"}, {"no": 329, "word": "Tenable", "bn": "সমর্থনযোগ্য / রক্ষাযোগ্য", "meaning": "defensible"}, {"no": 330, "word": "Temporal", "bn": "পার্থিব", "meaning": "worldly"}, {"no": 331, "word": "Termination", "bn": "সমাপ্তি", "meaning": "to end"}, {"no": 332, "word": "To replicate", "bn": "হুবহু নকল করা", "meaning": "to copy"}, {"no": 333, "word": "To foresee", "bn": "আগেই জানা / আগেই বোঝা", "meaning": "anticipate"}, {"no": 334, "word": "Tranquil", "bn": "শান্ত", "meaning": "placid"}, {"no": 335, "word": "Thesaurus", "bn": "অর্থের সাদৃশ্য অনুযায়ী বর্গীকৃত শব্দ ও তাদের প্রতিশব্দাদির তালিকা / ভাব-অভিধান", "meaning": "a dictionary of words arranged in group that have similar meaning"}, {"no": 336, "word": "Tertiary", "bn": "তৃতীয় পর্যায়ভুক্ত", "meaning": "third in order"}, {"no": 337, "word": "To doctor an animal", "bn": "জীবাণুমুক্ত করা", "meaning": "to sterilize it"}, {"no": 338, "word": "To taunt someone", "bn": "কোনো অনুভূতি আঘাত দেওয়ার উদ্দেশ্যে মন্তব্য / বিদ্রুপ", "meaning": "tease"}, {"no": 339, "word": "Turbid", "bn": "অস্বচ্ছ / ঘোলা / বিশৃঙ্খল", "meaning": "murky"}, {"no": 340, "word": "Tenuous", "bn": "ক্ষীণ ও সরু", "meaning": "weak"}, {"no": 341, "word": "Tributary", "bn": "উপনদী", "meaning": "rivulet"}, {"no": 342, "word": "Untidy", "bn": "অপরিপাটি / অগোছালো", "meaning": "messy / mangy"}, {"no": 343, "word": "Unprecedented", "bn": "নজিরবিহীন / অভূতপূর্ব", "meaning": "without any example set before"}, {"no": 344, "word": "Unorganized", "bn": "বিশৃঙ্খল", "meaning": "haphazard"}, {"no": 345, "word": "Via", "bn": "মধ্য দিয়ে / হয়ে", "meaning": "through"}, {"no": 346, "word": "Venerate", "bn": "গভীরভাবে শ্রদ্ধা করা / পূজা করা", "meaning": "respect"}, {"no": 347, "word": "Veracity", "bn": "সত্য / সত্যনিষ্ঠি", "meaning": "authenticity"}, {"no": 348, "word": "Vengeance", "bn": "প্রতিশোধ / প্রতিহিংসা", "meaning": "revenge"}, {"no": 349, "word": "Verdict", "bn": "রায়", "meaning": "judgement"}, {"no": 350, "word": "Vertex", "bn": "শীর্ষ / চূড়া", "meaning": "highest point"}, {"no": 351, "word": "Wink", "bn": "চোখ পিটপিট করা", "meaning": "to close one eye briefly"}, {"no": 352, "word": "Wander", "bn": "উদ্দেশ্যহীনভাবে এক জায়গা থেকে অন্য জায়গায় ঘুরে বেড়ানো", "meaning": "walk aimlessly"}, {"no": 353, "word": "Waive", "bn": "পরিত্যাগ করা / ছেড়ে দেওয়া", "meaning": "forgo"}, {"no": 354, "word": "Yield", "bn": "উৎপাদন করা / উৎপন্ন হওয়া", "meaning": "produce"}, {"no": 355, "word": "Zoonotic transmission", "bn": "প্রাণী থেকে আগত রোগ", "meaning": "coming from an animal"}];
@@ -1438,6 +1493,11 @@ const I18N = {
   btnAddKeyRow: {bn:'➕ আরেকটা key ঘর', en:'➕ Add key slot'},
   labelBulkPaste: {bn:'একসাথে অনেকগুলো key পেস্ট করো (নতুন লাইনে/কমা/স্পেস দিয়ে আলাদা — যেভাবেই পেস্ট করো, নিজে থেকে ভাগ হয়ে যাবে)', en:'Paste many keys at once (newline/comma/space separated — auto-splits however you paste it)'},
   btnBulkKeyApply: {bn:'📋 সব key বসাও', en:'📋 Apply all keys'},
+  btnWordLookup: {bn:'শব্দ খুঁজুন', en:'Word Lookup'},
+  btnArchive: {bn:'আর্কাইভ', en:'Archive'},
+  wordLookupTitle: {bn:'শব্দ খুঁজুন', en:'Word Lookup'},
+  archiveTitle: {bn:'আর্কাইভ (আগের খোঁজা শব্দ)', en:'Archive (past lookups)'},
+  globalSearchTitle: {bn:'যেকোনো শব্দ খুঁজুন', en:'Search any word'},
   btnSaveAll: {bn:'সংরক্ষণ করো', en:'Save'},
   backfillTitle: {bn:'MCQ ব্যাখ্যা Backfill', en:'MCQ Explanation Backfill'},
   backfillHint: {bn:'আগে যেসব MCQ শব্দের distractor জেনারেট হয়ে গেছে কিন্তু ব্যাখ্যা (explanation) নেই — এই বাটনে চাপলে শুধু ওগুলোর জন্যই নতুন করে AI থেকে ব্যাখ্যাসহ regenerate হবে। উপরের Gemini key/model লাগবে।', en:'For MCQ words whose distractors were already generated but have no explanation — pressing this button regenerates only those, with explanations, using AI. Needs the Gemini key/model above.'},
@@ -2477,6 +2537,251 @@ ${meta.label}: "${w.val || ''}"
 মনে রাখার কৌশল: (১-২ লাইনের সহজ, মজার mnemonic বা association, যা উপরের সম্পর্কটা (${meta.label}) ঠিকভাবে মাথায় গেঁথে দেবে — উপরের নোটটা মাথায় রেখে)
 উদাহরণ বাক্য: (এই শব্দটা/টার্মটা ব্যবহার করে exam-এর উপযোগী একটা ছোট বাক্য, ইংরেজিতে যদি শব্দটা ইংরেজি হয়)${rootBlock}`;
 }
+
+// ============ Word Lookup (any word, not just the fixed lists) + Archive ============
+// Standalone AI vocab lookup: the person can type ANY word (English or Bangla)
+// and get synonym/antonym/meaning/mnemonic/word-mining/example/caution in one
+// go, using the same Gemini key/model settings as the flashcard AI. Every
+// lookup is cached by normalized word text and kept in a capped local
+// "Archive" list so re-opening a past word costs no new API call.
+const WORD_ARCHIVE_KEY = 'memoria-word-archive-v1';
+const WORD_ARCHIVE_MAX = 200; // cap so this can't bloat localStorage the way aiCache did before
+function loadWordArchive(){
+  try{ const raw = localStorage.getItem(WORD_ARCHIVE_KEY); const arr = raw ? JSON.parse(raw) : []; return Array.isArray(arr) ? arr : []; }catch(e){ return []; }
+}
+function saveWordArchive(arr){ debouncedWrite(WORD_ARCHIVE_KEY, ()=>arr); }
+let wordArchive = loadWordArchive(); // newest first: [{word, answer, ts}, ...]
+function normalizeWordKey(s){ return String(s||'').trim().toLowerCase(); }
+function findArchiveEntry(word){
+  const key = normalizeWordKey(word);
+  return wordArchive.find(e => normalizeWordKey(e.word) === key) || null;
+}
+// move-to-front + cap: re-searching a word refreshes its position instead of duplicating it
+function upsertArchiveEntry(word, answer){
+  const key = normalizeWordKey(word);
+  wordArchive = wordArchive.filter(e => normalizeWordKey(e.word) !== key);
+  wordArchive.unshift({ word: word.trim(), answer, ts: Date.now() });
+  if(wordArchive.length > WORD_ARCHIVE_MAX) wordArchive.length = WORD_ARCHIVE_MAX;
+  saveWordArchive(wordArchive);
+}
+
+function buildWordLookupPrompt(word){
+  return `তুমি একজন বাংলাদেশের সরকারি চাকরির (BCS/Bank/৯ম গ্রেড) পরীক্ষার ভোকাবুলারি কোচ। একজন শিক্ষার্থী পরীক্ষার প্রস্তুতির জন্য এই শব্দ/টার্মটা মুখস্থ করতে চায়: "${word.trim()}"
+
+তোমার কাজ, ঠিক এই ফরম্যাটে বাংলায় উত্তর দাও (হেডিংগুলো হুবহু রাখো, ভূমিকা বা অতিরিক্ত কিছু লিখো না, কোনো হেডিং-এর তথ্য না থাকলে/প্রযোজ্য না হলে শুধু "প্রযোজ্য নয়" লিখো):
+টাইপ: (শব্দটা ইংরেজি হলে তার Part of Speech — Noun/Verb/Adjective/Adverb/Phrase ইত্যাদি, ১-২ শব্দে ইংরেজিতে। বাংলা শব্দ/বাগধারা/প্রবাদ হলে শুধু "প্রযোজ্য নয়" লিখো)
+সংক্ষিপ্ত অর্থ: (শব্দটার সরাসরি বাংলা অর্থ, ১ লাইনে, ছোট করে)
+বিস্তারিত অর্থ: (২-৩ বাক্যে, কোন প্রসঙ্গে/কীভাবে ব্যবহৃত হয় সহ একটু বিস্তারিত ব্যাখ্যা)
+সমার্থক শব্দ: (exam-এ কাজে লাগে এমন ৩-৪টা সমার্থক শব্দ/Synonym, শুধু কমা দিয়ে আলাদা করে শব্দগুলো লিখো, বাক্য/ব্যাখ্যা লিখো না)
+বিপরীত শব্দ: (exam-এ কাজে লাগে এমন ২-৩টা বিপরীত শব্দ/Antonym, শুধু কমা দিয়ে আলাদা করে শব্দগুলো লিখো, বাক্য/ব্যাখ্যা লিখো না)
+মনে রাখার কৌশল: (১-২ লাইনের সহজ, মজার mnemonic বা association যা অর্থটা মাথায় গেঁথে দেবে)
+শব্দের গঠন: (শব্দটা ইংরেজি হলে এবং prefix/root/suffix থেকে অর্থ বোঝা গেলে ১ লাইনে ভেঙে দেখাও, যেমন "mal(খারাপ)+practice(চর্চা) = খারাপ চর্চা" ফরম্যাটে)
+উদাহরণ বাক্য: (এই শব্দটা ব্যবহার করে exam-এর উপযোগী একটা ছোট বাক্য)
+কাছাকাছি শব্দ সতর্কতা: (exam-এ প্রায়ই গুলিয়ে ফেলা হয় এমন বানানে/উচ্চারণে কাছাকাছি একটা শব্দ থাকলে, তার নাম আর অর্থের পার্থক্য ১ লাইনে বলো)
+
+নোট: কোথাও গুরুত্বপূর্ণ শব্দ জোর দিয়ে বোঝাতে চাইলে **শব্দ** এভাবে দুইটা asterisk দিয়ে ঘিরে দিতে পারো, তা markdown bold হিসেবে দেখানো হবে।`;
+}
+
+// Turns escaped **bold** markers into real <strong> tags. Must run AFTER
+// escapeHtml() so the asterisks themselves can't be used to inject markup —
+// escapeHtml neutralizes <, >, &, quotes but leaves plain "*" untouched, so
+// this regex-on-already-escaped-text is safe.
+function mdBoldHtml(escapedText){
+  return escapedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+}
+// Renders a comma-separated AI answer (e.g. "Ages, eternity, eras") as pill/chip bubbles
+function renderChipRow(csvText, chipClass){
+  const items = csvText.split(/[,،]/).map(s=>s.trim()).filter(Boolean);
+  if(items.length === 0) return '';
+  return `<div class="wl-chip-row">${items.map(it=>`<span class="wl-chip ${chipClass}">${mdBoldHtml(escapeHtml(it))}</span>`).join('')}</div>`;
+}
+
+function renderWordLookupAnswer(box, raw, wordText){
+  const order = [
+    ['টাইপ'], ['সংক্ষিপ্ত অর্থ'], ['বিস্তারিত অর্থ'], ['সমার্থক শব্দ'], ['বিপরীত শব্দ'],
+    ['মনে রাখার কৌশল'], ['শব্দের গঠন'], ['উদাহরণ বাক্য'], ['কাছাকাছি শব্দ সতর্কতা']
+  ];
+  const labels = order.map(o=>o[0]);
+  const parts = {};
+  for(let i=0;i<order.length;i++){
+    const label = order[i][0];
+    const nextLabels = labels.slice(i+1).map(l=>l.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|');
+    const re = new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ':\\s*([\\s\\S]*?)(?=' + (nextLabels || '$') + ':|$)');
+    const m = raw.match(re);
+    parts[label] = (m && m[1].trim() && !isNaBlock(m[1])) ? m[1].trim() : '';
+  }
+  if(!Object.values(parts).some(Boolean)){ box.innerHTML = `<p>${mdBoldHtml(escapeHtml(raw))}</p>`; return; }
+
+  let html = `<div class="wl-word-header"><span class="wl-word">${escapeHtml(wordText || '')}</span>${parts['টাইপ'] ? `<span class="wl-pos-badge">${escapeHtml(parts['টাইপ'])}</span>` : ''}</div>`;
+  if(parts['সংক্ষিপ্ত অর্থ']) html += `<p style="margin:0 0 10px;font-size:14px;">${mdBoldHtml(escapeHtml(parts['সংক্ষিপ্ত অর্থ']))}</p>`;
+  if(parts['বিস্তারিত অর্থ']) html += `<div class="fc-ai-block"><span class="fc-ai-label">🔎 বিস্তারিত অর্থ</span><p>${mdBoldHtml(escapeHtml(parts['বিস্তারিত অর্থ']))}</p></div>`;
+  if(parts['সমার্থক শব্দ']) html += `<div class="fc-ai-block"><span class="fc-ai-label">🟢 সমার্থক শব্দ</span>${renderChipRow(parts['সমার্থক শব্দ'], 'syn')}</div>`;
+  if(parts['বিপরীত শব্দ']) html += `<div class="fc-ai-block"><span class="fc-ai-label">🔴 বিপরীত শব্দ</span>${renderChipRow(parts['বিপরীত শব্দ'], 'ant')}</div>`;
+  if(parts['মনে রাখার কৌশল']) html += `<div class="fc-ai-block"><span class="fc-ai-label">💡 মনে রাখার কৌশল</span><p>${mdBoldHtml(escapeHtml(parts['মনে রাখার কৌশল']))}</p></div>`;
+  if(parts['শব্দের গঠন']) html += `<div class="fc-ai-block"><span class="fc-ai-label">🧩 শব্দের গঠন</span><p>${mdBoldHtml(escapeHtml(parts['শব্দের গঠন']))}</p></div>`;
+  if(parts['উদাহরণ বাক্য']) html += `<div class="fc-ai-block"><span class="fc-ai-label">✍️ উদাহরণ বাক্য</span><p>${mdBoldHtml(escapeHtml(parts['উদাহরণ বাক্য']))}</p></div>`;
+  if(parts['কাছাকাছি শব্দ সতর্কতা']) html += `<div class="fc-ai-block"><span class="fc-ai-label">⚠️ কাছাকাছি শব্দ সতর্কতা</span><p>${mdBoldHtml(escapeHtml(parts['কাছাকাছি শব্দ সতর্কতা']))}</p></div>`;
+  box.innerHTML = html;
+}
+
+function openWordLookupModal(prefillWord, autoRun){
+  document.getElementById('wordLookupInput').value = prefillWord || '';
+  const box = document.getElementById('wordLookupBox');
+  if(prefillWord){
+    const cached = findArchiveEntry(prefillWord);
+    if(cached){ renderWordLookupAnswer(box, cached.answer, cached.word); box.classList.add('show'); }
+    else { box.innerHTML = ''; }
+  } else {
+    box.innerHTML = '';
+  }
+  document.getElementById('wordLookupModalOverlay').classList.add('open');
+  lockBodyScroll();
+  if(prefillWord && autoRun && !findArchiveEntry(prefillWord)) runWordLookup();
+}
+function closeWordLookupModal(){
+  document.getElementById('wordLookupModalOverlay').classList.remove('open');
+  unlockBodyScroll();
+}
+document.getElementById('pxWordLookupBtn').addEventListener('click', ()=>openWordLookupModal());
+document.getElementById('wordLookupClose').addEventListener('click', closeWordLookupModal);
+document.getElementById('wordLookupModalOverlay').addEventListener('click', e=>{
+  if(e.target.id === 'wordLookupModalOverlay') closeWordLookupModal();
+});
+async function runWordLookup(){
+  const input = document.getElementById('wordLookupInput');
+  const word = input.value.trim();
+  const box = document.getElementById('wordLookupBox');
+  if(!word){ box.innerHTML = '<p class="fc-ai-error">আগে একটা শব্দ লেখো।</p>'; return; }
+  const cached = findArchiveEntry(word);
+  if(cached){ renderWordLookupAnswer(box, cached.answer, cached.word); renderArchiveList(); return; } // cache hit — no API call
+  box.innerHTML = '<p class="fc-ai-loading">AI ভাবছে...</p>';
+  const prompt = buildWordLookupPrompt(word);
+  pauseAutoBackupForAi();
+  try{
+    const answer = await callGeminiText(prompt, msg => { box.innerHTML = `<p class="fc-ai-loading">${escapeHtml(msg)}</p>`; });
+    upsertArchiveEntry(word, answer);
+    renderWordLookupAnswer(box, answer, word);
+    renderArchiveList();
+  }catch(err){
+    box.innerHTML = `<p class="fc-ai-error">⚠️ ${escapeHtml(err.message)}</p>`;
+  }finally{
+    resumeAutoBackupForAi();
+  }
+}
+document.getElementById('wordLookupGoBtn').addEventListener('click', runWordLookup);
+document.getElementById('wordLookupInput').addEventListener('keydown', e=>{ if(e.key === 'Enter') runWordLookup(); });
+
+function renderArchiveList(){
+  const wrap = document.getElementById('archiveListWrap');
+  const emptyMsg = document.getElementById('archiveEmptyMsg');
+  if(!wrap) return;
+  if(wordArchive.length === 0){
+    wrap.innerHTML = '';
+    if(emptyMsg) emptyMsg.style.display = 'block';
+    return;
+  }
+  if(emptyMsg) emptyMsg.style.display = 'none';
+  wrap.innerHTML = wordArchive.map((e, i)=>{
+    const d = new Date(e.ts);
+    const dateStr = d.toLocaleDateString('bn-BD', {day:'numeric', month:'short'});
+    return `<div class="key-row archive-item" data-idx="${i}" style="grid-template-columns:1fr auto;cursor:pointer;align-items:center;padding:8px 4px;">
+      <span style="font-family:'Noto Sans Bengali','Inter',sans-serif;font-size:13px;">${escapeHtml(e.word)}</span>
+      <span style="font-size:10px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;">${dateStr}</span>
+    </div>`;
+  }).join('');
+  wrap.querySelectorAll('.archive-item').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const entry = wordArchive[parseInt(el.dataset.idx, 10)];
+      if(!entry) return;
+      closeArchiveModal();
+      openWordLookupModal(entry.word);
+    });
+  });
+}
+function openArchiveModal(){
+  renderArchiveList();
+  document.getElementById('archiveModalOverlay').classList.add('open');
+  lockBodyScroll();
+}
+function closeArchiveModal(){
+  document.getElementById('archiveModalOverlay').classList.remove('open');
+  unlockBodyScroll();
+}
+document.getElementById('pxArchiveBtn').addEventListener('click', openArchiveModal);
+document.getElementById('archiveClose').addEventListener('click', closeArchiveModal);
+document.getElementById('archiveModalOverlay').addEventListener('click', e=>{
+  if(e.target.id === 'archiveModalOverlay') closeArchiveModal();
+});
+
+// ============ Global Search (floating button, reachable from any tab) ============
+// Flattens every word list into one searchable index once, then filters by
+// substring match on the word itself and its Bangla side (bn/meaning/val —
+// field name differs per list type). Tapping a result reuses the Word Lookup
+// modal/AI-cache pipeline above rather than duplicating rendering logic.
+let globalSearchIndex = null;
+function buildGlobalSearchIndex(){
+  const idx = [];
+  Object.keys(LISTS).forEach(type=>{
+    (LISTS[type] || []).forEach(item=>{
+      idx.push({
+        word: item.word || '',
+        bn: item.bn || item.meaning || item.val || '',
+        type
+      });
+    });
+  });
+  return idx;
+}
+function runGlobalSearch(query){
+  const resultsWrap = document.getElementById('globalSearchResults');
+  const q = query.trim().toLowerCase();
+  if(!q){ resultsWrap.innerHTML = ''; return; }
+  if(!globalSearchIndex) globalSearchIndex = buildGlobalSearchIndex();
+  const matches = globalSearchIndex.filter(e =>
+    e.word.toLowerCase().includes(q) || (e.bn && e.bn.toLowerCase().includes(q))
+  ).slice(0, 40);
+  if(matches.length === 0){
+    resultsWrap.innerHTML = `<p style="font-size:12.5px;color:var(--text-muted);padding:8px 0;">কোনো মিল পাওয়া যায়নি তোমার লিস্টে।</p>
+      <button id="globalSearchAiFallbackBtn" class="modal-btn teal" type="button" style="width:100%;">🤖 AI দিয়ে "${escapeHtml(query.trim())}" খুঁজো</button>`;
+    const fb = document.getElementById('globalSearchAiFallbackBtn');
+    if(fb) fb.addEventListener('click', ()=>{
+      closeGlobalSearchModal();
+      openWordLookupModal(query.trim(), true);
+    });
+    return;
+  }
+  resultsWrap.innerHTML = matches.map((e, i)=>`
+    <div class="search-result-item" data-idx="${i}">
+      <span class="search-result-word">${escapeHtml(e.word)}${e.bn ? ` <span class="search-result-bn">— ${escapeHtml(e.bn.slice(0,40))}</span>` : ''}</span>
+      <span class="search-result-badge">${escapeHtml(TYPE_LABELS[e.type] || e.type)}</span>
+    </div>`).join('');
+  resultsWrap.querySelectorAll('.search-result-item').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const entry = matches[parseInt(el.dataset.idx, 10)];
+      if(!entry) return;
+      closeGlobalSearchModal();
+      openWordLookupModal(entry.word, true);
+    });
+  });
+}
+function openGlobalSearchModal(){
+  document.getElementById('globalSearchInput').value = '';
+  document.getElementById('globalSearchResults').innerHTML = '';
+  document.getElementById('globalSearchModalOverlay').classList.add('open');
+  lockBodyScroll();
+  setTimeout(()=>document.getElementById('globalSearchInput').focus(), 80);
+}
+function closeGlobalSearchModal(){
+  document.getElementById('globalSearchModalOverlay').classList.remove('open');
+  unlockBodyScroll();
+}
+document.getElementById('globalSearchBtn').addEventListener('click', openGlobalSearchModal);
+document.getElementById('globalSearchClose').addEventListener('click', closeGlobalSearchModal);
+document.getElementById('globalSearchModalOverlay').addEventListener('click', e=>{
+  if(e.target.id === 'globalSearchModalOverlay') closeGlobalSearchModal();
+});
+document.getElementById('globalSearchInput').addEventListener('input', e=>runGlobalSearch(e.target.value));
+
 document.getElementById('fcAi').addEventListener('click', async (e)=>{
   pulseBtn(e.currentTarget);
   const w = fcDeck[fcIndex];
@@ -3364,18 +3669,7 @@ function pxBuildCachedTypeSelect(){
 }
 pxBuildCachedTypeSelect();
 
-const pxGoProgressBtn = document.getElementById('pxGoProgress');
-if(pxGoProgressBtn) pxGoProgressBtn.addEventListener('click', ()=>{
-  const moreBtn = document.querySelector('.main-tab-btn[data-tab="more"]');
-  if(moreBtn) moreBtn.click();
-});
-const pxGoListBtn = document.getElementById('pxGoList');
-if(pxGoListBtn) pxGoListBtn.addEventListener('click', ()=>{
-  const moreBtn = document.querySelector('.main-tab-btn[data-tab="more"]');
-  if(moreBtn) moreBtn.click();
-  const extraSection = document.querySelector('.extra-section');
-  if(extraSection) extraSection.scrollIntoView({behavior:'smooth'});
-});
+const pxGoProgressBtn = null; // (removed: "অগ্রগতি"/"তালিকা" shortcuts replaced by Word Lookup + Archive below)
 
 
 document.querySelectorAll('#pxSourceTabs button').forEach(btn=>{
