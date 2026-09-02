@@ -1229,15 +1229,37 @@ const LISTS = {wm: WM_LIST, syn: SYN_LIST, ant: ANT_LIST, bagdhara: BAGDHARA_LIS
 const VALKEY = {wm:'meaning', syn:'syn', ant:'ant', bagdhara:'meaning', proverb:'meaning', ows:'meaning', ekkotha:'meaning', bnant:'meaning', shobdartho:'meaning', poribhashik:'meaning', groupverb:'meaning', idiom:'meaning', spelling:'meaning', bnsyn:'meaning'};
 const WEEKDAYS_BN = {0:'Sun',1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat'};
 
+// ---- Debounced localStorage writer ----
+// Writing a large JSON blob to localStorage synchronously on every single tap
+// (every checkbox click, every AI-cache update) can freeze the UI for a beat
+// once state/aiCache grows large, since JSON.stringify + setItem is synchronous
+// and blocks the main thread. This coalesces rapid repeated writes to the same
+// key into one actual localStorage.setItem a short while later, while always
+// flushing immediately when the page is about to go away so nothing is lost.
+const _pendingWrites = {}; // key -> { timer, getValue }
+function debouncedWrite(key, getValue, delay){
+  if(_pendingWrites[key]) clearTimeout(_pendingWrites[key].timer);
+  _pendingWrites[key] = { getValue, timer: setTimeout(()=>flushWrite(key), delay || 250) };
+}
+function flushWrite(key){
+  const pending = _pendingWrites[key];
+  if(!pending) return;
+  clearTimeout(pending.timer);
+  try{ localStorage.setItem(key, JSON.stringify(pending.getValue())); }catch(e){}
+  delete _pendingWrites[key];
+}
+function flushAllWrites(){ Object.keys(_pendingWrites).forEach(flushWrite); }
+window.addEventListener('beforeunload', flushAllWrites);
+
 const STORE_KEY = 'mukhosto-checker-v3';
 function loadState(){ try{ const raw = localStorage.getItem(STORE_KEY); return raw?JSON.parse(raw):{}; }catch(e){ return {}; } }
-function saveState(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){} scheduleAutoBackup(); }
+function saveState(s){ debouncedWrite(STORE_KEY, ()=>s); scheduleAutoBackup(); }
 let state = loadState();
 let filter = 'today';
 
 const OVERRIDE_KEY = 'mukhosto-overrides-v1';
 function loadOverrides(){ try{ const raw = localStorage.getItem(OVERRIDE_KEY); return raw?JSON.parse(raw):{}; }catch(e){ return {}; } }
-function saveOverrides(o){ try{ localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o)); }catch(e){} scheduleAutoBackup(); }
+function saveOverrides(o){ debouncedWrite(OVERRIDE_KEY, ()=>o); scheduleAutoBackup(); }
 let overrides = loadOverrides();
 
 const CUSTOM_KEY = 'memoria-custom-words-v1';
@@ -1984,6 +2006,7 @@ function scheduleAutoBackup(){
 }
 async function performAutoBackup(){
   if(settings.autoBackupEnabled === false) return;
+  flushAllWrites(); // make sure localStorage has the latest state before we read it below
   try{
     // Merge-before-push: fetch whatever is currently in the cloud and union it
     // key-by-key with local state/overrides/aiCache. Without this, pushing a
@@ -2018,8 +2041,8 @@ async function performAutoBackup(){
 // periodic safety-net: even if the person leaves a day open without further taps,
 // this makes sure a backup still goes out every few minutes
 setInterval(()=>{ if(settings.pantryId || settings.fbDbUrl) performAutoBackup(); }, 5*60*1000);
-document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'hidden') performAutoBackup(); });
-window.addEventListener('pagehide', ()=>{ performAutoBackup(); });
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'hidden'){ flushAllWrites(); performAutoBackup(); } });
+window.addEventListener('pagehide', ()=>{ flushAllWrites(); performAutoBackup(); });
 
 // ---- Auto-Pull (silent, pulls cloud → this device) ----
 // Runs once on load, and again whenever the app becomes visible/foregrounded —
@@ -2132,7 +2155,7 @@ async function callGeminiText(prompt, onProgress){
 // and doesn't waste API tokens on repeat views ----
 const AI_CACHE_KEY = 'memoria_ai_cache_v1';
 function loadAiCache(){ try{ const raw = localStorage.getItem(AI_CACHE_KEY); return raw?JSON.parse(raw):{}; }catch(e){ return {}; } }
-function saveAiCache(c){ try{ localStorage.setItem(AI_CACHE_KEY, JSON.stringify(c)); }catch(e){} scheduleAutoBackup(); }
+function saveAiCache(c){ debouncedWrite(AI_CACHE_KEY, ()=>c); scheduleAutoBackup(); }
 let aiCache = loadAiCache();
 function aiCacheKey(w){ return (w.type || '?') + '-' + w.no + '-' + String(w.word||'').replace(/[.$#\[\]\/]/g, '_'); }
 
@@ -4237,7 +4260,7 @@ function bnMinutes(min){
 
 const ROUTINE_STATE_KEY = 'memoria-routine-state-v1';
 function loadRoutineState(){ try{ const raw = localStorage.getItem(ROUTINE_STATE_KEY); return raw?JSON.parse(raw):{}; }catch(e){ return {}; } }
-function saveRoutineState(s){ try{ localStorage.setItem(ROUTINE_STATE_KEY, JSON.stringify(s)); }catch(e){} scheduleAutoBackup(); }
+function saveRoutineState(s){ debouncedWrite(ROUTINE_STATE_KEY, ()=>s); scheduleAutoBackup(); }
 let routineState = loadRoutineState(); // { 'YYYY-MM-DD': {b1:true, b2:true, ...} }
 let routineDayOffset = 0;
 let routineManualOpen = null; // gi manually opened by user this render cycle, or null = auto
