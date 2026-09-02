@@ -401,6 +401,9 @@ if('serviceWorker' in navigator){
   .wl-word-header .wl-word{ font-family:'Fraunces','Noto Sans Bengali',serif; font-size:20px; color:var(--gold); font-weight:600; }
   .wl-pos-badge{ font-size:10px; padding:2px 9px; border-radius:999px; border:1px solid var(--border); color:var(--text-muted); font-family:'IBM Plex Mono',monospace; white-space:nowrap; }
   .wl-chip-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
+  .wl-img-block{ margin:2px 0 12px; }
+  .wl-img-block img.wl-generated-img{ width:100%; max-height:280px; object-fit:cover; border-radius:10px; border:1px solid var(--border); display:block; }
+  .wl-img-caption{ font-size:10.5px; color:var(--text-muted); margin-top:5px; text-align:center; font-family:'IBM Plex Mono',monospace; }
   .wl-chip{ font-size:12px; padding:4px 11px; border-radius:999px; border:1px solid; font-family:'Noto Sans Bengali','Inter',sans-serif; }
   .wl-chip.syn{ border-color:var(--teal-dim); color:var(--teal); }
   .wl-chip.ant{ border-color:var(--danger); color:var(--danger); }
@@ -2578,6 +2581,7 @@ function buildWordLookupPrompt(word){
 শব্দের গঠন: (শব্দটা ইংরেজি হলে এবং prefix/root/suffix থেকে অর্থ বোঝা গেলে ১ লাইনে ভেঙে দেখাও, যেমন "mal(খারাপ)+practice(চর্চা) = খারাপ চর্চা" ফরম্যাটে)
 উদাহরণ বাক্য: (এই শব্দটা ব্যবহার করে exam-এর উপযোগী একটা ছোট বাক্য)
 কাছাকাছি শব্দ সতর্কতা: (exam-এ প্রায়ই গুলিয়ে ফেলা হয় এমন বানানে/উচ্চারণে কাছাকাছি একটা শব্দ থাকলে, তার নাম আর অর্থের পার্থক্য ১ লাইনে বলো)
+ছবির দৃশ্য: (এই হেডিং-এর উত্তর অবশ্যই ইংরেজিতে দাও, বাংলায় না। এমন একটা নির্দিষ্ট, concrete দৃশ্য/scene বর্ণনা করো যা এই শব্দের অর্থটা এক নজরে বুঝিয়ে দেবে। শব্দটা যদি মানুষের ভাব/আচরণ/অনুভূতি সংক্রান্ত হয় (যেমন arrogant, jealous, generous), তাহলে দৃশ্যে সহজ কার্টুন-স্টাইল মানুষ/চরিত্র (একটা বাচ্চাদের ছবির বইয়ের মতো, মুখভঙ্গি-অঙ্গভঙ্গি সহ) ব্যবহার করতে পারো — সবসময় সাধারণ পোশাক পরিহিত, নিরীহ, শিক্ষামূলক দৃশ্য হবে, বাস্তবসম্মত/photographic মানুষ কল্পনা কোরো না। শব্দটা বস্তু/প্রাণী/পরিস্থিতি সংক্রান্ত হলে সরাসরি সেটাই বর্ণনা করো। যেমন "abhor" শব্দের জন্য "a cartoon girl pushing away a plate of rotten broccoli with a disgusted face" অথবা "ostentatious" শব্দের জন্য "an overly decorated mansion gate covered in gold ornaments and flashy chandeliers" — এভাবে নির্দিষ্ট করে লেখো, ভাসাভাসা না। ১ বাক্যে লেখো।)
 
 নোট: কোথাও গুরুত্বপূর্ণ শব্দ জোর দিয়ে বোঝাতে চাইলে **শব্দ** এভাবে দুইটা asterisk দিয়ে ঘিরে দিতে পারো, তা markdown bold হিসেবে দেখানো হবে।`;
 }
@@ -2596,10 +2600,55 @@ function renderChipRow(csvText, chipClass){
   return `<div class="wl-chip-row">${items.map(it=>`<span class="wl-chip ${chipClass}">${mdBoldHtml(escapeHtml(it))}</span>`).join('')}</div>`;
 }
 
-function renderWordLookupAnswer(box, raw, wordText){
+// Visual mnemonic — free, keyless image generation via Pollinations.ai. The
+// AI lookup itself now produces a concrete English scene description (see
+// "ছবির দৃশ্য" in buildWordLookupPrompt) that actually says what should be
+// IN the picture for this specific word — falls back to word+Bangla-meaning
+// only for older cached archive entries that predate this field.
+// People CAN appear now (needed for words about human traits/emotions) but
+// are locked to a cute cartoon/picture-book style, never photorealistic —
+// free image models drift toward photorealistic renders of people on words
+// like "ostentatious"/"gorgeous" etc., which can turn suggestive with zero
+// warning. A flat-vector cartoon character sidesteps that risk while still
+// showing the human situation the word needs.
+// Seed is derived from the word so the same word always gets the same image
+// (browser HTTP cache then makes repeat views instant, no fresh generation).
+function pollinationsImageUrl(word, sceneDescription, meaningHint){
+  const scene = sceneDescription || `${word}${meaningHint ? ' — ' + meaningHint : ''}`;
+  const promptText = `${scene}. Children's picture-book flat-vector illustration style — if a person appears, draw them as a simple, cute, fully-clothed cartoon character with a clear facial expression, never photorealistic, never romantic or sensual. Pastel colors, clean vector art, wholesome, safe for work, no text, no letters, no watermark.`;
+  let seed = 0;
+  for(let i=0;i<word.length;i++){ seed = ((seed<<5) - seed + word.charCodeAt(i)) | 0; }
+  seed = Math.abs(seed) % 100000;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=640&height=360&seed=${seed}&nologo=true&safe=true`;
+}
+// Shared image loader — used both for the manual button (old/cached words)
+// and auto-fire (brand new words), so retry-after-error works identically
+// either way.
+function loadWlImage(box, wordText, sceneDescription, meaningHint){
+  const block = box.querySelector('#wlImgBlock');
+  if(!block) return;
+  const url = pollinationsImageUrl(wordText || '', sceneDescription, meaningHint);
+  block.innerHTML = `<p class="fc-ai-loading">ছবি বানাচ্ছে (কয়েক সেকেন্ড লাগতে পারে)...</p>`;
+  const probe = new Image();
+  probe.onload = ()=>{
+    block.innerHTML = `<img src="${url}" alt="${escapeHtml(wordText || '')}" class="wl-generated-img"><div class="wl-img-caption">AI generated — Pollinations.ai</div>`;
+  };
+  probe.onerror = ()=>{
+    block.innerHTML = `<p class="fc-ai-error">ছবি লোড করা গেল না। ইন্টারনেট চেক করে আবার চেষ্টা করো।</p><button id="wlImgRetryBtn" class="modal-btn ghost" type="button" style="width:100%;margin-top:6px;">আবার চেষ্টা করো</button>`;
+    const retry = block.querySelector('#wlImgRetryBtn');
+    if(retry) retry.addEventListener('click', ()=>loadWlImage(box, wordText, sceneDescription, meaningHint));
+  };
+  probe.src = url;
+}
+// autoLoadImage=true → fires the image generation immediately (used right
+// after a fresh AI lookup, so text + picture arrive together in one go).
+// autoLoadImage=false/undefined → just shows the "ছবি দিয়ে বুঝো" button
+// (used for words already sitting in the archive, so re-opening an old word
+// doesn't burn a fresh image generation you probably already saw).
+function renderWordLookupAnswer(box, raw, wordText, autoLoadImage){
   const order = [
     ['টাইপ'], ['সংক্ষিপ্ত অর্থ'], ['বিস্তারিত অর্থ'], ['সমার্থক শব্দ'], ['বিপরীত শব্দ'],
-    ['মনে রাখার কৌশল'], ['শব্দের গঠন'], ['উদাহরণ বাক্য'], ['কাছাকাছি শব্দ সতর্কতা']
+    ['মনে রাখার কৌশল'], ['শব্দের গঠন'], ['উদাহরণ বাক্য'], ['কাছাকাছি শব্দ সতর্কতা'], ['ছবির দৃশ্য']
   ];
   const labels = order.map(o=>o[0]);
   const parts = {};
@@ -2614,6 +2663,7 @@ function renderWordLookupAnswer(box, raw, wordText){
 
   let html = `<div class="wl-word-header"><span class="wl-word">${escapeHtml(wordText || '')}</span>${parts['টাইপ'] ? `<span class="wl-pos-badge">${escapeHtml(parts['টাইপ'])}</span>` : ''}</div>`;
   if(parts['সংক্ষিপ্ত অর্থ']) html += `<p style="margin:0 0 10px;font-size:14px;">${mdBoldHtml(escapeHtml(parts['সংক্ষিপ্ত অর্থ']))}</p>`;
+  html += `<div class="wl-img-block" id="wlImgBlock"><button id="wlImgBtn" class="modal-btn ghost" type="button" style="width:100%;">🎨 ছবি দিয়ে বুঝো (visual meaning)</button></div>`;
   if(parts['বিস্তারিত অর্থ']) html += `<div class="fc-ai-block"><span class="fc-ai-label">🔎 বিস্তারিত অর্থ</span><p>${mdBoldHtml(escapeHtml(parts['বিস্তারিত অর্থ']))}</p></div>`;
   if(parts['সমার্থক শব্দ']) html += `<div class="fc-ai-block"><span class="fc-ai-label">🟢 সমার্থক শব্দ</span>${renderChipRow(parts['সমার্থক শব্দ'], 'syn')}</div>`;
   if(parts['বিপরীত শব্দ']) html += `<div class="fc-ai-block"><span class="fc-ai-label">🔴 বিপরীত শব্দ</span>${renderChipRow(parts['বিপরীত শব্দ'], 'ant')}</div>`;
@@ -2622,6 +2672,14 @@ function renderWordLookupAnswer(box, raw, wordText){
   if(parts['উদাহরণ বাক্য']) html += `<div class="fc-ai-block"><span class="fc-ai-label">✍️ উদাহরণ বাক্য</span><p>${mdBoldHtml(escapeHtml(parts['উদাহরণ বাক্য']))}</p></div>`;
   if(parts['কাছাকাছি শব্দ সতর্কতা']) html += `<div class="fc-ai-block"><span class="fc-ai-label">⚠️ কাছাকাছি শব্দ সতর্কতা</span><p>${mdBoldHtml(escapeHtml(parts['কাছাকাছি শব্দ সতর্কতা']))}</p></div>`;
   box.innerHTML = html;
+  const sceneDescription = parts['ছবির দৃশ্য'] || ''; // English scene, hidden from the user, used only for the image prompt
+  const meaningHint = parts['সংক্ষিপ্ত অর্থ'] || '';
+  if(autoLoadImage){
+    loadWlImage(box, wordText, sceneDescription, meaningHint);
+  } else {
+    const wlImgBtn = box.querySelector('#wlImgBtn');
+    if(wlImgBtn) wlImgBtn.addEventListener('click', ()=>loadWlImage(box, wordText, sceneDescription, meaningHint));
+  }
 }
 
 function openWordLookupModal(prefillWord, autoRun){
@@ -2660,7 +2718,7 @@ async function runWordLookup(){
   try{
     const answer = await callGeminiText(prompt, msg => { box.innerHTML = `<p class="fc-ai-loading">${escapeHtml(msg)}</p>`; });
     upsertArchiveEntry(word, answer);
-    renderWordLookupAnswer(box, answer, word);
+    renderWordLookupAnswer(box, answer, word, true); // brand new word — auto-load the picture too
     renderArchiveList();
   }catch(err){
     box.innerHTML = `<p class="fc-ai-error">⚠️ ${escapeHtml(err.message)}</p>`;
