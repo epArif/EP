@@ -528,6 +528,7 @@ if('serviceWorker' in navigator){
   .px-hist-score{ font-family:'IBM Plex Mono',monospace; font-weight:700; color:var(--gold); flex-shrink:0; text-align:right; }
   .px-hist-right{ display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0; }
   .px-hist-retake{ font-family:'Noto Sans Bengali','Inter',sans-serif; font-size:10px; background:var(--panel-2); border:1px solid var(--teal-dim); color:var(--teal); border-radius:999px; padding:3px 9px; cursor:pointer; white-space:nowrap; transition:background .15s ease, border-color .15s ease, transform .15s ease; }
+  .px-hist-del{ background:var(--panel-2); border:1px solid var(--border); color:#e0685f; border-radius:999px; width:22px; height:22px; font-size:11px; cursor:pointer; flex-shrink:0; line-height:1; }
   .px-hist-retake:hover{ background:var(--teal); color:#0E0D12; border-color:var(--teal); }
   .px-hist-retake:active{ transform:scale(0.94); }
   .px-hist-more{ width:100%; margin-top:10px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; background:var(--panel-2); border:1px dashed var(--border); color:var(--text-muted); padding:8px; border-radius:9px; cursor:pointer; transition:color .15s ease, border-color .15s ease; }
@@ -758,6 +759,7 @@ if('serviceWorker' in navigator){
       <div id="archiveEmptyMsg" style="display:none;font-size:12.5px;color:var(--text-muted);padding:10px 0;">এখনো কোনো শব্দ খোঁজা হয়নি।</div>
       <div id="archiveListWrap"></div>
       <div class="modal-actions">
+        <button id="archiveClearAll" class="modal-btn ghost" type="button" style="color:var(--danger);border-color:var(--danger);">🗑 সব মুছে ফেলো</button>
         <button id="archiveClose" class="modal-btn ghost" type="button" data-i18n="btnCloseModal">বন্ধ করো</button>
       </div>
     </div>
@@ -1022,6 +1024,7 @@ if('serviceWorker' in navigator){
         <button id="pxHistGoCached" type="button" class="px-hist-cached-trigger">🔁 <span data-i18n="reExamTitle">পুরনো MCQ থেকে re-exam</span></button>
         <div class="px-hist-tabs" id="pxHistoryTabs"></div>
         <div id="pxHistoryWrap"><div class="sub" data-i18n="noSessionsYet">এখনো কোনো সেশন হয়নি।</div></div>
+        <button id="pxHistoryClearAll" type="button" class="modal-btn ghost" style="width:100%;margin-top:10px;color:var(--danger);border-color:var(--danger);">🗑 সব exam history মুছে ফেলো</button>
       </div>
     </section>
 
@@ -1941,13 +1944,20 @@ document.getElementById('pantryUpload').addEventListener('click', async ()=>{
   setSyncStatus('Upload হচ্ছে...', '');
   try{
     const remote = await fetchRemoteBackup();
+    const mergedDeletedHistoryIds = mergeTombstoneLists(remote && remote.deletedHistoryIds, deletedHistoryIds);
+    const mergedDeletedArchiveWords = mergeTombstoneLists(remote && remote.deletedArchiveWords, deletedArchiveWords);
+    deletedHistoryIds = mergedDeletedHistoryIds; saveDeletedList(DELETED_HISTORY_KEY, deletedHistoryIds);
+    deletedArchiveWords = mergedDeletedArchiveWords; saveDeletedList(DELETED_ARCHIVE_KEY, deletedArchiveWords);
     const payload = {
       state: mergeDict(remote && remote.state, state),
       overrides: mergeDict(remote && remote.overrides, overrides),
       aiCache: mergeDict(remote && remote.aiCache, aiCache),
-      practiceHistory: mergeHistoryArr(remote && remote.practiceHistory, practiceHistory, 150),
+      practiceHistory: mergeHistoryArr(remote && remote.practiceHistory, practiceHistory, 150, mergedDeletedHistoryIds),
       wrongCounts: mergeMaxDict(remote && remote.wrongCounts, wrongCounts),
       routineState: mergeNestedDict(remote && remote.routineState, routineState),
+      wordArchive: mergeWordArchive(remote && remote.wordArchive, wordArchive, mergedDeletedArchiveWords, WORD_ARCHIVE_MAX),
+      deletedHistoryIds: mergedDeletedHistoryIds,
+      deletedArchiveWords: mergedDeletedArchiveWords,
       updatedAt: new Date().toISOString()
     };
     const res = await fetch(`https://getpantry.cloud/apiv1/pantry/${encodeURIComponent(pantryId)}/basket/${PANTRY_BASKET}`, {
@@ -1976,8 +1986,11 @@ document.getElementById('pantryDownload').addEventListener('click', async ()=>{
     if(data.state) { state = data.state; saveState(state); }
     if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
     if(data.aiCache) { mergeAiCacheFromCloud(data.aiCache); }
-    if(data.practiceHistory) { practiceHistory = data.practiceHistory; savePracticeHistory(practiceHistory); if(typeof pxRenderHistory==='function') try{ pxRenderHistory(); }catch(e){} }
+    deletedHistoryIds = mergeTombstoneLists(data.deletedHistoryIds, deletedHistoryIds); saveDeletedList(DELETED_HISTORY_KEY, deletedHistoryIds);
+    deletedArchiveWords = mergeTombstoneLists(data.deletedArchiveWords, deletedArchiveWords); saveDeletedList(DELETED_ARCHIVE_KEY, deletedArchiveWords);
+    if(data.practiceHistory) { practiceHistory = mergeHistoryArr(data.practiceHistory, [], 150, deletedHistoryIds); savePracticeHistory(practiceHistory); if(typeof pxRenderHistory==='function') try{ pxRenderHistory(); }catch(e){} }
     if(data.wrongCounts) { wrongCounts = data.wrongCounts; saveWrongCounts(wrongCounts); }
+    if(data.wordArchive) { wordArchive = mergeWordArchive(data.wordArchive, [], deletedArchiveWords, WORD_ARCHIVE_MAX); saveWordArchive(wordArchive); if(typeof renderArchiveList==='function') try{ renderArchiveList(); }catch(e){} }
     if(data.routineState) { routineState = data.routineState; saveRoutineState(routineState); if(typeof renderRoutine==='function') try{ renderRoutine(); }catch(e){} }
     applyingRemoteData = false;
     if(data.updatedAt) setLocalEditTs(new Date(data.updatedAt).getTime());
@@ -2024,13 +2037,20 @@ document.getElementById('fbUpload').addEventListener('click', async ()=>{
   setFbStatus('Upload হচ্ছে...', '');
   try{
     const remote = await fetchRemoteBackup();
+    const mergedDeletedHistoryIds = mergeTombstoneLists(remote && remote.deletedHistoryIds, deletedHistoryIds);
+    const mergedDeletedArchiveWords = mergeTombstoneLists(remote && remote.deletedArchiveWords, deletedArchiveWords);
+    deletedHistoryIds = mergedDeletedHistoryIds; saveDeletedList(DELETED_HISTORY_KEY, deletedHistoryIds);
+    deletedArchiveWords = mergedDeletedArchiveWords; saveDeletedList(DELETED_ARCHIVE_KEY, deletedArchiveWords);
     const payload = {
       state: mergeDict(remote && remote.state, state),
       overrides: mergeDict(remote && remote.overrides, overrides),
       aiCache: mergeDict(remote && remote.aiCache, aiCache),
-      practiceHistory: mergeHistoryArr(remote && remote.practiceHistory, practiceHistory, 150),
+      practiceHistory: mergeHistoryArr(remote && remote.practiceHistory, practiceHistory, 150, mergedDeletedHistoryIds),
       wrongCounts: mergeMaxDict(remote && remote.wrongCounts, wrongCounts),
       routineState: mergeNestedDict(remote && remote.routineState, routineState),
+      wordArchive: mergeWordArchive(remote && remote.wordArchive, wordArchive, mergedDeletedArchiveWords, WORD_ARCHIVE_MAX),
+      deletedHistoryIds: mergedDeletedHistoryIds,
+      deletedArchiveWords: mergedDeletedArchiveWords,
       updatedAt: new Date().toISOString()
     };
     const fbPayload = { ...payload, aiCache: fbEncodeAiCache(payload.aiCache) };
@@ -2062,8 +2082,11 @@ document.getElementById('fbDownload').addEventListener('click', async ()=>{
     if(data.state) { state = data.state; saveState(state); }
     if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
     if(data.aiCache) { mergeAiCacheFromCloud(data.aiCache); }
-    if(data.practiceHistory) { practiceHistory = data.practiceHistory; savePracticeHistory(practiceHistory); if(typeof pxRenderHistory==='function') try{ pxRenderHistory(); }catch(e){} }
+    deletedHistoryIds = mergeTombstoneLists(data.deletedHistoryIds, deletedHistoryIds); saveDeletedList(DELETED_HISTORY_KEY, deletedHistoryIds);
+    deletedArchiveWords = mergeTombstoneLists(data.deletedArchiveWords, deletedArchiveWords); saveDeletedList(DELETED_ARCHIVE_KEY, deletedArchiveWords);
+    if(data.practiceHistory) { practiceHistory = mergeHistoryArr(data.practiceHistory, [], 150, deletedHistoryIds); savePracticeHistory(practiceHistory); if(typeof pxRenderHistory==='function') try{ pxRenderHistory(); }catch(e){} }
     if(data.wrongCounts) { wrongCounts = data.wrongCounts; saveWrongCounts(wrongCounts); }
+    if(data.wordArchive) { wordArchive = mergeWordArchive(data.wordArchive, [], deletedArchiveWords, WORD_ARCHIVE_MAX); saveWordArchive(wordArchive); if(typeof renderArchiveList==='function') try{ renderArchiveList(); }catch(e){} }
     if(data.routineState) { routineState = data.routineState; saveRoutineState(routineState); if(typeof renderRoutine==='function') try{ renderRoutine(); }catch(e){} }
     applyingRemoteData = false;
     if(data.updatedAt) setLocalEditTs(new Date(data.updatedAt).getTime());
@@ -2118,7 +2141,7 @@ function renderAutoBackupStatus(){
 // once on Phone A shows up instantly (and offline, without spending a new API call)
 // on Phone B too.
 function buildBackupPayload(){
-  return { state, overrides, aiCache, practiceHistory, wrongCounts, routineState, updatedAt: new Date().toISOString() };
+  return { state, overrides, aiCache, practiceHistory, wrongCounts, routineState, wordArchive, updatedAt: new Date().toISOString() };
 }
 // Merge cloud aiCache into local aiCache instead of overwriting — so an answer
 // generated on this device (maybe not uploaded yet) never gets erased by a restore,
@@ -2168,16 +2191,59 @@ function mergeNestedDict(remote, local){
 // practiceHistory: id দিয়ে union (id-তে টাইমস্ট্যাম্প এমবেড থাকে বলেই নতুন-আগে সর্ট করা
 // যায়), একই id দুই জায়গায় থাকলে local-টা রাখা হয়, ১৫০-এ ক্যাপ করা হয় (savePracticeHistory
 // যেভাবে করে সেভাবেই)।
-function mergeHistoryArr(remote, local, cap){
+// ---- Deletion tombstones ----
+// mergeHistoryArr/mergeWordArchive below are UNION merges (so a session/word
+// added on one device isn't lost if this device hasn't seen it yet) — but a
+// plain union can never represent "this was deleted", since removing it
+// locally just means it's absent from `local`, and the remote copy would
+// silently win the union and reappear. Recording what was deleted (and
+// syncing that list too) lets every merge drop those entries for good.
+const DELETED_HISTORY_KEY = 'memoria-deleted-history-v1';
+const DELETED_ARCHIVE_KEY = 'memoria-deleted-archive-v1';
+const DELETED_LIST_CAP = 300; // oldest tombstones age out — old enough deletions are stable everywhere by then
+function loadDeletedList(key){ try{ const raw = localStorage.getItem(key); const arr = raw?JSON.parse(raw):[]; return Array.isArray(arr)?arr:[]; }catch(e){ return []; } }
+function saveDeletedList(key, arr){ try{ localStorage.setItem(key, JSON.stringify(arr)); }catch(e){} }
+let deletedHistoryIds = loadDeletedList(DELETED_HISTORY_KEY);
+let deletedArchiveWords = loadDeletedList(DELETED_ARCHIVE_KEY);
+function addTombstone(listRef, key, saveKey){
+  if(!key || listRef.includes(key)) return listRef;
+  listRef.push(key);
+  if(listRef.length > DELETED_LIST_CAP) listRef.splice(0, listRef.length - DELETED_LIST_CAP);
+  saveDeletedList(saveKey, listRef);
+  return listRef;
+}
+function mergeTombstoneLists(remote, local){
+  const merged = Array.from(new Set([...(Array.isArray(remote)?remote:[]), ...(Array.isArray(local)?local:[])]));
+  return merged.length > DELETED_LIST_CAP ? merged.slice(merged.length - DELETED_LIST_CAP) : merged;
+}
+function mergeHistoryArr(remote, local, cap, deletedIds){
   const map = new Map();
   (Array.isArray(remote) ? remote : []).forEach(e=>{ if(e && e.id) map.set(e.id, e); });
   (Array.isArray(local) ? local : []).forEach(e=>{ if(e && e.id) map.set(e.id, e); });
+  (deletedIds || []).forEach(id => map.delete(id));
   const merged = Array.from(map.values());
   merged.sort((a,b)=>{
     const ta = parseInt(String(a.id).replace(/^px/,'').split('-')[0], 10) || 0;
     const tb = parseInt(String(b.id).replace(/^px/,'').split('-')[0], 10) || 0;
     return tb - ta;
   });
+  return cap ? merged.slice(0, cap) : merged;
+}
+// Same idea as mergeHistoryArr but keyed by normalized word (wordArchive has
+// no stable id) and picking the newer `ts` on a collision instead of "local
+// always wins", since either side could be the more recent lookup.
+function mergeWordArchive(remote, local, deletedWords, cap){
+  const map = new Map();
+  (Array.isArray(remote) ? remote : []).forEach(e=>{ if(e && e.word) map.set(normalizeWordKey(e.word), e); });
+  (Array.isArray(local) ? local : []).forEach(e=>{
+    if(!e || !e.word) return;
+    const k = normalizeWordKey(e.word);
+    const existing = map.get(k);
+    if(!existing || (e.ts||0) >= (existing.ts||0)) map.set(k, e);
+  });
+  const delSet = new Set((deletedWords||[]).map(normalizeWordKey));
+  const merged = Array.from(map.values()).filter(e => !delSet.has(normalizeWordKey(e.word)));
+  merged.sort((a,b)=>(b.ts||0)-(a.ts||0));
   return cap ? merged.slice(0, cap) : merged;
 }
 async function fetchRemoteBackup(){
@@ -2234,13 +2300,20 @@ async function performAutoBackup(){
     // whole-blob snapshot could silently erase a *different* word another
     // device edited and pushed in between (this device never pulled it in).
     const remote = await fetchRemoteBackup();
+    const mergedDeletedHistoryIds = mergeTombstoneLists(remote && remote.deletedHistoryIds, deletedHistoryIds);
+    const mergedDeletedArchiveWords = mergeTombstoneLists(remote && remote.deletedArchiveWords, deletedArchiveWords);
+    deletedHistoryIds = mergedDeletedHistoryIds; saveDeletedList(DELETED_HISTORY_KEY, deletedHistoryIds);
+    deletedArchiveWords = mergedDeletedArchiveWords; saveDeletedList(DELETED_ARCHIVE_KEY, deletedArchiveWords);
     const payload = {
       state: mergeDict(remote && remote.state, state),
       overrides: mergeDict(remote && remote.overrides, overrides),
       aiCache: mergeDict(remote && remote.aiCache, aiCache),
-      practiceHistory: mergeHistoryArr(remote && remote.practiceHistory, practiceHistory, 150),
+      practiceHistory: mergeHistoryArr(remote && remote.practiceHistory, practiceHistory, 150, mergedDeletedHistoryIds),
       wrongCounts: mergeMaxDict(remote && remote.wrongCounts, wrongCounts),
       routineState: mergeNestedDict(remote && remote.routineState, routineState),
+      wordArchive: mergeWordArchive(remote && remote.wordArchive, wordArchive, mergedDeletedArchiveWords, WORD_ARCHIVE_MAX),
+      deletedHistoryIds: mergedDeletedHistoryIds,
+      deletedArchiveWords: mergedDeletedArchiveWords,
       updatedAt: new Date().toISOString()
     };
     if(settings.fbDbUrl){
@@ -2309,8 +2382,11 @@ async function performAutoPull(){
         if(data.state) { state = data.state; saveState(state); }
         if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
         if(data.aiCache) { mergeAiCacheFromCloud(data.aiCache); }
-        if(data.practiceHistory) { practiceHistory = data.practiceHistory; savePracticeHistory(practiceHistory); if(typeof pxRenderHistory==='function') try{ pxRenderHistory(); }catch(e){} }
+        deletedHistoryIds = mergeTombstoneLists(data.deletedHistoryIds, deletedHistoryIds); saveDeletedList(DELETED_HISTORY_KEY, deletedHistoryIds);
+        deletedArchiveWords = mergeTombstoneLists(data.deletedArchiveWords, deletedArchiveWords); saveDeletedList(DELETED_ARCHIVE_KEY, deletedArchiveWords);
+        if(data.practiceHistory) { practiceHistory = mergeHistoryArr(data.practiceHistory, [], 150, deletedHistoryIds); savePracticeHistory(practiceHistory); if(typeof pxRenderHistory==='function') try{ pxRenderHistory(); }catch(e){} }
         if(data.wrongCounts) { wrongCounts = data.wrongCounts; saveWrongCounts(wrongCounts); }
+        if(data.wordArchive) { wordArchive = mergeWordArchive(data.wordArchive, [], deletedArchiveWords, WORD_ARCHIVE_MAX); saveWordArchive(wordArchive); if(typeof renderArchiveList==='function') try{ renderArchiveList(); }catch(e){} }
         if(data.routineState) { routineState = data.routineState; saveRoutineState(routineState); if(typeof renderRoutine==='function') try{ renderRoutine(); }catch(e){} }
         applyingRemoteData = false;
         if(remoteTs > 0) setLocalEditTs(remoteTs); // now in sync with cloud, not "dirty"
@@ -2340,31 +2416,52 @@ async function callGeminiText(prompt, onProgress){
   if(models.length === 0){
     throw new Error('কোনো মডেল configure করা নেই — Settings থেকে অন্তত একটা মডেলের নাম দাও।');
   }
+  const REQUEST_TIMEOUT_MS = 15000; // don't let one hung/slow key silently block everything
   let lastErr = null;
-  const MAX_PASSES = 2; // 1st pass runs straight through (no waiting); only a failed full pass triggers one 1-min wait + retry pass
+  let sawRateLimitAcrossPass = false;
+  const MAX_PASSES = 2; // 1st pass runs straight through (no waiting); a 2nd pass only happens if the failures actually looked rate-limit-related
   for(let pass=0; pass<MAX_PASSES; pass++){
     if(pass > 0){
-      if(onProgress) onProgress(`সব key/model একবার চেষ্টা হয়ে গেছে — rate-limit এড়াতে ১ মিনিট অপেক্ষা করে আবার প্রথম থেকে চেষ্টা করছি...`);
+      if(!sawRateLimitAcrossPass){
+        // Nothing looked like a rate-limit (429) last pass — every key/model
+        // failed for a real reason (bad key, bad model name, network down).
+        // Waiting a minute and retrying the exact same thing won't fix that,
+        // it would just make the app look frozen for no reason.
+        break;
+      }
+      if(onProgress) onProgress(`Rate-limit-এ পড়েছে — ১ মিনিট অপেক্ষা করে আবার চেষ্টা করছি...`);
       await sleep(60000);
     }
+    sawRateLimitAcrossPass = false;
     for(let ki=0; ki<keys.length; ki++){
       const keyObj = keys[ki];
       for(let mi=0; mi<models.length; mi++){
         const modelObj = models[mi];
         if(onProgress) onProgress(`চেষ্টা করছি: key #${ki+1}, মডেল ${modelObj.model}...`);
+        const controller = new AbortController();
+        const timer = setTimeout(()=>controller.abort(), REQUEST_TIMEOUT_MS);
         try{
           const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelObj.model)}:generateContent?key=${encodeURIComponent(keyObj.key)}`;
           const res = await fetch(url, {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+            signal: controller.signal
           });
-          if(!res.ok){ lastErr = new Error('HTTP ' + res.status + ' (key #' + (ki+1) + ', ' + modelObj.model + ')'); continue; }
+          if(!res.ok){
+            if(res.status === 429) sawRateLimitAcrossPass = true;
+            lastErr = new Error('HTTP ' + res.status + ' (key #' + (ki+1) + ', ' + modelObj.model + ')');
+            continue;
+          }
           const data = await res.json();
           const text = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
           if(text) return text.trim();
           lastErr = new Error('খালি উত্তর এসেছে (key #' + (ki+1) + ', ' + modelObj.model + ')');
-        }catch(err){ lastErr = err; }
+        }catch(err){
+          lastErr = err && err.name === 'AbortError' ? new Error(`সময়মতো সাড়া দেয়নি (${REQUEST_TIMEOUT_MS/1000}s timeout, key #${ki+1}, ${modelObj.model})`) : err;
+        }finally{
+          clearTimeout(timer);
+        }
       }
     }
   }
@@ -2630,9 +2727,39 @@ function upsertArchiveEntry(word, answer){
   if(wordArchive.length > WORD_ARCHIVE_MAX) wordArchive.length = WORD_ARCHIVE_MAX;
   saveWordArchive(wordArchive);
 }
+function deleteArchiveEntry(idx){
+  const removed = wordArchive[idx];
+  wordArchive.splice(idx, 1);
+  saveWordArchive(wordArchive);
+  if(removed) addTombstone(deletedArchiveWords, normalizeWordKey(removed.word), DELETED_ARCHIVE_KEY);
+  scheduleAutoBackup(); // so the deletion also propagates to the cloud, not just this device
+}
+function clearWordArchive(){
+  wordArchive.forEach(e => addTombstone(deletedArchiveWords, normalizeWordKey(e.word), DELETED_ARCHIVE_KEY));
+  wordArchive = [];
+  saveWordArchive(wordArchive);
+  scheduleAutoBackup();
+}
 
-function buildWordLookupPrompt(word){
-  return `তুমি একজন বাংলাদেশের সরকারি চাকরির (BCS/Bank/৯ম গ্রেড) পরীক্ষার ভোকাবুলারি কোচ। একজন শিক্ষার্থী পরীক্ষার প্রস্তুতির জন্য এই শব্দ/টার্মটা মুখস্থ করতে চায়: "${word.trim()}"
+function buildWordLookupPrompt(word, itemCtx){
+  // itemCtx = the exact list-item object (word/bn/val/type) when this lookup was
+  // triggered from a specific exam list (Antonym/Group Verb/Idiom/etc. row) via
+  // the 🖼️ button, instead of typed free-text in the search box. Reusing
+  // AI_TYPE_META (the same per-type notes the flashcard AI already uses) means
+  // the poster card is no longer one generic dictionary lookup — an Antonym-list
+  // word gets told explicitly it's an antonym pair, a Group Verb gets told it's
+  // a phrasal verb, an idiom doesn't get treated like a single dictionary word,
+  // etc. Free-text search (no itemCtx) keeps the old generic behaviour.
+  const meta = itemCtx && itemCtx.type ? (AI_TYPE_META[itemCtx.type] || null) : null;
+  const knownVal = itemCtx ? (itemCtx.val || itemCtx.bn || '') : '';
+  const contextBlock = meta ? `
+
+গুরুত্বপূর্ণ প্রেক্ষাপট: এই শব্দ/টার্মটা একটা নির্দিষ্ট exam-list থেকে খোঁজা হচ্ছে, শুধু আলগোছালো ডিকশনারি সার্চ না। এটা "${meta.label}" ক্যাটেগরির একটা এন্ট্রি। প্রসঙ্গ: ${meta.note}${knownVal ? ` এই নির্দিষ্ট এন্ট্রিতে exam-এ যুক্ত তথ্য/জোড়া হলো: "${knownVal}"।` : ''}
+এই প্রেক্ষাপটটা মাথায় রেখে নিচের উত্তর সাজাও — জেনেরিক ডিকশনারি-অর্থ না লিখে এই নির্দিষ্ট সম্পর্ক/ব্যবহারটাই কেন্দ্রে রাখো:
+- টাইপ-এ শুধু Part of Speech না, এটা কোন ধরনের এন্ট্রি সেটাও ইঙ্গিত দাও (যেমন Antonym হলে "Adjective — Antonym pair", Group Verb হলে "Phrasal Verb")।
+- মনে রাখার কৌশল-এ অবশ্যই এই নির্দিষ্ট সম্পর্ক/জোড়াটা (${knownVal ? `"${word.trim()}" ↔ "${knownVal}"` : `"${word.trim()}"`}) স্পষ্ট করে বোঝাও, শুধু সাধারণ অর্থ মনে রাখার কৌশল না।
+${knownVal ? `- সমার্থক শব্দ/বিপরীত শব্দ (যেটা প্রযোজ্য) লেখার সময় "${knownVal}"-টা অবশ্যই তালিকায় রাখবে, বাদ দেবে না — চাইলে আরও ২-৩টা যোগ করতে পারো।` : ''}` : '';
+  return `তুমি একজন বাংলাদেশের সরকারি চাকরির (BCS/Bank/৯ম গ্রেড) পরীক্ষার ভোকাবুলারি কোচ। একজন শিক্ষার্থী পরীক্ষার প্রস্তুতির জন্য এই শব্দ/টার্মটা মুখস্থ করতে চায়: "${word.trim()}"${contextBlock}
 
 তোমার কাজ, ঠিক এই ফরম্যাটে বাংলায় উত্তর দাও (হেডিংগুলো হুবহু রাখো, ভূমিকা বা অতিরিক্ত কিছু লিখো না, কোনো হেডিং-এর তথ্য না থাকলে/প্রযোজ্য না হলে শুধু "প্রযোজ্য নয়" লিখো):
 টাইপ: (শব্দটা ইংরেজি হলে তার Part of Speech — Noun/Verb/Adjective/Adverb/Phrase ইত্যাদি, ১-২ শব্দে ইংরেজিতে। বাংলা শব্দ/বাগধারা/প্রবাদ হলে শুধু "প্রযোজ্য নয়" লিখো)
@@ -2770,7 +2897,20 @@ function renderWordLookupAnswer(box, raw, wordText, autoLoadImage){
   }
 }
 
-function openWordLookupModal(prefillWord, autoRun){
+let pendingLookupCtx = null; // set right before opening the poster-card modal from a specific exam-list item; consumed (and cleared) by the next runWordLookup() call
+let pendingLookupWord = null; // the exact word pendingLookupCtx was set for — guards against a stale itemCtx leaking onto an unrelated word the person types afterward
+// Shared handler for every 🖼️ lookup-btn (routine tab, vocab browser, quiz
+// wrong-answer review): reads the type/bn/val the row already carries and
+// passes it along so the poster card is generated with exam-specific context
+// instead of a generic dictionary lookup.
+function openWordLookupFromBtn(btn){
+  const word = btn.dataset.lookupword;
+  const itemCtx = btn.dataset.lookuptype ? { type: btn.dataset.lookuptype, bn: btn.dataset.lookupbn || '', val: btn.dataset.lookupval || '' } : null;
+  openWordLookupModal(word, true, itemCtx);
+}
+function openWordLookupModal(prefillWord, autoRun, itemCtx){
+  pendingLookupCtx = itemCtx || null;
+  pendingLookupWord = itemCtx ? (prefillWord || null) : null;
   document.getElementById('wordLookupInput').value = prefillWord || '';
   const box = document.getElementById('wordLookupBox');
   if(prefillWord){
@@ -2800,8 +2940,10 @@ async function runWordLookup(){
   if(!word){ box.innerHTML = '<p class="fc-ai-error">আগে একটা শব্দ লেখো।</p>'; return; }
   const cached = findArchiveEntry(word);
   if(cached){ renderWordLookupAnswer(box, cached.answer, cached.word); renderArchiveList(); return; } // cache hit — no API call
+  const itemCtx = (pendingLookupCtx && pendingLookupWord === word) ? pendingLookupCtx : null;
+  pendingLookupCtx = null; pendingLookupWord = null; // one-shot — don't leak onto a later, unrelated lookup
   box.innerHTML = '<p class="fc-ai-loading">AI ভাবছে...</p>';
-  const prompt = buildWordLookupPrompt(word);
+  const prompt = buildWordLookupPrompt(word, itemCtx);
   pauseAutoBackupForAi();
   try{
     const answer = await callGeminiText(prompt, msg => { box.innerHTML = `<p class="fc-ai-loading">${escapeHtml(msg)}</p>`; });
@@ -2830,9 +2972,10 @@ function renderArchiveList(){
   wrap.innerHTML = wordArchive.map((e, i)=>{
     const d = new Date(e.ts);
     const dateStr = d.toLocaleDateString('bn-BD', {day:'numeric', month:'short'});
-    return `<div class="key-row archive-item" data-idx="${i}" style="grid-template-columns:1fr auto;cursor:pointer;align-items:center;padding:8px 4px;">
+    return `<div class="key-row archive-item" data-idx="${i}" style="grid-template-columns:1fr auto auto;cursor:pointer;align-items:center;padding:8px 4px;gap:8px;">
       <span style="font-family:'Noto Sans Bengali','Inter',sans-serif;font-size:13px;">${escapeHtml(e.word)}</span>
       <span style="font-size:10px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;">${dateStr}</span>
+      <button class="del-btn archive-del-btn" data-idx="${i}" title="মুছে ফেলো">🗑</button>
     </div>`;
   }).join('');
   wrap.querySelectorAll('.archive-item').forEach(el=>{
@@ -2841,6 +2984,13 @@ function renderArchiveList(){
       if(!entry) return;
       closeArchiveModal();
       openWordLookupModal(entry.word);
+    });
+  });
+  wrap.querySelectorAll('.archive-del-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation(); // don't also trigger the row's open-lookup click
+      deleteArchiveEntry(parseInt(btn.dataset.idx, 10));
+      renderArchiveList();
     });
   });
 }
@@ -2855,6 +3005,12 @@ function closeArchiveModal(){
 }
 document.getElementById('pxArchiveBtn').addEventListener('click', openArchiveModal);
 document.getElementById('archiveClose').addEventListener('click', closeArchiveModal);
+document.getElementById('archiveClearAll').addEventListener('click', ()=>{
+  if(wordArchive.length === 0) return;
+  if(!confirm('আর্কাইভের সব শব্দ মুছে ফেলবে? এটা ফেরানো যাবে না।')) return;
+  clearWordArchive();
+  renderArchiveList();
+});
 document.getElementById('archiveModalOverlay').addEventListener('click', e=>{
   if(e.target.id === 'archiveModalOverlay') closeArchiveModal();
 });
@@ -2931,7 +3087,7 @@ document.getElementById('globalSearchInput').addEventListener('input', e=>runGlo
 document.getElementById('fcPoster').addEventListener('click', (e)=>{
   pulseBtn(e.currentTarget);
   const w = fcDeck[fcIndex];
-  openWordLookupModal(w.word, true);
+  openWordLookupModal(w.word, true, {type: w.type, bn: w.bn, val: w.val});
 });
 document.getElementById('fcAi').addEventListener('click', async (e)=>{
   pulseBtn(e.currentTarget);
@@ -3064,7 +3220,7 @@ document.getElementById('fcPosterAll').addEventListener('click', async (e)=>{
       const w = pending[i];
       label.textContent = `আনা হচ্ছে... (${done + 1}/${total})`;
       try{
-        const answer = await callGeminiText(buildWordLookupPrompt(w.word));
+        const answer = await callGeminiText(buildWordLookupPrompt(w.word, {type: w.type, bn: w.bn, val: w.val}));
         upsertArchiveEntry(w.word, answer);
       }catch(err){
         failed++;
@@ -3506,7 +3662,7 @@ function render(){
             <div class="word-val">${val}</div>
             <div class="row-actions">
               <button class="edit-btn" data-etype="${it.type}" data-eno="${w.no}" title="এডিট করো">✎</button>
-              <button class="lookup-btn" data-lookupword="${escapeHtml(w.word)}" title="পোস্টার কার্ড দেখো">${POSTER_ICON_SVG}</button>
+              <button class="lookup-btn" data-lookupword="${escapeHtml(w.word)}" data-lookuptype="${it.type}" data-lookupbn="${escapeHtml(w.bn||'')}" data-lookupval="${escapeHtml(val||'')}" title="পোস্টার কার্ড দেখো">${POSTER_ICON_SVG}</button>
               <input type="checkbox" class="chk mini en" data-wkey="${wk}" ${checked?'checked':''}>
             </div>
           </div>`;
@@ -3596,7 +3752,7 @@ function render(){
   wrap.querySelectorAll('.lookup-btn').forEach(btn=>{
     btn.addEventListener('click', e=>{
       e.stopPropagation();
-      openWordLookupModal(btn.dataset.lookupword, true);
+      openWordLookupFromBtn(btn);
     });
   });
   wrap.querySelectorAll('.fc-trigger[data-fcday]').forEach(btn=>{
@@ -3686,7 +3842,7 @@ function renderExtra(){
           <button class="reorder-btn" data-movetype="${sec.type}" data-moveno="${w.no}" data-dir="up" ${idx===0?'disabled':''} title="উপরে সরাও">↑</button>
           <button class="reorder-btn" data-movetype="${sec.type}" data-moveno="${w.no}" data-dir="down" ${idx===items.length-1?'disabled':''} title="নিচে সরাও">↓</button>
           <button class="edit-btn" data-etype="${sec.type}" data-eno="${w.no}" title="এডিট করো">✎</button>
-          <button class="lookup-btn" data-lookupword="${escapeHtml(w.word)}" title="পোস্টার কার্ড দেখো">${POSTER_ICON_SVG}</button>
+          <button class="lookup-btn" data-lookupword="${escapeHtml(w.word)}" data-lookuptype="${sec.type}" data-lookupbn="${escapeHtml(w.bn||'')}" data-lookupval="${escapeHtml(val||'')}" title="পোস্টার কার্ড দেখো">${POSTER_ICON_SVG}</button>
           ${isCustom ? `<button class="del-btn" data-deltype="${sec.type}" data-delno="${w.no}" title="মুছে ফেলো">🗑</button>` : ''}
           <input type="checkbox" class="chk mini en" data-wkey="${wk}" ${checked?'checked':''}>
         </div>
@@ -3754,7 +3910,7 @@ function renderExtra(){
   wrap.querySelectorAll('.lookup-btn').forEach(btn=>{
     btn.addEventListener('click', e=>{
       e.stopPropagation();
-      openWordLookupModal(btn.dataset.lookupword, true);
+      openWordLookupFromBtn(btn);
     });
   });
   wrap.querySelectorAll('.fc-trigger[data-fcextra]').forEach(btn=>{
@@ -3855,6 +4011,20 @@ document.querySelectorAll('.filters button').forEach(btn=>{
 const PRACTICE_HISTORY_KEY = 'memoria-practice-history-v1';
 function loadPracticeHistory(){ try{ const raw = localStorage.getItem(PRACTICE_HISTORY_KEY); return raw?JSON.parse(raw):[]; }catch(e){ return []; } }
 function savePracticeHistory(h){ try{ localStorage.setItem(PRACTICE_HISTORY_KEY, JSON.stringify(h)); }catch(e){} }
+function deletePracticeHistoryEntry(id){
+  practiceHistory = practiceHistory.filter(h => h.id !== id);
+  savePracticeHistory(practiceHistory);
+  addTombstone(deletedHistoryIds, id, DELETED_HISTORY_KEY);
+  scheduleAutoBackup(); // propagate the deletion to the cloud too
+  pxRenderHistory();
+}
+function clearPracticeHistory(){
+  practiceHistory.forEach(h => addTombstone(deletedHistoryIds, h.id, DELETED_HISTORY_KEY));
+  practiceHistory = [];
+  savePracticeHistory(practiceHistory);
+  scheduleAutoBackup();
+  pxRenderHistory();
+}
 let practiceHistory = loadPracticeHistory();
 
 // separate from revision-progress `state` — tracks how many times each word has been missed in MCQ Quiz
@@ -4509,7 +4679,7 @@ function pxShowSummary(){
           <div class="px-wrong-row">
             <div class="w">${escapeHtml(w.word)}<span class="sub2b">${escapeHtml(w.bn||'')}</span></div>
             <div class="a">${escapeHtml(w.val)}</div>
-            <button class="lookup-btn" data-lookupword="${escapeHtml(w.word)}" title="পোস্টার কার্ড দেখো">${POSTER_ICON_SVG}</button>
+            <button class="lookup-btn" data-lookupword="${escapeHtml(w.word)}" data-lookuptype="${w.type}" data-lookupbn="${escapeHtml(w.bn||'')}" data-lookupval="${escapeHtml(w.val||'')}" title="পোস্টার কার্ড দেখো">${POSTER_ICON_SVG}</button>
           </div>
           ${w.explanation ? `<div class="px-wrong-explain">💡 ${escapeHtml(w.explanation)}</div>` : ''}
         </div>`).join('')}</div>` : `<div class="sub" style="margin-top:14px;">${escapeHtml(trKey('allCorrect'))}</div>`}
@@ -4532,7 +4702,7 @@ function pxShowSummary(){
   document.getElementById('pxBody').querySelectorAll('.lookup-btn').forEach(btn=>{
     btn.addEventListener('click', e=>{
       e.stopPropagation();
-      openWordLookupModal(btn.dataset.lookupword, true);
+      openWordLookupFromBtn(btn);
     });
   });
   document.getElementById('pxNewSession').addEventListener('click', pxCloseOverlay);
@@ -4582,7 +4752,10 @@ function pxRenderHistory(){
       </div>
       <div class="px-hist-right">
         <div class="px-hist-score">${scoreHtml}</div>
-        ${canRetake ? `<button class="px-hist-retake" data-retake="${h.id}" title="${escapeHtml(trKey('retakeTitle'))}">${escapeHtml(trKey('retakeBtn'))}</button>` : ''}
+        <div style="display:flex;gap:6px;align-items:center;">
+          ${canRetake ? `<button class="px-hist-retake" data-retake="${h.id}" title="${escapeHtml(trKey('retakeTitle'))}">${escapeHtml(trKey('retakeBtn'))}</button>` : ''}
+          <button class="px-hist-del" data-histdel="${h.id}" title="মুছে ফেলো">🗑</button>
+        </div>
       </div>
     </div>`;
   }).join('') + (remaining > 0 ? `<button class="px-hist-more" id="pxHistoryMoreBtn">${escapeHtml(trKey('showMoreRemaining', {n:remaining}))}</button>` : '');
@@ -4591,8 +4764,20 @@ function pxRenderHistory(){
   wrap.querySelectorAll('[data-retake]').forEach(btn=>{
     btn.addEventListener('click', ()=> pxRetakeFromHistory(btn.dataset.retake));
   });
+  wrap.querySelectorAll('[data-histdel]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      deletePracticeHistoryEntry(btn.dataset.histdel);
+    });
+  });
 }
 pxRenderHistory();
+const pxHistoryClearAllBtn = document.getElementById('pxHistoryClearAll');
+if(pxHistoryClearAllBtn) pxHistoryClearAllBtn.addEventListener('click', ()=>{
+  if(practiceHistory.length === 0) return;
+  if(!confirm('সব exam history মুছে ফেলবে? এটা ফেরানো যাবে না।')) return;
+  clearPracticeHistory();
+});
 
 // ============ পুরনো MCQ থেকে re-exam বানানো (উপরের quicklink থেকে খোলা মোডাল) ============
 const pxHistGoCachedBtn = document.getElementById('pxHistGoCached');
