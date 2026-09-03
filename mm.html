@@ -246,6 +246,8 @@ if('serviceWorker' in navigator){
   .row-actions{ display:flex; align-items:center; gap:8px; justify-content:flex-end; }
   .edit-btn{ background:none; border:1px solid var(--border); color:var(--text-muted); border-radius:6px; width:24px; height:24px; font-size:12px; cursor:pointer; line-height:1; flex-shrink:0; }
   .edit-btn:hover{ color:var(--gold); border-color:var(--gold-dim); }
+  .lookup-btn{ background:none; border:1px solid var(--border); color:var(--text-muted); border-radius:6px; width:24px; height:24px; font-size:12px; cursor:pointer; line-height:1; flex-shrink:0; }
+  .lookup-btn:hover{ color:var(--teal); border-color:var(--teal-dim); }
 
   .extra-section{ margin-top:26px; border:1px solid var(--teal-dim); border-radius:var(--radius); padding:16px 14px; background:var(--panel); }
   .extra-section h2{ font-family:'Fraunces','Noto Sans Bengali',serif; font-weight:600; font-size:18px; color:var(--teal); margin:0 0 4px; }
@@ -270,7 +272,7 @@ if('serviceWorker' in navigator){
   .cov-table tr.active .cov-name::before{ content:"● "; color:var(--teal); font-size:9px; }
   .cov-wrap{ overflow-x:auto; }
 
-  .modal-overlay{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:100; align-items:center; justify-content:center; padding:16px; }
+  .modal-overlay{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:130; align-items:center; justify-content:center; padding:16px; }
   .modal-overlay.open{ display:flex; }
   .modal-box{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:16px; width:100%; max-width:420px; }
   .modal-title{ font-family:'Fraunces','Noto Sans Bengali',serif; font-size:16px; margin-bottom:8px; color:var(--gold); }
@@ -312,7 +314,7 @@ if('serviceWorker' in navigator){
   .fc-overlay.open{ display:flex; }
   .fc-overlay.open .fc-box{ animation: fcBoxIn .3s cubic-bezier(.22,1,.36,1); }
   @keyframes fcBoxIn{ from{ opacity:0; transform:scale(.94) translateY(10px); } to{ opacity:1; transform:scale(1) translateY(0); } }
-  .fc-box{ width:100%; max-width:420px; display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .fc-box{ width:100%; max-width:420px; display:flex; flex-direction:column; align-items:center; gap:10px; background:var(--bg); border-radius:20px; padding:6px; }
   .fc-top{ width:100%; display:flex; align-items:center; justify-content:space-between; }
   .fc-title{ font-family:'Fraunces','Noto Sans Bengali',serif; color:var(--gold); font-size:14px; }
   .fc-progress{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-muted); }
@@ -350,6 +352,8 @@ if('serviceWorker' in navigator){
     100%{ transform:scale(1); box-shadow:none; }
   }
   .fc-controls button.fc-ai{ background:linear-gradient(135deg, var(--gold), var(--teal)); color:var(--bg); font-weight:600; border:none; }
+  .fc-controls button.fc-poster{ flex:0 0 42px; padding:10px 0; border-color:var(--teal-dim); color:var(--teal); }
+  .fc-controls button.fc-poster:hover{ background:rgba(79,167,158,0.1); }
   .fc-controls button.fc-ai.fc-btn-pop{ animation: fcAiBtnPop .32s ease; }
   @keyframes fcAiBtnPop{
     0%{ transform:scale(1); filter:brightness(1); }
@@ -364,7 +368,9 @@ if('serviceWorker' in navigator){
   .fc-controls-2 button.fc-ai-all{ width:100%; padding:11px 8px; font-size:11.5px; opacity:0.96; background:var(--panel-2); color:var(--teal); font-weight:600; border:1px solid var(--teal-dim); box-shadow:none; }
   .fc-controls-2 button.fc-ai-all:hover{ border-color:var(--teal); color:var(--teal); background:var(--panel); }
   .fc-controls-2 button.fc-ai-all:disabled{ opacity:0.6; cursor:default; }
-  .fc-ai-box{ width:100%; background:var(--panel-2); border:1px solid var(--teal-dim); border-radius:12px; padding:12px 14px; font-size:12.5px; color:#B9E3DE; font-family:'Noto Sans Bengali','Inter',sans-serif; line-height:1.6; min-height:20px; display:none; box-shadow:0 6px 18px rgba(0,0,0,0.25); }
+  .fc-controls-2 button.fc-poster-all{ color:var(--gold); border-color:var(--gold-dim); }
+  .fc-controls-2 button.fc-poster-all:hover{ border-color:var(--gold); color:var(--gold); }
+  .fc-ai-box{ width:100%; background:linear-gradient(165deg, var(--panel-2), #17262A); border:1px solid var(--teal-dim); border-radius:14px; padding:12px 14px; font-size:12.5px; color:#B9E3DE; font-family:'Noto Sans Bengali','Inter',sans-serif; line-height:1.6; min-height:20px; display:none; box-shadow:0 8px 22px rgba(0,0,0,0.28); }
   .fc-ai-box.show{ display:block; }
   .fc-ai-box p{ margin:0; }
   .fc-ai-block + .fc-ai-block{ margin-top:10px; padding-top:10px; border-top:1px dashed var(--teal-dim); }
@@ -407,6 +413,47 @@ if('serviceWorker' in navigator){
   .wl-chip{ font-size:12px; padding:4px 11px; border-radius:999px; border:1px solid; font-family:'Noto Sans Bengali','Inter',sans-serif; }
   .wl-chip.syn{ border-color:var(--teal-dim); color:var(--teal); }
   .wl-chip.ant{ border-color:var(--danger); color:var(--danger); }
+
+  /* Poster-style infographic card — everything here is real HTML/CSS text,
+     never AI-painted pixels, so it never comes out garbled/"ultapalta"
+     the way baked-in text from a free image model does. Any AI image is
+     kept purely decorative (no text expected inside it) and sits inside
+     this shell instead of trying to carry the meaning itself. */
+  .wl-poster{ border:1px solid var(--border); border-radius:16px; padding:18px 16px 16px; margin-bottom:12px; background:linear-gradient(165deg, rgba(217,168,78,0.07), rgba(79,167,158,0.05) 60%); position:relative; overflow:hidden; }
+  .wl-poster-banner{ text-align:center; margin-bottom:10px; }
+  .wl-poster-word{ display:inline-block; font-family:'Fraunces','Noto Sans Bengali',serif; font-size:26px; font-weight:700; letter-spacing:0.02em; background:linear-gradient(135deg,#F3F1EC,var(--gold) 60%,var(--teal)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .wl-poster-pos{ display:block; margin:4px auto 0; width:fit-content; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--bg); background:var(--gold); padding:2px 12px; border-radius:999px; }
+  .wl-poster-meaning{ text-align:center; font-family:'Noto Sans Bengali','Inter',sans-serif; font-size:15px; color:var(--text); margin-top:8px; }
+  .wl-poster-illustration{ margin:12px 0; border-radius:12px; overflow:hidden; border:1px solid var(--border); }
+  .wl-poster-illustration img{ width:100%; max-height:220px; object-fit:cover; display:block; }
+  .wl-root-box{ border:1.5px dashed var(--teal-dim); border-radius:12px; padding:10px 12px; margin:12px 0; text-align:center; }
+  .wl-root-box .wl-root-title{ font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.08em; color:var(--teal); display:block; margin-bottom:5px; }
+  .wl-root-box .wl-root-body{ font-family:'Noto Sans Bengali','Inter',sans-serif; font-size:13px; color:var(--text); }
+  .wl-synant-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:12px 0; }
+  .wl-synant-box{ border-radius:12px; padding:9px 10px; border:1px solid; }
+  .wl-synant-box.syn{ border-color:var(--teal-dim); background:rgba(79,167,158,0.08); }
+  .wl-synant-box.ant{ border-color:var(--danger); background:rgba(196,99,79,0.08); }
+  .wl-synant-title{ font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.06em; display:block; margin-bottom:5px; }
+  .wl-synant-box.syn .wl-synant-title{ color:var(--teal); }
+  .wl-synant-box.ant .wl-synant-title{ color:var(--danger); }
+  .wl-poster-sentence{ border:1px solid var(--gold-dim); border-radius:12px; padding:9px 12px; margin-top:12px; font-size:13px; font-style:italic; text-align:center; }
+
+  /* Flashcard AI panel — same left-accent "premium card" language as the poster,
+     just laid out as a vertical stack of colour-coded mini cards (no banner,
+     since the word/meaning already show on the flip-card above this panel). */
+  .wl-fc-block{ border-radius:10px; padding:9px 11px; border-left:3px solid var(--border); background:rgba(255,255,255,0.03); }
+  .wl-fc-block + .wl-fc-block{ margin-top:8px; }
+  .wl-fc-block p{ margin:0; }
+  .wl-fc-label{ display:block; font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.06em; margin-bottom:4px; }
+  .wl-fc-block.direct{ border-left-color:var(--teal); background:rgba(79,167,158,0.13); }
+  .wl-fc-block.direct .wl-fc-label{ color:var(--teal); }
+  .wl-fc-block.mnemonic{ border-left-color:var(--gold); background:rgba(217,168,78,0.12); }
+  .wl-fc-block.mnemonic .wl-fc-label{ color:var(--gold); }
+  .wl-fc-block.root{ border-left-color:var(--teal-dim); background:rgba(79,167,158,0.09); }
+  .wl-fc-block.root .wl-fc-label{ color:var(--teal); }
+  .wl-fc-block.sentence{ border-left-color:var(--gold-dim); background:rgba(217,168,78,0.08); font-style:italic; }
+  .wl-fc-block.confuse{ border-left-color:var(--danger); background:rgba(196,99,79,0.13); }
+  .wl-fc-block.confuse .wl-fc-label{ color:var(--danger); }
   .search-result-item{ padding:9px 6px; border-bottom:1px solid var(--border); cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:8px; }
   .search-result-item:hover{ background:rgba(255,255,255,0.03); }
   .search-result-word{ font-size:13px; }
@@ -743,10 +790,14 @@ if('serviceWorker' in navigator){
         <button id="fcPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14 6 8 12 14 18"/></svg> <span data-i18n="btnPrev">আগের</span></button>
         <button id="fcShuffle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> <span data-i18n="btnShuffle">এলোমেলো</span></button>
         <button id="fcAi" class="fc-ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5a2.5 2.5 0 0 0-2.45 2.03A2.5 2.5 0 0 0 5.5 8.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 2 4.42A2.5 2.5 0 0 0 9.5 20.5"/><path d="M9.5 3.5v17"/><path d="M9.5 8.5h-2"/><path d="M9.5 13.5h-2"/><path d="M14.5 3.5a2.5 2.5 0 0 1 2.45 2.03 2.5 2.5 0 0 1 1.55 2.97 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-2 4.42 2.5 2.5 0 0 1-2 2.58"/><path d="M14.5 3.5v17"/><path d="M14.5 8.5h2"/><path d="M14.5 13.5h2"/></svg> <span data-i18n="btnAiHelp">AI সাহায্য</span></button>
+        <button id="fcPoster" class="fc-poster" type="button" title="পোস্টার কার্ড দেখো"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></button>
         <button id="fcNext"><span data-i18n="btnNext">পরের</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="10 6 16 12 10 18"/></svg></button>
       </div>
       <div class="fc-controls fc-controls-2">
         <button id="fcAiAll" class="fc-ai-all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5a2.5 2.5 0 0 0-2.45 2.03A2.5 2.5 0 0 0 5.5 8.5a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 2 4.42A2.5 2.5 0 0 0 9.5 20.5"/><path d="M9.5 3.5v17"/><path d="M9.5 8.5h-2"/><path d="M9.5 13.5h-2"/><path d="M14.5 3.5a2.5 2.5 0 0 1 2.45 2.03 2.5 2.5 0 0 1 1.55 2.97 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-2 4.42 2.5 2.5 0 0 1-2 2.58"/><path d="M14.5 3.5v17"/><path d="M14.5 8.5h2"/><path d="M14.5 13.5h2"/></svg> <span id="fcAiAllLabel" data-i18n="aiAllLabel">এই তালিকার সব শব্দের AI একসাথে আনো</span></button>
+      </div>
+      <div class="fc-controls fc-controls-2">
+        <button id="fcPosterAll" class="fc-ai-all fc-poster-all"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg> <span id="fcPosterAllLabel">এই তালিকার সব শব্দের Poster Card একসাথে আনো</span></button>
       </div>
     </div>
   </div>
@@ -1298,6 +1349,14 @@ const BNSYN_LIST = [{"no": 1, "word": "অগ্নি", "bn": "আগুন, �
 const LISTS = {wm: WM_LIST, syn: SYN_LIST, ant: ANT_LIST, bagdhara: BAGDHARA_LIST, proverb: PROVERB_LIST, ows: OWS_LIST, ekkotha: EKKOTHA_LIST, bnant: BNANT_LIST, shobdartho: SHOBDARTHO_LIST, poribhashik: PORIBHASHIK_LIST, groupverb: GROUPVERB_LIST, idiom: IDIOM_LIST, spelling: SPELLING_LIST, bnsyn: BNSYN_LIST};
 const VALKEY = {wm:'meaning', syn:'syn', ant:'ant', bagdhara:'meaning', proverb:'meaning', ows:'meaning', ekkotha:'meaning', bnant:'meaning', shobdartho:'meaning', poribhashik:'meaning', groupverb:'meaning', idiom:'meaning', spelling:'meaning', bnsyn:'meaning'};
 const WEEKDAYS_BN = {0:'Sun',1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat'};
+// Two overlapping rounded cards — replaces the 🎴 emoji (flower playing
+// cards), which several phones/fonts don't have a glyph for and render as a
+// broken "tofu" box instead. Inline SVG always renders identically everywhere.
+const FC_ICON_SVG = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><rect x="3" y="4.5" width="13" height="10" rx="2" transform="rotate(-8 9.5 9.5)"/><rect x="7.5" y="9" width="13" height="10" rx="2"/></svg>`;
+// Picture-frame icon — replaces the 🖼️ emoji, which some phones/fonts render
+// inconsistently (flat mono glyph, wrong size, or a tofu box) — same reason
+// as FC_ICON_SVG above.
+const POSTER_ICON_SVG = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`;
 
 // ---- Debounced localStorage writer ----
 // Writing a large JSON blob to localStorage synchronously on every single tap
@@ -2489,17 +2548,19 @@ function isNaBlock(text){
   return t === '' || /^প্রযোজ্য\s*নয়\.?$/.test(t);
 }
 function renderAiAnswer(aiBox, raw){
+  const directEnMatch = raw.match(/সরাসরি ইংরেজি অর্থ:\s*([\s\S]*?)(?=মনে রাখার কৌশল:|উদাহরণ বাক্য:|শব্দের গঠন:|কাছাকাছি শব্দ সতর্কতা:|$)/);
   const memMatch = raw.match(/মনে রাখার কৌশল:\s*([\s\S]*?)(?=উদাহরণ বাক্য:|শব্দের গঠন:|কাছাকাছি শব্দ সতর্কতা:|$)/);
   const exMatch = raw.match(/উদাহরণ বাক্য:\s*([\s\S]*?)(?=শব্দের গঠন:|কাছাকাছি শব্দ সতর্কতা:|$)/);
   const rootMatch = raw.match(/শব্দের গঠন:\s*([\s\S]*?)(?=কাছাকাছি শব্দ সতর্কতা:|$)/);
   const confuseMatch = raw.match(/কাছাকাছি শব্দ সতর্কতা:\s*([\s\S]*)/);
-  if(memMatch || exMatch || rootMatch || confuseMatch){
+  if(directEnMatch || memMatch || exMatch || rootMatch || confuseMatch){
     let html = '';
-    if(memMatch && memMatch[1].trim()) html += `<div class="fc-ai-block"><span class="fc-ai-label">💡 মনে রাখার কৌশল</span><p>${escapeHtml(memMatch[1].trim())}</p></div>`;
-    if(exMatch && exMatch[1].trim()) html += `<div class="fc-ai-block"><span class="fc-ai-label">✍️ উদাহরণ বাক্য</span><p>${escapeHtml(exMatch[1].trim())}</p></div>`;
-    if(rootMatch && !isNaBlock(rootMatch[1])) html += `<div class="fc-ai-block"><span class="fc-ai-label">🧩 শব্দের গঠন</span><p>${escapeHtml(rootMatch[1].trim())}</p></div>`;
-    if(confuseMatch && !isNaBlock(confuseMatch[1])) html += `<div class="fc-ai-block"><span class="fc-ai-label">⚠️ কাছাকাছি শব্দ</span><p>${escapeHtml(confuseMatch[1].trim())}</p></div>`;
-    aiBox.innerHTML = html || `<p>${escapeHtml(raw)}</p>`;
+    if(directEnMatch && !isNaBlock(directEnMatch[1])) html += `<div class="wl-fc-block direct"><span class="wl-fc-label">🔤 সরাসরি ইংরেজি অর্থ</span>${renderChipRow(directEnMatch[1].trim(), 'syn')}</div>`;
+    if(memMatch && memMatch[1].trim()) html += `<div class="wl-fc-block mnemonic"><span class="wl-fc-label">💡 মনে রাখার কৌশল</span><p>${escapeHtml(memMatch[1].trim())}</p></div>`;
+    if(rootMatch && !isNaBlock(rootMatch[1])) html += `<div class="wl-fc-block root"><span class="wl-fc-label">🧩 শব্দের গঠন</span><p>${escapeHtml(rootMatch[1].trim())}</p></div>`;
+    if(exMatch && exMatch[1].trim()) html += `<div class="wl-fc-block sentence"><span class="wl-fc-label">✍️ উদাহরণ বাক্য</span><p>${escapeHtml(exMatch[1].trim())}</p></div>`;
+    if(confuseMatch && !isNaBlock(confuseMatch[1])) html += `<div class="wl-fc-block confuse"><span class="wl-fc-label">⚠️ কাছাকাছি শব্দ</span><p>${escapeHtml(confuseMatch[1].trim())}</p></div>`;
+    aiBox.innerHTML = html;
   } else {
     aiBox.innerHTML = `<p>${escapeHtml(raw)}</p>`;
   }
@@ -2523,7 +2584,7 @@ const AI_TYPE_META = {
   ekkotha:   { label: 'এক কথায় প্রকাশ',         note: 'এটা বাক্যাংশের এক কথায় প্রকাশ।', hasRoot:false },
   shobdartho:{ label: 'শব্দের অর্থ',            note: 'এটা মূল শব্দটার সরাসরি অর্থ।', hasRoot:false },
   poribhashik:{ label: 'পারিভাষিক শব্দ (English term)', note: 'এটা বাংলা টার্মের ইংরেজি পারিভাষিক প্রতিশব্দ, সরাসরি অনুবাদ না — mnemonic-এ বোঝাও যে এটা একটা স্বীকৃত পরিভাষা।', hasRoot:true },
-  groupverb: { label: 'Group Verb-এর অর্থ',     note: 'এটা group verb (phrasal verb) টার অর্থ।', hasRoot:false },
+  groupverb: { label: 'Group Verb-এর অর্থ',     note: 'এটা group verb (phrasal verb) টার অর্থ।', hasRoot:false, hasDirectEn:true },
   bnsyn:     { label: 'সমার্থক শব্দ (একটি প্রতিনিধিত্বমূলক)', note: 'এটা মূল বাংলা শব্দটার একটা সমার্থক শব্দ — subtext-এ (bn ফিল্ড) এই শব্দের পুরো সমার্থক শব্দগুচ্ছ দেওয়া আছে, mnemonic-এ সেই পুরো গুচ্ছটার সাথে সম্পর্ক বোঝাও, শুধু একটা শব্দের সাথে না।', hasRoot:false },
 };
 function buildAiPrompt(w){
@@ -2531,12 +2592,14 @@ function buildAiPrompt(w){
   const rootBlock = meta.hasRoot ? `
 শব্দের গঠন: (শব্দটা যদি ইংরেজি এবং এর prefix/root/suffix থেকে অর্থ বোঝা যায়, তাহলে ১ লাইনে ভেঙে দেখাও, যেমন "mal(খারাপ)+practice(চর্চা) = খারাপ চর্চা" ফরম্যাটে। এটা দিয়ে ভবিষ্যতে অচেনা শব্দও আন্দাজ করা শেখা যায়। যদি স্পষ্ট prefix/root/suffix না থাকে বা শব্দটা সাধারণ/সরল হয়, এই লাইনে শুধু "প্রযোজ্য নয়" লিখো।)
 কাছাকাছি শব্দ সতর্কতা: (exam-এ প্রায়ই গুলিয়ে ফেলা হয় এমন বানানে/উচ্চারণে কাছাকাছি একটা ইংরেজি শব্দ থাকলে, তার নাম আর অর্থের পার্থক্য ১ লাইনে বলো, যেমন "Considerable (যথেষ্ট) কে Considerate (বিবেচক)-এর সাথে গুলিও না"। এমন কোনো শব্দ মনে না পড়লে শুধু "প্রযোজ্য নয়" লিখো।)` : '';
+  const directEnBlock = meta.hasDirectEn ? `
+সরাসরি ইংরেজি অর্থ: (এই group verb/phrasal verb-টার সবচেয়ে কাছাকাছি ১-২ শব্দের সরাসরি ইংরেজি প্রতিশব্দ (single-word বা খুব ছোট synonym) দাও, যেমন "Bring forth" এর জন্য "Produce", "Look into" এর জন্য "Investigate", "Call off" এর জন্য "Cancel"। শুধু শব্দ/শব্দগুচ্ছ লিখো, বাক্য বা ব্যাখ্যা লিখো না। একাধিক প্রতিশব্দ হলে কমা দিয়ে আলাদা করো।)` : '';
   return `তুমি একজন বাংলাদেশের সরকারি চাকরির (BCS/Bank/৯ম গ্রেড) পরীক্ষার ভোকাবুলারি কোচ। একজন শিক্ষার্থী নিচের শব্দ/টার্মটা ফ্ল্যাশকার্ডে মুখস্থ করছে:
 শব্দ/টার্ম: "${w.word}"${w.bn ? ' ('+w.bn+')' : ''}
 ${meta.label}: "${w.val || ''}"
 (লক্ষ্য করো: ${meta.note})
 
-তোমার কাজ, ঠিক এই ফরম্যাটে বাংলায় উত্তর দাও (হেডিংগুলো হুবহু রাখো, ভূমিকা বা অতিরিক্ত কিছু লিখো না):
+তোমার কাজ, ঠিক এই ফরম্যাটে বাংলায় উত্তর দাও (হেডিংগুলো হুবহু রাখো, ভূমিকা বা অতিরিক্ত কিছু লিখো না):${directEnBlock}
 মনে রাখার কৌশল: (১-২ লাইনের সহজ, মজার mnemonic বা association, যা উপরের সম্পর্কটা (${meta.label}) ঠিকভাবে মাথায় গেঁথে দেবে — উপরের নোটটা মাথায় রেখে)
 উদাহরণ বাক্য: (এই শব্দটা/টার্মটা ব্যবহার করে exam-এর উপযোগী একটা ছোট বাক্য, ইংরেজিতে যদি শব্দটা ইংরেজি হয়)${rootBlock}`;
 }
@@ -2573,6 +2636,7 @@ function buildWordLookupPrompt(word){
 
 তোমার কাজ, ঠিক এই ফরম্যাটে বাংলায় উত্তর দাও (হেডিংগুলো হুবহু রাখো, ভূমিকা বা অতিরিক্ত কিছু লিখো না, কোনো হেডিং-এর তথ্য না থাকলে/প্রযোজ্য না হলে শুধু "প্রযোজ্য নয়" লিখো):
 টাইপ: (শব্দটা ইংরেজি হলে তার Part of Speech — Noun/Verb/Adjective/Adverb/Phrase ইত্যাদি, ১-২ শব্দে ইংরেজিতে। বাংলা শব্দ/বাগধারা/প্রবাদ হলে শুধু "প্রযোজ্য নয়" লিখো)
+Definition: (এই হেডিং-এর উত্তর অবশ্যই ইংরেজিতে দাও, বাংলায় না। শব্দটার একটা standard dictionary-style ইংরেজি সংজ্ঞা লিখো, ১টা সংক্ষিপ্ত বাক্যে — যেমন একটা English dictionary-তে যেভাবে লেখা থাকে। শব্দটা বাংলা/বাগধারা/প্রবাদ হলে শুধু "প্রযোজ্য নয়" লিখো)
 সংক্ষিপ্ত অর্থ: (শব্দটার সরাসরি বাংলা অর্থ, ১ লাইনে, ছোট করে)
 বিস্তারিত অর্থ: (২-৩ বাক্যে, কোন প্রসঙ্গে/কীভাবে ব্যবহৃত হয় সহ একটু বিস্তারিত ব্যাখ্যা)
 সমার্থক শব্দ: (exam-এ কাজে লাগে এমন ৩-৪টা সমার্থক শব্দ/Synonym, শুধু কমা দিয়ে আলাদা করে শব্দগুলো লিখো, বাক্য/ব্যাখ্যা লিখো না)
@@ -2581,7 +2645,7 @@ function buildWordLookupPrompt(word){
 শব্দের গঠন: (শব্দটা ইংরেজি হলে এবং prefix/root/suffix থেকে অর্থ বোঝা গেলে ১ লাইনে ভেঙে দেখাও, যেমন "mal(খারাপ)+practice(চর্চা) = খারাপ চর্চা" ফরম্যাটে)
 উদাহরণ বাক্য: (এই শব্দটা ব্যবহার করে exam-এর উপযোগী একটা ছোট বাক্য)
 কাছাকাছি শব্দ সতর্কতা: (exam-এ প্রায়ই গুলিয়ে ফেলা হয় এমন বানানে/উচ্চারণে কাছাকাছি একটা শব্দ থাকলে, তার নাম আর অর্থের পার্থক্য ১ লাইনে বলো)
-ছবির দৃশ্য: (এই হেডিং-এর উত্তর অবশ্যই ইংরেজিতে দাও, বাংলায় না। এমন একটা নির্দিষ্ট, concrete দৃশ্য/scene বর্ণনা করো যা এই শব্দের অর্থটা এক নজরে বুঝিয়ে দেবে। শব্দটা যদি মানুষের ভাব/আচরণ/অনুভূতি সংক্রান্ত হয় (যেমন arrogant, jealous, generous), তাহলে দৃশ্যে সহজ কার্টুন-স্টাইল মানুষ/চরিত্র (একটা বাচ্চাদের ছবির বইয়ের মতো, মুখভঙ্গি-অঙ্গভঙ্গি সহ) ব্যবহার করতে পারো — সবসময় সাধারণ পোশাক পরিহিত, নিরীহ, শিক্ষামূলক দৃশ্য হবে, বাস্তবসম্মত/photographic মানুষ কল্পনা কোরো না। শব্দটা বস্তু/প্রাণী/পরিস্থিতি সংক্রান্ত হলে সরাসরি সেটাই বর্ণনা করো। যেমন "abhor" শব্দের জন্য "a cartoon girl pushing away a plate of rotten broccoli with a disgusted face" অথবা "ostentatious" শব্দের জন্য "an overly decorated mansion gate covered in gold ornaments and flashy chandeliers" — এভাবে নির্দিষ্ট করে লেখো, ভাসাভাসা না। ১ বাক্যে লেখো।)
+ছবির দৃশ্য: (এই হেডিং-এর উত্তর অবশ্যই ইংরেজিতে দাও, বাংলায় না। শব্দটার একদম নির্দিষ্ট সংজ্ঞা/ব্যবহার মাথায় রেখে এমন একটা একক, আক্ষরিক (literal) দৃশ্য বর্ণনা করো যেটা দেখলেই এক নজরে ঠিক এই অর্থটাই বোঝা যায় — অস্পষ্ট, প্রতীকী (symbolic), বা আলগোছালো কোনো কল্পনা না। দৃশ্যে অবশ্যই থাকতে হবে: (১) কে/কী আছে, (২) সে ঠিক কী করছে/কী ঘটছে (একটামাত্র স্পষ্ট action/moment, একসাথে একাধিক ঘটনা মেশাবে না), (৩) কোথায় — এই তিনটা স্পষ্ট করে বলো যাতে prompt পড়েই কেউ দৃশ্যটা হুবহু কল্পনা করতে পারে। শব্দটা যদি মানুষের ভাব/আচরণ/অনুভূতি সংক্রান্ত হয় (যেমন arrogant, jealous, generous), তাহলে দৃশ্যে সহজ কার্টুন-স্টাইল মানুষ/চরিত্র (একটা বাচ্চাদের ছবির বইয়ের মতো, স্পষ্ট মুখভঙ্গি-অঙ্গভঙ্গি সহ, যেটা ওই ভাবটা স্পষ্টভাবে ফুটিয়ে তোলে) ব্যবহার করতে পারো — সবসময় সাধারণ পোশাক পরিহিত, নিরীহ, শিক্ষামূলক দৃশ্য হবে, বাস্তবসম্মত/photographic মানুষ কল্পনা কোরো না। শব্দটা বস্তু/প্রাণী/পরিস্থিতি সংক্রান্ত হলে সরাসরি সেটাই বর্ণনা করো, রূপক না। যেমন "abhor" শব্দের জন্য "a cartoon girl pushing away a plate of rotten broccoli with a disgusted grimace, one hand raised palm-out" (শুধু "disgust" লিখলেই চলবে না, ঠিক কী কাজটা করছে সেটাও বলো), অথবা "ostentatious" শব্দের জন্য "an overly decorated mansion gate covered in gold ornaments, flashy chandeliers, and a peacock statue out front" — এভাবে concrete visual detail সহ লেখো, generic/ভাসাভাসা বাক্য (যেমন শুধু "a sad person" বা "someone feeling proud") চলবে না। ১ বাক্যে লেখো।)
 
 নোট: কোথাও গুরুত্বপূর্ণ শব্দ জোর দিয়ে বোঝাতে চাইলে **শব্দ** এভাবে দুইটা asterisk দিয়ে ঘিরে দিতে পারো, তা markdown bold হিসেবে দেখানো হবে।`;
 }
@@ -2615,7 +2679,7 @@ function renderChipRow(csvText, chipClass){
 // (browser HTTP cache then makes repeat views instant, no fresh generation).
 function pollinationsImageUrl(word, sceneDescription, meaningHint){
   const scene = sceneDescription || `${word}${meaningHint ? ' — ' + meaningHint : ''}`;
-  const promptText = `${scene}. Children's picture-book flat-vector illustration style — if a person appears, draw them as a simple, cute, fully-clothed cartoon character with a clear facial expression, never photorealistic, never romantic or sensual. Pastel colors, clean vector art, wholesome, safe for work, no text, no letters, no watermark.`;
+  const promptText = `A single clear illustration of this exact scene, literally depicted, one unambiguous moment, no abstract or symbolic elements: ${scene}. Children's picture-book flat-vector illustration style — if a person appears, draw them as a simple, cute, fully-clothed cartoon character with a clear facial expression and body pose that matches the action described, never photorealistic, never romantic or sensual. Pastel colors, clean vector art, wholesome, safe for work, no text, no letters, no watermark.`;
   let seed = 0;
   for(let i=0;i<word.length;i++){ seed = ((seed<<5) - seed + word.charCodeAt(i)) | 0; }
   seed = Math.abs(seed) % 100000;
@@ -2631,7 +2695,14 @@ function loadWlImage(box, wordText, sceneDescription, meaningHint){
   block.innerHTML = `<p class="fc-ai-loading">ছবি বানাচ্ছে (কয়েক সেকেন্ড লাগতে পারে)...</p>`;
   const probe = new Image();
   probe.onload = ()=>{
-    block.innerHTML = `<img src="${url}" alt="${escapeHtml(wordText || '')}" class="wl-generated-img"><div class="wl-img-caption">AI generated — Pollinations.ai</div>`;
+    block.innerHTML = `<button id="wlImgToggleBtn" class="modal-btn ghost" type="button" style="width:100%;margin-bottom:8px;">${POSTER_ICON_SVG} ছবি লুকাও</button><div class="wl-img-content" id="wlImgContent"><div class="wl-poster-illustration"><img src="${url}" alt="${escapeHtml(wordText || '')}" class="wl-generated-img"></div><div class="wl-img-caption">AI illustration only — লেখা এখানে বিশ্বাস কোরো না, উপরের কার্ডের লেখাই নির্ভুল</div></div>`;
+    const toggleBtn = block.querySelector('#wlImgToggleBtn');
+    const content = block.querySelector('#wlImgContent');
+    toggleBtn.addEventListener('click', ()=>{
+      const hidden = content.style.display === 'none';
+      content.style.display = hidden ? '' : 'none';
+      toggleBtn.innerHTML = hidden ? `${POSTER_ICON_SVG} ছবি লুকাও` : `${POSTER_ICON_SVG} ছবি দেখাও`;
+    });
   };
   probe.onerror = ()=>{
     block.innerHTML = `<p class="fc-ai-error">ছবি লোড করা গেল না। ইন্টারনেট চেক করে আবার চেষ্টা করো।</p><button id="wlImgRetryBtn" class="modal-btn ghost" type="button" style="width:100%;margin-top:6px;">আবার চেষ্টা করো</button>`;
@@ -2647,7 +2718,7 @@ function loadWlImage(box, wordText, sceneDescription, meaningHint){
 // doesn't burn a fresh image generation you probably already saw).
 function renderWordLookupAnswer(box, raw, wordText, autoLoadImage){
   const order = [
-    ['টাইপ'], ['সংক্ষিপ্ত অর্থ'], ['বিস্তারিত অর্থ'], ['সমার্থক শব্দ'], ['বিপরীত শব্দ'],
+    ['টাইপ'], ['Definition'], ['সংক্ষিপ্ত অর্থ'], ['বিস্তারিত অর্থ'], ['সমার্থক শব্দ'], ['বিপরীত শব্দ'],
     ['মনে রাখার কৌশল'], ['শব্দের গঠন'], ['উদাহরণ বাক্য'], ['কাছাকাছি শব্দ সতর্কতা'], ['ছবির দৃশ্য']
   ];
   const labels = order.map(o=>o[0]);
@@ -2661,15 +2732,32 @@ function renderWordLookupAnswer(box, raw, wordText, autoLoadImage){
   }
   if(!Object.values(parts).some(Boolean)){ box.innerHTML = `<p>${mdBoldHtml(escapeHtml(raw))}</p>`; return; }
 
-  let html = `<div class="wl-word-header"><span class="wl-word">${escapeHtml(wordText || '')}</span>${parts['টাইপ'] ? `<span class="wl-pos-badge">${escapeHtml(parts['টাইপ'])}</span>` : ''}</div>`;
-  if(parts['সংক্ষিপ্ত অর্থ']) html += `<p style="margin:0 0 10px;font-size:14px;">${mdBoldHtml(escapeHtml(parts['সংক্ষিপ্ত অর্থ']))}</p>`;
-  html += `<div class="wl-img-block" id="wlImgBlock"><button id="wlImgBtn" class="modal-btn ghost" type="button" style="width:100%;">🎨 ছবি দিয়ে বুঝো (visual meaning)</button></div>`;
+  // ── Poster card: word / POS / short meaning / illustration / root / synonym
+  // & antonym boxes / easy sentence — ALL real HTML+CSS text, styled to look
+  // like the infographic-card reference image. The AI illustration (if the
+  // person chooses to load one) sits inside this shell purely as decoration;
+  // it is never asked to carry any text, so it can't come out garbled the
+  // way a full AI-painted infographic does.
+  let html = `<div class="wl-poster">`;
+  html += `<div class="wl-poster-banner"><span class="wl-poster-word">${escapeHtml(wordText || '')}</span>`;
+  if(parts['টাইপ']) html += `<span class="wl-poster-pos">${escapeHtml(parts['টাইপ'])}</span>`;
+  html += `</div>`;
+  if(parts['সংক্ষিপ্ত অর্থ']) html += `<div class="wl-poster-meaning">${mdBoldHtml(escapeHtml(parts['সংক্ষিপ্ত অর্থ']))}</div>`;
+  if(parts['Definition']) html += `<div class="wl-poster-meaning" style="font-family:'Inter',sans-serif;font-size:12.5px;font-style:italic;color:var(--text-muted);margin-top:4px;">${mdBoldHtml(escapeHtml(parts['Definition']))}</div>`;
+  html += `<div class="wl-img-block" id="wlImgBlock"><button id="wlImgBtn" class="modal-btn ghost" type="button" style="width:100%;">🎨 ছবি দিয়ে বুঝো (শুধু illustration, লেখা ছাড়া)</button></div>`;
+  if(parts['শব্দের গঠন']) html += `<div class="wl-root-box"><span class="wl-root-title">🧩 WORD ROOT</span><div class="wl-root-body">${mdBoldHtml(escapeHtml(parts['শব্দের গঠন']))}</div></div>`;
+  if(parts['সমার্থক শব্দ'] || parts['বিপরীত শব্দ']){
+    html += `<div class="wl-synant-grid">`;
+    html += `<div class="wl-synant-box syn"><span class="wl-synant-title">🟢 SYNONYMS</span>${parts['সমার্থক শব্দ'] ? renderChipRow(parts['সমার্থক শব্দ'], 'syn') : '<span style="font-size:11px;color:var(--text-muted);">প্রযোজ্য নয়</span>'}</div>`;
+    html += `<div class="wl-synant-box ant"><span class="wl-synant-title">🔴 ANTONYMS</span>${parts['বিপরীত শব্দ'] ? renderChipRow(parts['বিপরীত শব্দ'], 'ant') : '<span style="font-size:11px;color:var(--text-muted);">প্রযোজ্য নয়</span>'}</div>`;
+    html += `</div>`;
+  }
+  if(parts['উদাহরণ বাক্য']) html += `<div class="wl-poster-sentence">✍️ ${mdBoldHtml(escapeHtml(parts['উদাহরণ বাক্য']))}</div>`;
+  html += `</div>`; // /.wl-poster
+
+  // Supplementary detail (not part of the "poster" visual, plain blocks below it)
   if(parts['বিস্তারিত অর্থ']) html += `<div class="fc-ai-block"><span class="fc-ai-label">🔎 বিস্তারিত অর্থ</span><p>${mdBoldHtml(escapeHtml(parts['বিস্তারিত অর্থ']))}</p></div>`;
-  if(parts['সমার্থক শব্দ']) html += `<div class="fc-ai-block"><span class="fc-ai-label">🟢 সমার্থক শব্দ</span>${renderChipRow(parts['সমার্থক শব্দ'], 'syn')}</div>`;
-  if(parts['বিপরীত শব্দ']) html += `<div class="fc-ai-block"><span class="fc-ai-label">🔴 বিপরীত শব্দ</span>${renderChipRow(parts['বিপরীত শব্দ'], 'ant')}</div>`;
   if(parts['মনে রাখার কৌশল']) html += `<div class="fc-ai-block"><span class="fc-ai-label">💡 মনে রাখার কৌশল</span><p>${mdBoldHtml(escapeHtml(parts['মনে রাখার কৌশল']))}</p></div>`;
-  if(parts['শব্দের গঠন']) html += `<div class="fc-ai-block"><span class="fc-ai-label">🧩 শব্দের গঠন</span><p>${mdBoldHtml(escapeHtml(parts['শব্দের গঠন']))}</p></div>`;
-  if(parts['উদাহরণ বাক্য']) html += `<div class="fc-ai-block"><span class="fc-ai-label">✍️ উদাহরণ বাক্য</span><p>${mdBoldHtml(escapeHtml(parts['উদাহরণ বাক্য']))}</p></div>`;
   if(parts['কাছাকাছি শব্দ সতর্কতা']) html += `<div class="fc-ai-block"><span class="fc-ai-label">⚠️ কাছাকাছি শব্দ সতর্কতা</span><p>${mdBoldHtml(escapeHtml(parts['কাছাকাছি শব্দ সতর্কতা']))}</p></div>`;
   box.innerHTML = html;
   const sceneDescription = parts['ছবির দৃশ্য'] || ''; // English scene, hidden from the user, used only for the image prompt
@@ -2840,6 +2928,11 @@ document.getElementById('globalSearchModalOverlay').addEventListener('click', e=
 });
 document.getElementById('globalSearchInput').addEventListener('input', e=>runGlobalSearch(e.target.value));
 
+document.getElementById('fcPoster').addEventListener('click', (e)=>{
+  pulseBtn(e.currentTarget);
+  const w = fcDeck[fcIndex];
+  openWordLookupModal(w.word, true);
+});
 document.getElementById('fcAi').addEventListener('click', async (e)=>{
   pulseBtn(e.currentTarget);
   const w = fcDeck[fcIndex];
@@ -2929,6 +3022,65 @@ document.getElementById('fcAiAll').addEventListener('click', async (e)=>{
   fcBulkRunning = false;
   label.textContent = failed === 0
     ? `সম্পন্ন! ${total}/${total} শব্দের AI তথ্য আনা হয়েছে ✓`
+    : `সম্পন্ন — ${total - failed}/${total} সফল, ${failed}টা ব্যর্থ হয়েছে`;
+  setTimeout(()=>{ label.textContent = prevText; }, 3500);
+});
+
+// ---- Bulk Poster Card fetch: same idea as the bulk-AI button above, but for
+// the poster card (search/word-lookup) pipeline instead of the mnemonic
+// panel. Pre-fetches buildWordLookupPrompt results into the Archive for
+// every word in the open deck, so tapping 🖼️ on any of them later (or the
+// per-card fcPoster button) opens instantly with no waiting. The two stay
+// completely separate — this never touches aiCache, and the AI-all button
+// above never touches the Archive.
+let fcPosterBulkRunning = false;
+document.getElementById('fcPosterAll').addEventListener('click', async (e)=>{
+  const btn = e.currentTarget;
+  const label = document.getElementById('fcPosterAllLabel');
+  pulseBtn(btn);
+  if(fcPosterBulkRunning){
+    label.textContent = 'আগের ব্যাচ এখনো চলছে, একটু অপেক্ষা করো...';
+    return;
+  }
+  if(!fcDeck || fcDeck.length === 0) return;
+
+  const pending = fcDeck.filter(w => !findArchiveEntry(w.word));
+  if(pending.length === 0){
+    const prevText = label.textContent;
+    label.textContent = 'সবগুলোর Poster Card আগে থেকেই আছে ✓';
+    setTimeout(()=>{ label.textContent = prevText; }, 2200);
+    return;
+  }
+
+  fcPosterBulkRunning = true;
+  btn.disabled = true;
+  const total = pending.length;
+  let done = 0, failed = 0;
+  const prevText = label.textContent;
+
+  pauseAutoBackupForAi();
+  try{
+    for(let i = 0; i < pending.length; i++){
+      const w = pending[i];
+      label.textContent = `আনা হচ্ছে... (${done + 1}/${total})`;
+      try{
+        const answer = await callGeminiText(buildWordLookupPrompt(w.word));
+        upsertArchiveEntry(w.word, answer);
+      }catch(err){
+        failed++;
+      }
+      done++;
+      if(i < pending.length - 1) await sleep(400);
+    }
+  }finally{
+    resumeAutoBackupForAi();
+  }
+  renderArchiveList();
+
+  btn.disabled = false;
+  fcPosterBulkRunning = false;
+  label.textContent = failed === 0
+    ? `সম্পন্ন! ${total}/${total} শব্দের Poster Card আনা হয়েছে ✓`
     : `সম্পন্ন — ${total - failed}/${total} সফল, ${failed}টা ব্যর্থ হয়েছে`;
   setTimeout(()=>{ label.textContent = prevText; }, 3500);
 });
@@ -3354,6 +3506,7 @@ function render(){
             <div class="word-val">${val}</div>
             <div class="row-actions">
               <button class="edit-btn" data-etype="${it.type}" data-eno="${w.no}" title="এডিট করো">✎</button>
+              <button class="lookup-btn" data-lookupword="${escapeHtml(w.word)}" title="পোস্টার কার্ড দেখো">${POSTER_ICON_SVG}</button>
               <input type="checkbox" class="chk mini en" data-wkey="${wk}" ${checked?'checked':''}>
             </div>
           </div>`;
@@ -3365,7 +3518,7 @@ function render(){
             <span class="dot ${it.g}"></span>
             <div class="item-label">${it.k}${note}</div>
             <span class="item-progress">${wDone}/${words.length}</span>
-            <button class="fc-trigger" data-fcday="${day.date}" data-fcidx="${idx}" title="ফ্ল্যাশকার্ড দিয়ে ঝালাই করো">🎴</button>
+            <button class="fc-trigger" data-fcday="${day.date}" data-fcidx="${idx}" title="ফ্ল্যাশকার্ড দিয়ে ঝালাই করো">${FC_ICON_SVG}</button>
             <span class="caret ${isOpen?'open':''}" id="caret-${blockId}">▸</span>
           </div>
           <div class="item-mini-progress"><div class="item-mini-progress-fill" style="width:${wPct}%"></div></div>
@@ -3396,7 +3549,7 @@ function render(){
     return `<div class="day-card ${isToday?'today':''} ${isTomorrow?'is-tomorrow':''} ${isActuallyMissed?'past-missed':''} ${day.revision?'is-revision':''}" data-date="${day.date}">
       <div class="day-head">
         <div>${isToday?'<span class="day-live-dot"></span>':''}<span class="day-date">${dd}/${mm}/${y}</span> <span class="day-weekday">${wd}</span>${filter==='today' ? `<button class="day-golist-icon-btn" data-golistday="${day.date}" title="সব তালিকায় দেখো">🔎</button>` : ''}${missedTag}${revisionTag}${tomorrowTag}</div>
-        ${dayHasWords ? `<button class="day-fc-btn" data-fcdayall="${day.date}">🎴 আজকের পড়া ঝালাই করো</button>` : ''}
+        ${dayHasWords ? `<button class="day-fc-btn" data-fcdayall="${day.date}">${FC_ICON_SVG} আজকের পড়া ঝালাই করো</button>` : ''}
       </div>
       ${rows}
     </div>`;
@@ -3438,6 +3591,12 @@ function render(){
     btn.addEventListener('click', e=>{
       e.stopPropagation();
       openEditModal(btn.dataset.etype, Number(btn.dataset.eno));
+    });
+  });
+  wrap.querySelectorAll('.lookup-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      openWordLookupModal(btn.dataset.lookupword, true);
     });
   });
   wrap.querySelectorAll('.fc-trigger[data-fcday]').forEach(btn=>{
@@ -3527,6 +3686,7 @@ function renderExtra(){
           <button class="reorder-btn" data-movetype="${sec.type}" data-moveno="${w.no}" data-dir="up" ${idx===0?'disabled':''} title="উপরে সরাও">↑</button>
           <button class="reorder-btn" data-movetype="${sec.type}" data-moveno="${w.no}" data-dir="down" ${idx===items.length-1?'disabled':''} title="নিচে সরাও">↓</button>
           <button class="edit-btn" data-etype="${sec.type}" data-eno="${w.no}" title="এডিট করো">✎</button>
+          <button class="lookup-btn" data-lookupword="${escapeHtml(w.word)}" title="পোস্টার কার্ড দেখো">${POSTER_ICON_SVG}</button>
           ${isCustom ? `<button class="del-btn" data-deltype="${sec.type}" data-delno="${w.no}" title="মুছে ফেলো">🗑</button>` : ''}
           <input type="checkbox" class="chk mini en" data-wkey="${wk}" ${checked?'checked':''}>
         </div>
@@ -3539,7 +3699,7 @@ function renderExtra(){
         <span class="dot en"></span>
         <div class="item-label">${sec.label}</div>
         <span class="item-progress">${done}/${items.length}</span>
-        <button class="fc-trigger" data-fcextra="${sec.type}" title="ফ্ল্যাশকার্ড দিয়ে ঝালাই করো">🎴</button>
+        <button class="fc-trigger" data-fcextra="${sec.type}" title="ফ্ল্যাশকার্ড দিয়ে ঝালাই করো">${FC_ICON_SVG}</button>
         <span class="caret ${isOpen?'open':''}" id="caret-${blockId}">▸</span>
       </div>
       <div class="item-mini-progress"><div class="item-mini-progress-fill" style="width:${wPct}%"></div></div>
@@ -3589,6 +3749,12 @@ function renderExtra(){
     btn.addEventListener('click', e=>{
       e.stopPropagation();
       openEditModal(btn.dataset.etype, Number(btn.dataset.eno));
+    });
+  });
+  wrap.querySelectorAll('.lookup-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      openWordLookupModal(btn.dataset.lookupword, true);
     });
   });
   wrap.querySelectorAll('.fc-trigger[data-fcextra]').forEach(btn=>{
@@ -4343,6 +4509,7 @@ function pxShowSummary(){
           <div class="px-wrong-row">
             <div class="w">${escapeHtml(w.word)}<span class="sub2b">${escapeHtml(w.bn||'')}</span></div>
             <div class="a">${escapeHtml(w.val)}</div>
+            <button class="lookup-btn" data-lookupword="${escapeHtml(w.word)}" title="পোস্টার কার্ড দেখো">${POSTER_ICON_SVG}</button>
           </div>
           ${w.explanation ? `<div class="px-wrong-explain">💡 ${escapeHtml(w.explanation)}</div>` : ''}
         </div>`).join('')}</div>` : `<div class="sub" style="margin-top:14px;">${escapeHtml(trKey('allCorrect'))}</div>`}
@@ -4362,6 +4529,12 @@ function pxShowSummary(){
       pxRenderQuestion();
     });
   }
+  document.getElementById('pxBody').querySelectorAll('.lookup-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      openWordLookupModal(btn.dataset.lookupword, true);
+    });
+  });
   document.getElementById('pxNewSession').addEventListener('click', pxCloseOverlay);
 }
 
