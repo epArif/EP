@@ -11061,9 +11061,17 @@ function buildHomeStats() {
   panel.classList.remove('hidden');
   btn.classList.remove('hidden');
 
-  // Count by category
+  // Count by category — normalized so the same subject never splits into
+  // duplicate cards just because of case or spelling variants
+  // ("Bangla Language" vs "bangla language" vs "বাংলাদেশ বিষয়াবলি"/"বিষয়াবলী").
   const cats = {};
-  DB.filter(q => q.q).forEach(q => { cats[q.cat] = (cats[q.cat] || 0) + 1; });
+  const _catFirstRaw = {}; // remembers the original text for subjects the table doesn't know
+  const _catKeyFn = window._canonicalSubjectKey || function(c){ return (c||'').toString().trim().toLowerCase(); };
+  DB.filter(q => q.q).forEach(q => {
+    const _k = _catKeyFn(q.cat);
+    cats[_k] = (cats[_k] || 0) + 1;
+    if (!_catFirstRaw[_k]) _catFirstRaw[_k] = q.cat;
+  });
   const total = DB.filter(q => q.q).length;
   let delay = 80;
 
@@ -11075,8 +11083,9 @@ function buildHomeStats() {
     const qLabel = (window._uiLang === 'en') ? 'Q' : 'প্রশ্ন';
     const mLabel = (window._uiLang === 'en') ? 'Marks' : 'নম্বর';
     const _lang = window._uiLang || 'en';
-    const _displayCat = window._subjectName ? window._subjectName(cat, _lang) : cat;
-    const _shortCat   = window._subjectShort ? window._subjectShort(cat, _lang) : _displayCat;
+    const _rawCat = _catFirstRaw[cat] || cat;
+    const _displayCat = window._subjectName ? window._subjectName(_rawCat, _lang) : _rawCat;
+    const _shortCat   = window._subjectShort ? window._subjectShort(_rawCat, _lang) : _displayCat;
     const _cStr = _numFn(count);
     card.dataset.fullname = _displayCat;
     card.innerHTML = `
@@ -14579,17 +14588,57 @@ window._SUBJECT_NAMES = {
   'ethics, values, and good governance': { bn: 'নৈতিকতা, মূল্যবোধ ও সুশাসন',        en: 'Ethics & Governance',  short_bn: 'নৈতিকতা',        short_en: 'Ethics' },
   'ethics & governance':                 { bn: 'নৈতিকতা, মূল্যবোধ ও সুশাসন',        en: 'Ethics & Governance',  short_bn: 'নৈতিকতা',        short_en: 'Ethics' },
 };
+/* ── Canonical subject-key resolver ──
+   Collapses ANY case/spelling/whitespace variant of a subject name
+   ("Bangla Language" / "bangla language" / "BANGLA LANGUAGE" /
+   "বাংলাদেশ বিষয়াবলি" / "বাংলাদেশ বিষয়াবলী" ...) down to the SAME
+   canonical key in _SUBJECT_NAMES — so grouping/display never splits
+   one subject into duplicates just from case or spelling differences. */
+window._canonicalSubjectKey = function(cat) {
+  if (!cat) return '';
+  var entry = window._resolveSubjectEntry(cat);
+  /* Use the entry's own English name as the merge identity — this way
+     TWO different table keys that describe the same subject (e.g. the
+     "বিষয়াবলি" vs "বিষয়াবলী" spelling variants, both meaning
+     "Bangladesh Affairs") still collapse into ONE card instead of two. */
+  if (entry) return entry.en.trim().toLowerCase();
+  return String(cat).trim().toLowerCase();
+};
+
+/* Internal: find the _SUBJECT_NAMES entry matching a raw cat value,
+   ignoring case/whitespace and matching against keys OR display values. */
+window._resolveSubjectEntry = function(cat) {
+  if (!cat) return null;
+  var raw = String(cat).trim();
+  var lc = raw.toLowerCase();
+  var keys = Object.keys(window._SUBJECT_NAMES);
+  /* 1. exact key match, case/whitespace-insensitive */
+  for (var i = 0; i < keys.length; i++) {
+    if (keys[i].trim().toLowerCase() === lc) return window._SUBJECT_NAMES[keys[i]];
+  }
+  /* 2. match against the table's own display values (bn/en/short_*) —
+        covers data that stores the translated label instead of the raw key */
+  for (var i = 0; i < keys.length; i++) {
+    var e = window._SUBJECT_NAMES[keys[i]];
+    if ((e.bn && e.bn.trim() === raw) ||
+        (e.short_bn && e.short_bn.trim() === raw) ||
+        (e.en && e.en.trim().toLowerCase() === lc) ||
+        (e.short_en && e.short_en.trim().toLowerCase() === lc)) {
+      return e;
+    }
+  }
+  /* 3. loose partial match — cat contains a known key, or vice versa */
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i].trim().toLowerCase();
+    if (lc.includes(k) || k.includes(lc)) return window._SUBJECT_NAMES[keys[i]];
+  }
+  return null; /* unknown subject */
+};
+
 window._subjectShort = function(cat, lang) {
   if (!cat) return cat || '';
   lang = lang || window._uiLang || 'en';
-  var entry = window._SUBJECT_NAMES[cat] || window._SUBJECT_NAMES[cat.toLowerCase()];
-  if (!entry) {
-    var lc = cat.toLowerCase().trim(), keys = Object.keys(window._SUBJECT_NAMES);
-    for (var i = 0; i < keys.length; i++) {
-      var k = keys[i];
-      if (lc === k || lc.includes(k) || k.includes(lc)) { entry = window._SUBJECT_NAMES[k]; break; }
-    }
-  }
+  var entry = window._resolveSubjectEntry(cat);
   if (entry) return entry['short_' + lang] || entry['short_en'] || entry[lang] || entry['en'] || cat;
   /* Unknown subject — take first word only (e.g. "Math Reasoning" → "Math") */
   var first = cat.trim().split(/[\s,।]+/)[0];
@@ -14600,22 +14649,7 @@ window._subjectShort = function(cat, lang) {
 window._subjectName = function(cat, lang) {
   if (!cat) return cat || '';
   lang = lang || window._uiLang || 'en';
-  /* 1. Exact match */
-  var entry = window._SUBJECT_NAMES[cat];
-  /* 2. Lowercase exact */
-  if (!entry) entry = window._SUBJECT_NAMES[cat.toLowerCase()];
-  /* 3. Partial match — cat contains key, or key contains cat */
-  if (!entry) {
-    var lc = cat.toLowerCase().trim();
-    var keys = Object.keys(window._SUBJECT_NAMES);
-    for (var i = 0; i < keys.length; i++) {
-      var k = keys[i];
-      if (lc === k || lc.includes(k) || k.includes(lc)) {
-        entry = window._SUBJECT_NAMES[k];
-        break;
-      }
-    }
-  }
+  var entry = window._resolveSubjectEntry(cat);
   if (!entry) return cat; /* unknown — show as-is */
   return entry[lang] || entry['en'] || cat;
 };
