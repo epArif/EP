@@ -314,11 +314,11 @@ if('serviceWorker' in navigator){
   .fc-overlay.open{ display:flex; }
   .fc-overlay.open .fc-box{ animation: fcBoxIn .3s cubic-bezier(.22,1,.36,1); }
   @keyframes fcBoxIn{ from{ opacity:0; transform:scale(.94) translateY(10px); } to{ opacity:1; transform:scale(1) translateY(0); } }
-  .fc-box{ width:100%; max-width:420px; display:flex; flex-direction:column; align-items:center; gap:10px; background:var(--bg); border-radius:20px; padding:6px; }
+  .fc-box{ width:100%; max-width:420px; display:flex; flex-direction:column; align-items:center; gap:12px; background:var(--bg); border-radius:20px; padding:18px 16px; }
   .fc-top{ width:100%; display:flex; align-items:center; justify-content:space-between; }
-  .fc-title{ font-family:'Fraunces','Noto Sans Bengali',serif; color:var(--gold); font-size:14px; }
-  .fc-progress{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-muted); }
-  .fc-close{ background:none; border:1px solid var(--border); color:var(--text-muted); border-radius:8px; width:30px; height:30px; cursor:pointer; }
+  .fc-title{ font-family:'Fraunces','Noto Sans Bengali',serif; color:var(--gold); font-size:15px; line-height:30px; }
+  .fc-progress{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-muted); line-height:30px; }
+  .fc-close{ background:none; border:1px solid var(--border); color:var(--text-muted); border-radius:8px; width:30px; height:30px; cursor:pointer; flex-shrink:0; }
   .fc-progress-bar-wrap{ width:100%; height:4px; border-radius:999px; background:var(--panel-2); overflow:hidden; }
   .fc-progress-bar-fill{ height:100%; width:0%; background:linear-gradient(90deg, var(--gold), var(--teal)); border-radius:999px; transition:width .3s cubic-bezier(.22,1,.36,1); }
   .fc-dots{ display:flex; flex-wrap:wrap; gap:5px; justify-content:center; width:100%; }
@@ -335,12 +335,13 @@ if('serviceWorker' in navigator){
   .fc-face{ position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; border:1px solid var(--border); background:linear-gradient(160deg, var(--panel), var(--panel-2)); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; gap:8px; }
   .fc-face.front{ }
   .fc-face.back{ transform:rotateY(180deg); border-color:var(--teal-dim); }
-  .fc-word{ font-family:'Fraunces','Noto Sans Bengali',serif; font-weight:700; font-size:27px; letter-spacing:0.01em; line-height:1.3; background:linear-gradient(135deg, #F3F1EC 35%, var(--gold)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .fc-word{ font-family:'Fraunces','Noto Sans Bengali',serif; font-weight:700; font-size:27px; letter-spacing:0.01em; line-height:1.3; background:none; -webkit-background-clip:border-box; background-clip:border-box; -webkit-text-fill-color:#E3A857; color:#E3A857; }
   /* Extra accent for the piece of a word that's an actual, AI-identified
-     root/prefix/suffix — a clean solid gold (matching the reference card's
-     "little" in "Belittle"), no underline, no extra gradient mixed in.
-     No root data → word just keeps its normal shimmer, untouched. */
-  .root-hl{ background:none !important; -webkit-background-clip:border-box !important; background-clip:border-box !important; -webkit-text-fill-color:var(--gold) !important; color:var(--gold) !important; }
+     root/prefix/suffix — a distinct soft cream tone standing out against
+     the rest of the word's gold, so the root portion is visibly separate.
+     No root data → the highlight span never appears, so the word just
+     stays plain simple gold throughout. */
+  .root-hl{ background:none !important; -webkit-background-clip:border-box !important; background-clip:border-box !important; -webkit-text-fill-color:#F3F1EC !important; color:#F3F1EC !important; }
   .fc-sub{ font-size:13.5px; color:var(--text-muted); font-family:'Noto Sans Bengali',sans-serif; letter-spacing:0.01em; margin-top:1px; }
   .fc-meaning{ font-family:'Noto Sans Bengali','Inter',sans-serif; font-weight:500; font-size:18.5px; color:#F0DDB0; line-height:1.65; padding:0 8px; }
   .fc-hint{ font-size:11px; color:var(--text-muted); font-family:'Noto Sans Bengali','IBM Plex Mono',monospace; letter-spacing:0.03em; opacity:0.72; margin-top:2px; display:flex; align-items:center; justify-content:center; gap:5px; }
@@ -445,7 +446,7 @@ if('serviceWorker' in navigator){
      this shell instead of trying to carry the meaning itself. */
   .wl-poster{ border:1px solid var(--border); border-radius:16px; padding:18px 16px 16px; margin-bottom:12px; background:linear-gradient(165deg, rgba(217,168,78,0.07), rgba(79,167,158,0.05) 60%); position:relative; overflow:hidden; }
   .wl-poster-banner{ text-align:center; margin-bottom:10px; }
-  .wl-poster-word{ display:inline-block; font-family:'Fraunces','Noto Sans Bengali',serif; font-size:26px; font-weight:700; letter-spacing:0.02em; background:linear-gradient(135deg,#F3F1EC,var(--gold) 60%,var(--teal)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .wl-poster-word{ display:inline-block; font-family:'Fraunces','Noto Sans Bengali',serif; font-size:26px; font-weight:700; letter-spacing:0.02em; background:none; -webkit-background-clip:border-box; background-clip:border-box; -webkit-text-fill-color:#E3A857; color:#E3A857; }
   .wl-poster-pos{ display:block; margin:4px auto 0; width:fit-content; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--bg); background:var(--gold); padding:2px 12px; border-radius:999px; }
   .wl-poster-meaning{ text-align:center; font-family:'Noto Sans Bengali','Inter',sans-serif; font-size:15px; color:var(--text); margin-top:8px; }
   .wl-poster-illustration{ margin:12px 0; border-radius:12px; overflow:hidden; border:1px solid var(--border); }
@@ -2927,6 +2928,17 @@ function pxStartSrReview(){
   });
 }
 function normalizeWordKey(s){ return String(s||'').trim().toLowerCase(); }
+// Capitalizes just the first letter of a searched/looked-up word (leaves
+// the rest of the word untouched) — used wherever the person types or
+// re-opens a word in the AI word-lookup search, so "belittle" always shows
+// and gets saved to search history as "Belittle". Bengali/empty input is
+// returned unchanged (charAt(0).toUpperCase() is a harmless no-op on
+// non-Latin scripts).
+function capFirstWord(s){
+  s = String(s||'').trim();
+  if(!s) return s;
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 function findArchiveEntry(word){
   const key = normalizeWordKey(word);
   return wordArchive.find(e => normalizeWordKey(e.word) === key) || null;
@@ -3195,6 +3207,7 @@ function openWordLookupFromBtn(btn){
   openWordLookupModal(word, true, itemCtx);
 }
 function openWordLookupModal(prefillWord, autoRun, itemCtx){
+  prefillWord = prefillWord ? capFirstWord(prefillWord) : prefillWord;
   pendingLookupCtx = itemCtx || null;
   pendingLookupWord = itemCtx ? (prefillWord || null) : null;
   document.getElementById('wordLookupInput').value = prefillWord || '';
@@ -3221,7 +3234,8 @@ document.getElementById('wordLookupModalOverlay').addEventListener('click', e=>{
 });
 async function runWordLookup(){
   const input = document.getElementById('wordLookupInput');
-  const word = input.value.trim();
+  const word = capFirstWord(input.value);
+  input.value = word; // reflect the auto-capitalized form back in the search box
   const box = document.getElementById('wordLookupBox');
   if(!word){ box.innerHTML = '<p class="fc-ai-error">আগে একটা শব্দ লেখো।</p>'; return; }
   const cached = findArchiveEntry(word);
@@ -3259,7 +3273,7 @@ function renderArchiveList(){
     const d = new Date(e.ts);
     const dateStr = d.toLocaleDateString('bn-BD', {day:'numeric', month:'short'});
     return `<div class="key-row archive-item" data-idx="${i}" style="grid-template-columns:1fr auto auto;cursor:pointer;align-items:center;padding:8px 4px;gap:8px;">
-      <span style="font-family:'Noto Sans Bengali','Inter',sans-serif;font-size:13px;">${escapeHtml(e.word)}</span>
+      <span style="font-family:'Noto Sans Bengali','Inter',sans-serif;font-size:13px;">${escapeHtml(capFirstWord(e.word))}</span>
       <span style="font-size:10px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;">${dateStr}</span>
       <button class="del-btn archive-del-btn" data-idx="${i}" title="মুছে ফেলো">🗑</button>
     </div>`;
@@ -3340,7 +3354,7 @@ function runGlobalSearch(query){
   }
   resultsWrap.innerHTML = matches.map((e, i)=>`
     <div class="search-result-item" data-idx="${i}">
-      <span class="search-result-word">${escapeHtml(e.word)}${e.bn ? ` <span class="search-result-bn">— ${escapeHtml(e.bn.slice(0,40))}</span>` : ''}</span>
+      <span class="search-result-word">${escapeHtml(capFirstWord(e.word))}${e.bn ? ` <span class="search-result-bn">— ${escapeHtml(e.bn.slice(0,40))}</span>` : ''}</span>
       <span class="search-result-badge">${escapeHtml(TYPE_LABELS[e.type] || e.type)}</span>
     </div>`).join('');
   resultsWrap.querySelectorAll('.search-result-item').forEach(el=>{
