@@ -2963,22 +2963,22 @@ document.addEventListener('click', e=>{
 // like "ostentatious"/"gorgeous" etc., which can turn suggestive with zero
 // warning. A flat-vector cartoon character sidesteps that risk while still
 // showing the human situation the word needs.
+// Prompt is kept entirely affirmative (describes what SHOULD be in the
+// picture, never a "do not include X/Y/Z" list). FLUX-based models are
+// known to handle negation poorly — mentioning "no distorted anatomy" or
+// "not scary" tends to make the model attend to distortion/fear rather
+// than avoid it, which is what was producing the unsettling, off-looking
+// results before. Natural flowing sentences also work better than
+// comma-stacked tag/keyword dumps for this model family.
 // Seed is derived from the word so the same word always gets the same image
 // (browser HTTP cache then makes repeat views instant, no fresh generation).
 function pollinationsImageUrl(word, sceneDescription, meaningHint){
   const scene = sceneDescription || `${word}${meaningHint ? ' — ' + meaningHint : ''}`;
-  // Art-direction is spelled out explicitly (style, composition, lighting,
-  // color, line quality) rather than left to the model's defaults — this is
-  // what actually pushes a free text-to-image model toward a clean,
-  // "professional-looking" result instead of a muddy/generic one. The
-  // exclusion clause at the end substitutes for a real negative-prompt
-  // parameter (Pollinations' URL API doesn't reliably support one across
-  // models), so it's folded into the main prompt instead.
-  const promptText = `Professional educational picture-book illustration of this exact scene, literally depicted, one single unambiguous moment, no abstract or symbolic elements, one clear centered subject filling the frame: ${scene}. Style: flat-vector children's picture-book illustration, bold clean linework, smooth shapes, soft studio lighting, balanced warm pastel color palette, tidy uncluttered background with just enough context to place the scene, high detail and sharp focus. If a person appears, draw them as a simple, cute, fully-clothed cartoon character with a clear facial expression and body pose matching the described action, never photorealistic, never romantic or sensual, never a crowd of people. Do not include: text, letters, numbers, captions, watermark, signature, logo, blurriness, distorted anatomy, extra limbs or fingers, multiple conflicting subjects, dark or scary tones. Wholesome, safe for work, exam-study-friendly aesthetic.`;
+  const promptText = `A warm, wholesome flat-vector picture-book illustration made for a children's book, showing this scene clearly and simply: ${scene}. One single calm, natural moment, one clear subject centered in the frame, bold clean linework, smooth rounded shapes, soft bright daytime lighting, a cheerful warm pastel color palette, and a tidy simple background with just enough context to place the scene. If a person appears, they are a cute, friendly cartoon character wearing everyday modest clothing, standing or sitting in a relaxed, natural pose, with a gentle clear facial expression that matches the scene. Clean, polished, professional children's-book art, sharp focus, high detail.`;
   let seed = 0;
   for(let i=0;i<word.length;i++){ seed = ((seed<<5) - seed + word.charCodeAt(i)) | 0; }
   seed = Math.abs(seed) % 100000;
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=800&height=450&seed=${seed}&model=flux&nologo=true&safe=true`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1024&height=768&seed=${seed}&model=flux&nologo=true&safe=true`;
 }
 // Shared image loader — used both for the manual button (old/cached words)
 // and auto-fire (brand new words), so retry-after-error works identically
@@ -2990,7 +2990,7 @@ function loadWlImage(box, wordText, sceneDescription, meaningHint){
   block.innerHTML = `<p class="fc-ai-loading">ছবি বানাচ্ছে (কয়েক সেকেন্ড লাগতে পারে)...</p>`;
   const probe = new Image();
   probe.onload = ()=>{
-    block.innerHTML = `<button id="wlImgToggleBtn" class="modal-btn ghost" type="button" style="width:100%;margin-bottom:8px;">${POSTER_ICON_SVG} ছবি লুকাও</button><div class="wl-img-content" id="wlImgContent"><div class="wl-poster-illustration"><img src="${url}" alt="${escapeHtml(wordText || '')}" class="wl-generated-img"></div><div class="wl-img-caption">AI illustration only — লেখা এখানে বিশ্বাস কোরো না, উপরের কার্ডের লেখাই নির্ভুল</div></div>`;
+    block.innerHTML = `<button id="wlImgToggleBtn" class="modal-btn ghost" type="button" style="width:100%;margin-bottom:8px;">${POSTER_ICON_SVG} ছবি লুকাও</button><div class="wl-img-content" id="wlImgContent"><div class="wl-poster-illustration"><img src="${url}" alt="${escapeHtml(wordText || '')}" class="wl-generated-img"></div></div>`;
     const toggleBtn = block.querySelector('#wlImgToggleBtn');
     const content = block.querySelector('#wlImgContent');
     toggleBtn.addEventListener('click', ()=>{
