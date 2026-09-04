@@ -377,6 +377,15 @@ if('serviceWorker' in navigator){
   .fc-ai-label{ display:block; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.04em; color:var(--gold); margin-bottom:3px; }
   .fc-ai-loading{ color:var(--text-muted); font-style:italic; }
   .fc-ai-error{ color:var(--danger); }
+  @keyframes wlShimmer{ 0%{ background-position:-200% 0; } 100%{ background-position:200% 0; } }
+  .wl-skel{ display:flex; flex-direction:column; gap:10px; align-items:center; padding:4px 0; }
+  .wl-skel-bar, .wl-skel-box{ background:linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.14) 50%, rgba(255,255,255,0.05) 75%); background-size:200% 100%; animation:wlShimmer 1.3s ease-in-out infinite; border-radius:8px; }
+  .wl-skel-bar{ height:14px; }
+  .wl-skel-bar.w60{ width:60%; height:20px; }
+  .wl-skel-bar.w40{ width:40%; }
+  .wl-skel-bar.full{ width:100%; }
+  .wl-skel-box{ width:100%; height:56px; border-radius:12px; }
+  .wl-skel-status{ text-align:center; font-size:11px; color:var(--text-muted); font-style:italic; margin-top:2px; }
 
   /* premium polish: cards & modals get a touch more depth */
   .fc-card{ box-shadow:0 14px 34px rgba(0,0,0,0.4); }
@@ -410,9 +419,13 @@ if('serviceWorker' in navigator){
   .wl-img-block{ margin:2px 0 12px; }
   .wl-img-block img.wl-generated-img{ width:100%; max-height:280px; object-fit:cover; border-radius:10px; border:1px solid var(--border); display:block; }
   .wl-img-caption{ font-size:10.5px; color:var(--text-muted); margin-top:5px; text-align:center; font-family:'IBM Plex Mono',monospace; }
-  .wl-chip{ font-size:12px; padding:4px 11px; border-radius:999px; border:1px solid; font-family:'Noto Sans Bengali','Inter',sans-serif; }
+  .wl-chip{ font-size:12px; padding:4px 11px; border-radius:999px; border:1px solid; font-family:'Noto Sans Bengali','Inter',sans-serif; background:none; cursor:pointer; transition:transform .1s ease, background .15s ease; }
+  .wl-chip:hover{ transform:translateY(-1px); }
+  .wl-chip:active{ transform:translateY(0); }
   .wl-chip.syn{ border-color:var(--teal-dim); color:var(--teal); }
+  .wl-chip.syn:hover{ background:rgba(79,167,158,0.12); }
   .wl-chip.ant{ border-color:var(--danger); color:var(--danger); }
+  .wl-chip.ant:hover{ background:rgba(196,99,79,0.12); }
 
   /* Poster-style infographic card — everything here is real HTML/CSS text,
      never AI-painted pixels, so it never comes out garbled/"ultapalta"
@@ -454,6 +467,7 @@ if('serviceWorker' in navigator){
   .wl-fc-block.sentence{ border-left-color:var(--gold-dim); background:rgba(217,168,78,0.08); font-style:italic; }
   .wl-fc-block.confuse{ border-left-color:var(--danger); background:rgba(196,99,79,0.13); }
   .wl-fc-block.confuse .wl-fc-label{ color:var(--danger); }
+  .fc-ai-outdated-hint{ margin-top:10px; padding:7px 10px; border-radius:8px; border:1px dashed var(--gold-dim); color:var(--gold); font-size:11px; }
   .search-result-item{ padding:9px 6px; border-bottom:1px solid var(--border); cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:8px; }
   .search-result-item:hover{ background:rgba(255,255,255,0.03); }
   .search-result-word{ font-size:13px; }
@@ -1013,6 +1027,18 @@ if('serviceWorker' in navigator){
       <div class="px-preview" id="pxPreview">🔤 <span class="n" id="pxPreviewN">–</span> <span data-i18n="wordsFoundSuffix">টি শব্দ পাওয়া যাচ্ছে</span></div>
       <button id="pxStartBtn" class="px-start-btn" data-i18n="btnStart">শুরু করো</button>
       <div id="pxSetupMsg" class="px-msg"></div>
+    </section>
+
+    <section class="panel reveal d2" id="pxSrPanel">
+      <div class="panel-title cov-header" data-toggle="pxSrBody">
+        <span>🔁 <span>আজকের রিভিউ</span> <span class="tag">Spaced Repetition</span></span>
+        <span class="caret open" id="caret-pxSrBody">▸</span>
+      </div>
+      <div class="cov-wrap open" id="pxSrBody">
+        <div class="px-preview" id="pxSrPreview">🔁 <span class="n" id="pxSrDueCount">0</span> টা শব্দ আজ রিভিউ করার সময় হয়েছে</div>
+        <button id="pxSrStartBtn" class="px-start-btn" type="button">রিভিউ শুরু করো</button>
+        <div class="sub" style="margin-top:6px;font-size:11px;">কুইজে ঠিক/ভুল উত্তরের ওপর ভিত্তি করে প্রতিটা শব্দের নিজস্ব repeat-interval হিসাব হয় — ভুল হলে শীঘ্রই আবার দেখাবে, ঠিক হতে থাকলে ধীরে ধীরে ব্যবধান বাড়বে।</div>
+      </div>
     </section>
 
     <section class="panel reveal d2" id="pxHistoryPanel">
@@ -1952,6 +1978,7 @@ document.getElementById('pantryUpload').addEventListener('click', async ()=>{
       state: mergeDict(remote && remote.state, state),
       overrides: mergeDict(remote && remote.overrides, overrides),
       aiCache: mergeDict(remote && remote.aiCache, aiCache),
+      srState: mergeDict(remote && remote.srState, srState),
       practiceHistory: mergeHistoryArr(remote && remote.practiceHistory, practiceHistory, 150, mergedDeletedHistoryIds),
       wrongCounts: mergeMaxDict(remote && remote.wrongCounts, wrongCounts),
       routineState: mergeNestedDict(remote && remote.routineState, routineState),
@@ -1986,6 +2013,7 @@ document.getElementById('pantryDownload').addEventListener('click', async ()=>{
     if(data.state) { state = data.state; saveState(state); }
     if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
     if(data.aiCache) { mergeAiCacheFromCloud(data.aiCache); }
+    if(data.srState) { srState = mergeDict(data.srState, srState); saveSrState(srState); if(typeof pxRenderSrPanel==='function') try{ pxRenderSrPanel(); }catch(e){} }
     deletedHistoryIds = mergeTombstoneLists(data.deletedHistoryIds, deletedHistoryIds); saveDeletedList(DELETED_HISTORY_KEY, deletedHistoryIds);
     deletedArchiveWords = mergeTombstoneLists(data.deletedArchiveWords, deletedArchiveWords); saveDeletedList(DELETED_ARCHIVE_KEY, deletedArchiveWords);
     if(data.practiceHistory) { practiceHistory = mergeHistoryArr(data.practiceHistory, [], 150, deletedHistoryIds); savePracticeHistory(practiceHistory); if(typeof pxRenderHistory==='function') try{ pxRenderHistory(); }catch(e){} }
@@ -2045,6 +2073,7 @@ document.getElementById('fbUpload').addEventListener('click', async ()=>{
       state: mergeDict(remote && remote.state, state),
       overrides: mergeDict(remote && remote.overrides, overrides),
       aiCache: mergeDict(remote && remote.aiCache, aiCache),
+      srState: mergeDict(remote && remote.srState, srState),
       practiceHistory: mergeHistoryArr(remote && remote.practiceHistory, practiceHistory, 150, mergedDeletedHistoryIds),
       wrongCounts: mergeMaxDict(remote && remote.wrongCounts, wrongCounts),
       routineState: mergeNestedDict(remote && remote.routineState, routineState),
@@ -2082,6 +2111,7 @@ document.getElementById('fbDownload').addEventListener('click', async ()=>{
     if(data.state) { state = data.state; saveState(state); }
     if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
     if(data.aiCache) { mergeAiCacheFromCloud(data.aiCache); }
+    if(data.srState) { srState = mergeDict(data.srState, srState); saveSrState(srState); if(typeof pxRenderSrPanel==='function') try{ pxRenderSrPanel(); }catch(e){} }
     deletedHistoryIds = mergeTombstoneLists(data.deletedHistoryIds, deletedHistoryIds); saveDeletedList(DELETED_HISTORY_KEY, deletedHistoryIds);
     deletedArchiveWords = mergeTombstoneLists(data.deletedArchiveWords, deletedArchiveWords); saveDeletedList(DELETED_ARCHIVE_KEY, deletedArchiveWords);
     if(data.practiceHistory) { practiceHistory = mergeHistoryArr(data.practiceHistory, [], 150, deletedHistoryIds); savePracticeHistory(practiceHistory); if(typeof pxRenderHistory==='function') try{ pxRenderHistory(); }catch(e){} }
@@ -2308,6 +2338,7 @@ async function performAutoBackup(){
       state: mergeDict(remote && remote.state, state),
       overrides: mergeDict(remote && remote.overrides, overrides),
       aiCache: mergeDict(remote && remote.aiCache, aiCache),
+      srState: mergeDict(remote && remote.srState, srState),
       practiceHistory: mergeHistoryArr(remote && remote.practiceHistory, practiceHistory, 150, mergedDeletedHistoryIds),
       wrongCounts: mergeMaxDict(remote && remote.wrongCounts, wrongCounts),
       routineState: mergeNestedDict(remote && remote.routineState, routineState),
@@ -2382,6 +2413,7 @@ async function performAutoPull(){
         if(data.state) { state = data.state; saveState(state); }
         if(data.overrides) { overrides = data.overrides; saveOverrides(overrides); }
         if(data.aiCache) { mergeAiCacheFromCloud(data.aiCache); }
+        if(data.srState) { srState = mergeDict(data.srState, srState); saveSrState(srState); if(typeof pxRenderSrPanel==='function') try{ pxRenderSrPanel(); }catch(e){} }
         deletedHistoryIds = mergeTombstoneLists(data.deletedHistoryIds, deletedHistoryIds); saveDeletedList(DELETED_HISTORY_KEY, deletedHistoryIds);
         deletedArchiveWords = mergeTombstoneLists(data.deletedArchiveWords, deletedArchiveWords); saveDeletedList(DELETED_ARCHIVE_KEY, deletedArchiveWords);
         if(data.practiceHistory) { practiceHistory = mergeHistoryArr(data.practiceHistory, [], 150, deletedHistoryIds); savePracticeHistory(practiceHistory); if(typeof pxRenderHistory==='function') try{ pxRenderHistory(); }catch(e){} }
@@ -2650,17 +2682,26 @@ function renderAiAnswer(aiBox, raw){
   const exMatch = raw.match(/উদাহরণ বাক্য:\s*([\s\S]*?)(?=শব্দের গঠন:|কাছাকাছি শব্দ সতর্কতা:|$)/);
   const rootMatch = raw.match(/শব্দের গঠন:\s*([\s\S]*?)(?=কাছাকাছি শব্দ সতর্কতা:|$)/);
   const confuseMatch = raw.match(/কাছাকাছি শব্দ সতর্কতা:\s*([\s\S]*)/);
+  // A cached answer from before some heading existed in the prompt (e.g. group
+  // verb's "সরাসরি ইংরেজি অর্থ" added later) simply won't match that regex at
+  // all — that's the signal an old-format cache entry is being shown, and the
+  // refresh button below lets the person pull the current, richer format.
+  const isMaybeOutdated = (fcDeck[fcIndex] && AI_TYPE_META[fcDeck[fcIndex].type] && AI_TYPE_META[fcDeck[fcIndex].type].hasDirectEn && !directEnMatch) || (AI_TYPE_META[fcDeck[fcIndex] && fcDeck[fcIndex].type] && AI_TYPE_META[fcDeck[fcIndex].type].hasRoot && !rootMatch);
+  let html = '';
   if(directEnMatch || memMatch || exMatch || rootMatch || confuseMatch){
-    let html = '';
     if(directEnMatch && !isNaBlock(directEnMatch[1])) html += `<div class="wl-fc-block direct"><span class="wl-fc-label">🔤 সরাসরি ইংরেজি অর্থ</span>${renderChipRow(directEnMatch[1].trim(), 'syn')}</div>`;
     if(memMatch && memMatch[1].trim()) html += `<div class="wl-fc-block mnemonic"><span class="wl-fc-label">💡 মনে রাখার কৌশল</span><p>${escapeHtml(memMatch[1].trim())}</p></div>`;
     if(rootMatch && !isNaBlock(rootMatch[1])) html += `<div class="wl-fc-block root"><span class="wl-fc-label">🧩 শব্দের গঠন</span><p>${escapeHtml(rootMatch[1].trim())}</p></div>`;
     if(exMatch && exMatch[1].trim()) html += `<div class="wl-fc-block sentence"><span class="wl-fc-label">✍️ উদাহরণ বাক্য</span><p>${escapeHtml(exMatch[1].trim())}</p></div>`;
     if(confuseMatch && !isNaBlock(confuseMatch[1])) html += `<div class="wl-fc-block confuse"><span class="wl-fc-label">⚠️ কাছাকাছি শব্দ</span><p>${escapeHtml(confuseMatch[1].trim())}</p></div>`;
-    aiBox.innerHTML = html;
   } else {
-    aiBox.innerHTML = `<p>${escapeHtml(raw)}</p>`;
+    html = `<p>${escapeHtml(raw)}</p>`;
   }
+  if(isMaybeOutdated) html += `<div class="fc-ai-outdated-hint">⚠️ এটা পুরনো ফরম্যাটে আনা — নতুন ফিল্ডসহ আবার আনতে নিচের বাটনে চাপো।</div>`;
+  html += `<button id="fcAiRefreshBtn" class="modal-btn ghost" type="button" style="width:100%;margin-top:10px;font-size:11px;">🔄 নতুন ফরম্যাটে আবার আনো</button>`;
+  aiBox.innerHTML = html;
+  const refreshBtn = aiBox.querySelector('#fcAiRefreshBtn');
+  if(refreshBtn) refreshBtn.addEventListener('click', ()=> fcRunAi(true));
 }
 // Explicit job for the AI: a BCS/bank-exam vocabulary coach, output in two
 // clearly labelled parts so the app can render them as separate blocks.
@@ -2714,6 +2755,88 @@ function loadWordArchive(){
 }
 function saveWordArchive(arr){ debouncedWrite(WORD_ARCHIVE_KEY, ()=>arr); }
 let wordArchive = loadWordArchive(); // newest first: [{word, answer, ts}, ...]
+
+// ---- Spaced Repetition (simplified SM-2) ----
+// Keyed the same way as wrongCounts (type-no), so it works for every list
+// type without extra bookkeeping. Every quiz answer nudges a word's easiness
+// factor and next-due date: wrong answers reset it to "due tomorrow", correct
+// streaks push the interval out (1 → 6 → interval*EF days), same core idea
+// as Anki/SuperMemo.
+const SR_STATE_KEY = 'memoria-sr-state-v1';
+function loadSrState(){ try{ const raw = localStorage.getItem(SR_STATE_KEY); const o = raw?JSON.parse(raw):{}; return (o && typeof o==='object') ? o : {}; }catch(e){ return {}; } }
+function saveSrState(s){ try{ localStorage.setItem(SR_STATE_KEY, JSON.stringify(s)); }catch(e){} }
+let srState = loadSrState();
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function srUpdate(key, correct){
+  const s = srState[key] || {ef:2.5, interval:0, reps:0};
+  const q = correct ? 5 : 2; // simplified quality: correct=5 (easy), wrong=2 (fail)
+  if(q < 3){
+    s.reps = 0;
+    s.interval = 1;
+  } else {
+    s.reps = (s.reps||0) + 1;
+    if(s.reps === 1) s.interval = 1;
+    else if(s.reps === 2) s.interval = 6;
+    else s.interval = Math.max(1, Math.round((s.interval||1) * (s.ef||2.5)));
+  }
+  s.ef = Math.max(1.3, (s.ef||2.5) + (0.1 - (5-q)*(0.08+(5-q)*0.02)));
+  const due = new Date();
+  due.setDate(due.getDate() + s.interval);
+  s.due = due.toISOString().slice(0,10);
+  s.lastReviewed = todayISO();
+  srState[key] = s;
+  saveSrState(srState);
+  scheduleAutoBackup();
+}
+// Reconstructs full word objects (word/bn/val) for every key whose due date
+// has arrived, by looking them back up in the live lists (so edits/overrides
+// made after the SR entry was created are still reflected).
+function getDueWords(){
+  const today = todayISO();
+  const due = [];
+  Object.keys(srState).forEach(key=>{
+    const s = srState[key];
+    if(!s || !s.due || s.due > today) return;
+    const idx = key.lastIndexOf('-');
+    if(idx < 0) return;
+    const type = key.slice(0, idx);
+    const no = parseInt(key.slice(idx+1), 10);
+    if(!VALKEY[type]) return;
+    const w = getFullList(type).find(x => x.no === no);
+    if(w) due.push({type, no: w.no, word: w.word, bn: w.bn, val: w[VALKEY[type]]});
+  });
+  return due;
+}
+function pxRenderSrPanel(){
+  const countEl = document.getElementById('pxSrDueCount');
+  const btn = document.getElementById('pxSrStartBtn');
+  if(!countEl || !btn) return;
+  const n = getDueWords().length;
+  countEl.textContent = n;
+  btn.disabled = n === 0;
+  btn.textContent = n === 0 ? 'আজ রিভিউ করার কিছু নেই ✓' : 'রিভিউ শুরু করো';
+}
+function pxStartSrReview(){
+  let words = getDueWords();
+  if(words.length === 0) return;
+  let truncNote = '';
+  if(words.length > 20){ words = pxShuffle(words).slice(0, 20); truncNote = ' (এলোমেলোভাবে ২০টা বাছাই করা হয়েছে)'; }
+  else words = pxShuffle(words);
+  pxQueue = words;
+  pxIndex = 0; pxScore = 0; pxWrongThisSession = []; pxAnswered = [];
+  pxSourceLabel = 'আজকের রিভিউ (Spaced Repetition) · ' + words.length + 'টা শব্দ' + truncNote;
+  document.getElementById('pxTitle').textContent = 'MCQ Quiz';
+  document.getElementById('pxOverlay').classList.add('open');
+  lockBodyScroll();
+  document.getElementById('pxBody').innerHTML = `<div class="px-loading">${escapeHtml(trKey('generatingQuestions'))}</div>`;
+  pxCreateInProgressEntries();
+  pxPrepareDistractors(pxQueue, msg=>{
+    const body = document.getElementById('pxBody');
+    if(body) body.innerHTML = `<div class="px-loading">${escapeHtml(msg)}</div>`;
+  }).catch(()=>{}).then(()=>{
+    pxRenderQuestion();
+  });
+}
 function normalizeWordKey(s){ return String(s||'').trim().toLowerCase(); }
 function findArchiveEntry(word){
   const key = normalizeWordKey(word);
@@ -2725,6 +2848,15 @@ function upsertArchiveEntry(word, answer){
   wordArchive = wordArchive.filter(e => normalizeWordKey(e.word) !== key);
   wordArchive.unshift({ word: word.trim(), answer, ts: Date.now() });
   if(wordArchive.length > WORD_ARCHIVE_MAX) wordArchive.length = WORD_ARCHIVE_MAX;
+  saveWordArchive(wordArchive);
+}
+// Used only by the poster-card "refresh" button — clears the cached answer
+// so the next lookup re-fetches, but does NOT tombstone it like a real
+// deletion would. Tombstoning here would make the word permanently excluded
+// from future cloud merges even after it's freshly re-added.
+function removeArchiveEntryOnly(word){
+  const key = normalizeWordKey(word);
+  wordArchive = wordArchive.filter(e => normalizeWordKey(e.word) !== key);
   saveWordArchive(wordArchive);
 }
 function deleteArchiveEntry(idx){
@@ -2741,6 +2873,15 @@ function clearWordArchive(){
   scheduleAutoBackup();
 }
 
+function skeletonHtml(statusMsg){
+  return `<div class="wl-skel">
+    <div class="wl-skel-bar w60"></div>
+    <div class="wl-skel-bar w40"></div>
+    <div class="wl-skel-box"></div>
+    <div class="wl-skel-box" style="height:70px;"></div>
+    <div class="wl-skel-bar full"></div>
+  </div>${statusMsg ? `<div class="wl-skel-status">${escapeHtml(statusMsg)}</div>` : ''}`;
+}
 function buildWordLookupPrompt(word, itemCtx){
   // itemCtx = the exact list-item object (word/bn/val/type) when this lookup was
   // triggered from a specific exam list (Antonym/Group Verb/Idiom/etc. row) via
@@ -2788,8 +2929,20 @@ function mdBoldHtml(escapedText){
 function renderChipRow(csvText, chipClass){
   const items = csvText.split(/[,،]/).map(s=>s.trim()).filter(Boolean);
   if(items.length === 0) return '';
-  return `<div class="wl-chip-row">${items.map(it=>`<span class="wl-chip ${chipClass}">${mdBoldHtml(escapeHtml(it))}</span>`).join('')}</div>`;
+  return `<div class="wl-chip-row">${items.map(it=>`<button type="button" class="wl-chip ${chipClass} wl-chip-tap" data-chipword="${escapeHtml(it.replace(/\*\*/g,''))}">${mdBoldHtml(escapeHtml(it))}</button>`).join('')}</div>`;
 }
+// One delegated listener (rather than re-wiring after every innerHTML swap)
+// handles every chip everywhere they appear — poster card, flashcard AI
+// panel, etc. Tapping a synonym/antonym/direct-meaning chip opens a fresh
+// poster-card lookup for that word, since a person reading "Loathe" as an
+// antonym result will often want to look "Loathe" itself up next.
+document.addEventListener('click', e=>{
+  const chip = e.target.closest('.wl-chip-tap');
+  if(!chip) return;
+  const word = chip.dataset.chipword;
+  if(!word) return;
+  openWordLookupModal(word, true);
+});
 
 // Visual mnemonic — free, keyless image generation via Pollinations.ai. The
 // AI lookup itself now produces a concrete English scene description (see
@@ -2886,7 +3039,44 @@ function renderWordLookupAnswer(box, raw, wordText, autoLoadImage){
   if(parts['বিস্তারিত অর্থ']) html += `<div class="fc-ai-block"><span class="fc-ai-label">🔎 বিস্তারিত অর্থ</span><p>${mdBoldHtml(escapeHtml(parts['বিস্তারিত অর্থ']))}</p></div>`;
   if(parts['মনে রাখার কৌশল']) html += `<div class="fc-ai-block"><span class="fc-ai-label">💡 মনে রাখার কৌশল</span><p>${mdBoldHtml(escapeHtml(parts['মনে রাখার কৌশল']))}</p></div>`;
   if(parts['কাছাকাছি শব্দ সতর্কতা']) html += `<div class="fc-ai-block"><span class="fc-ai-label">⚠️ কাছাকাছি শব্দ সতর্কতা</span><p>${mdBoldHtml(escapeHtml(parts['কাছাকাছি শব্দ সতর্কতা']))}</p></div>`;
+  html += `<button id="wlCopyBtn" class="modal-btn ghost" type="button" style="width:100%;margin-top:10px;">📋 কার্ডের লেখা কপি করো</button>`;
+  html += `<button id="wlRefreshBtn" class="modal-btn ghost" type="button" style="width:100%;margin-top:6px;font-size:11px;">🔄 নতুন ফরম্যাটে আবার আনো</button>`;
   box.innerHTML = html;
+  const wlRefreshBtn = box.querySelector('#wlRefreshBtn');
+  if(wlRefreshBtn) wlRefreshBtn.addEventListener('click', ()=>{
+    if(wordText) removeArchiveEntryOnly(wordText);
+    runWordLookup();
+  });
+  const wlCopyBtn = box.querySelector('#wlCopyBtn');
+  if(wlCopyBtn) wlCopyBtn.addEventListener('click', ()=>{
+    // Plain-text version of the whole card, in the same top-to-bottom order
+    // it's displayed — so pasting into WhatsApp/a notes app to send a
+    // friend reads naturally instead of dumping raw HTML/labels.
+    const lines = [wordText || ''];
+    if(parts['টাইপ']) lines.push(`(${parts['টাইপ']})`);
+    if(parts['সংক্ষিপ্ত অর্থ']) lines.push(parts['সংক্ষিপ্ত অর্থ']);
+    if(parts['Definition']) lines.push(parts['Definition']);
+    if(parts['শব্দের গঠন']) lines.push(`\nWord Root: ${parts['শব্দের গঠন']}`);
+    if(parts['সমার্থক শব্দ']) lines.push(`\nSynonyms: ${parts['সমার্থক শব্দ']}`);
+    if(parts['বিপরীত শব্দ']) lines.push(`Antonyms: ${parts['বিপরীত শব্দ']}`);
+    if(parts['উদাহরণ বাক্য']) lines.push(`\nExample: ${parts['উদাহরণ বাক্য']}`);
+    if(parts['বিস্তারিত অর্থ']) lines.push(`\nবিস্তারিত অর্থ: ${parts['বিস্তারিত অর্থ']}`);
+    if(parts['মনে রাখার কৌশল']) lines.push(`\nমনে রাখার কৌশল: ${parts['মনে রাখার কৌশল']}`);
+    if(parts['কাছাকাছি শব্দ সতর্কতা']) lines.push(`\n⚠️ ${parts['কাছাকাছি শব্দ সতর্কতা']}`);
+    const text = lines.join('\n');
+    const prevLabel = wlCopyBtn.textContent;
+    const showCopied = ()=>{ wlCopyBtn.textContent = '✓ কপি হয়ে গেছে!'; setTimeout(()=>{ wlCopyBtn.textContent = prevLabel; }, 1800); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(showCopied).catch(()=>{ wlCopyBtn.textContent = '❌ কপি করা গেল না'; setTimeout(()=>{ wlCopyBtn.textContent = prevLabel; }, 1800); });
+    } else {
+      // very old browsers without the Clipboard API
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); showCopied(); }catch(e){ wlCopyBtn.textContent = '❌ কপি করা গেল না'; setTimeout(()=>{ wlCopyBtn.textContent = prevLabel; }, 1800); }
+      document.body.removeChild(ta);
+    }
+  });
   const sceneDescription = parts['ছবির দৃশ্য'] || ''; // English scene, hidden from the user, used only for the image prompt
   const meaningHint = parts['সংক্ষিপ্ত অর্থ'] || '';
   if(autoLoadImage){
@@ -2942,11 +3132,11 @@ async function runWordLookup(){
   if(cached){ renderWordLookupAnswer(box, cached.answer, cached.word); renderArchiveList(); return; } // cache hit — no API call
   const itemCtx = (pendingLookupCtx && pendingLookupWord === word) ? pendingLookupCtx : null;
   pendingLookupCtx = null; pendingLookupWord = null; // one-shot — don't leak onto a later, unrelated lookup
-  box.innerHTML = '<p class="fc-ai-loading">AI ভাবছে...</p>';
+  box.innerHTML = skeletonHtml();
   const prompt = buildWordLookupPrompt(word, itemCtx);
   pauseAutoBackupForAi();
   try{
-    const answer = await callGeminiText(prompt, msg => { box.innerHTML = `<p class="fc-ai-loading">${escapeHtml(msg)}</p>`; });
+    const answer = await callGeminiText(prompt, msg => { box.innerHTML = skeletonHtml(msg); });
     upsertArchiveEntry(word, answer);
     renderWordLookupAnswer(box, answer, word, true); // brand new word — auto-load the picture too
     renderArchiveList();
@@ -3089,24 +3279,25 @@ document.getElementById('fcPoster').addEventListener('click', (e)=>{
   const w = fcDeck[fcIndex];
   openWordLookupModal(w.word, true, {type: w.type, bn: w.bn, val: w.val});
 });
-document.getElementById('fcAi').addEventListener('click', async (e)=>{
-  pulseBtn(e.currentTarget);
+async function fcRunAi(forceRefresh){
   const w = fcDeck[fcIndex];
   const aiBox = document.getElementById('fcAiBox');
   aiBox.classList.add('show');
 
   const cacheKey = aiCacheKey(w);
-  const cached = aiCache[cacheKey];
-  if(cached){
-    renderAiAnswer(aiBox, cached);
-    return; // already fetched before — no API call, works offline too
+  if(!forceRefresh){
+    const cached = aiCache[cacheKey];
+    if(cached){
+      renderAiAnswer(aiBox, cached);
+      return; // already fetched before — no API call, works offline too
+    }
   }
 
-  aiBox.innerHTML = '<p class="fc-ai-loading">AI ভাবছে...</p>';
+  aiBox.innerHTML = skeletonHtml();
   const prompt = buildAiPrompt(w);
   pauseAutoBackupForAi();
   try{
-    const answer = await callGeminiText(prompt, msg => { aiBox.innerHTML = `<p class="fc-ai-loading">${escapeHtml(msg)}</p>`; });
+    const answer = await callGeminiText(prompt, msg => { aiBox.innerHTML = skeletonHtml(msg); });
     aiCache[cacheKey] = answer;
     saveAiCache(aiCache);
     renderAiAnswer(aiBox, answer);
@@ -3115,6 +3306,10 @@ document.getElementById('fcAi').addEventListener('click', async (e)=>{
   }finally{
     resumeAutoBackupForAi();
   }
+}
+document.getElementById('fcAi').addEventListener('click', (e)=>{
+  pulseBtn(e.currentTarget);
+  fcRunAi(false);
 });
 
 // ---- Bulk AI fetch: one tap fetches AI help for every word currently in the
@@ -4399,6 +4594,7 @@ function pxUpdateBackfillChip(){
   if(!chip) return;
   const n = pxWordsMissingExplanation().length;
   chip.textContent = n > 0 ? (n + ' ' + trKey('backfillCountSuffix')) : '';
+  chip.style.display = n > 0 ? '' : 'none';
 }
 const backfillExplainBtnEl = document.getElementById('backfillExplainBtn');
 if(backfillExplainBtnEl) backfillExplainBtnEl.addEventListener('click', pxBackfillExplanations);
@@ -4600,6 +4796,7 @@ function pxAnswer(selIdx, correctIdx, w, explanation){
   });
   const isCorrect = selIdx === correctIdx;
   pxAnswered.push({type: w.type, correct: isCorrect});
+  srUpdate(wrongKey(w), isCorrect);
   if(isCorrect){
     pxScore++;
   } else {
@@ -4621,6 +4818,7 @@ function pxNext(){
 }
 
 function pxShowSummary(){
+  pxRenderSrPanel();
   const total = pxQueue.length;
   const correct = pxScore;
   const byType = {};
@@ -4716,7 +4914,15 @@ function pxRenderHistory(){
   const tabsWrap = document.getElementById('pxHistoryTabs');
   const countBadge = document.getElementById('pxHistoryCountBadge');
   if(!wrap) return;
-  if(countBadge) countBadge.textContent = practiceHistory.length ? (practiceHistory.length + ' ' + trKey('histSessionsSuffix')) : '';
+  if(countBadge){
+    if(practiceHistory.length){
+      countBadge.textContent = practiceHistory.length + ' ' + trKey('histSessionsSuffix');
+      countBadge.style.display = '';
+    } else {
+      countBadge.textContent = '';
+      countBadge.style.display = 'none';
+    }
+  }
   const types = Array.from(new Set(practiceHistory.map(h=>h.type).filter(Boolean)));
   if(tabsWrap){
     if(types.length === 0){
@@ -4772,6 +4978,8 @@ function pxRenderHistory(){
   });
 }
 pxRenderHistory();
+pxRenderSrPanel();
+document.getElementById('pxSrStartBtn').addEventListener('click', pxStartSrReview);
 const pxHistoryClearAllBtn = document.getElementById('pxHistoryClearAll');
 if(pxHistoryClearAllBtn) pxHistoryClearAllBtn.addEventListener('click', ()=>{
   if(practiceHistory.length === 0) return;
