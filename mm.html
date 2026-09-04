@@ -336,6 +336,11 @@ if('serviceWorker' in navigator){
   .fc-face.front{ }
   .fc-face.back{ transform:rotateY(180deg); border-color:var(--teal-dim); }
   .fc-word{ font-family:'Fraunces','Noto Sans Bengali',serif; font-weight:700; font-size:27px; letter-spacing:0.01em; line-height:1.3; background:linear-gradient(135deg, #F3F1EC 35%, var(--gold)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  /* Extra accent for the piece of a word that's an actual, AI-identified
+     root/prefix/suffix — a clean solid gold (matching the reference card's
+     "little" in "Belittle"), no underline, no extra gradient mixed in.
+     No root data → word just keeps its normal shimmer, untouched. */
+  .root-hl{ background:none !important; -webkit-background-clip:border-box !important; background-clip:border-box !important; -webkit-text-fill-color:var(--gold) !important; color:var(--gold) !important; }
   .fc-sub{ font-size:13.5px; color:var(--text-muted); font-family:'Noto Sans Bengali',sans-serif; letter-spacing:0.01em; margin-top:1px; }
   .fc-meaning{ font-family:'Noto Sans Bengali','Inter',sans-serif; font-weight:500; font-size:18.5px; color:#F0DDB0; line-height:1.65; padding:0 8px; }
   .fc-hint{ font-size:11px; color:var(--text-muted); font-family:'Noto Sans Bengali','IBM Plex Mono',monospace; letter-spacing:0.03em; opacity:0.72; margin-top:2px; display:flex; align-items:center; justify-content:center; gap:5px; }
@@ -343,6 +348,12 @@ if('serviceWorker' in navigator){
   .fc-controls{ width:100%; display:flex; align-items:center; gap:8px; }
   .fc-controls button{ flex:1; padding:10px 6px; border-radius:10px; border:1px solid var(--border); background:var(--panel); color:var(--text); font-size:12px; cursor:pointer; font-family:'IBM Plex Mono',monospace; transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease; display:flex; align-items:center; justify-content:center; gap:6px; }
   .fc-controls button svg{ width:14px; height:14px; flex-shrink:0; }
+  /* Auto-dims after a second of no interaction so attention stays on the
+     card itself; any touch/click/mouse-move inside the flashcard modal
+     brings it right back to full opacity. Buttons stay fully clickable
+     while dimmed — this is visual only, never disabled. */
+  .fc-controls{ transition: opacity .5s ease; }
+  .fc-controls.fc-dim{ opacity: 0.32; }
   .fc-controls button:hover{ border-color:var(--gold-dim); color:var(--gold); }
   .fc-controls button:active{ transform:scale(0.92); }
   .fc-controls button.fc-btn-pop{ animation: fcBtnPop .32s ease; }
@@ -813,7 +824,7 @@ if('serviceWorker' in navigator){
         <button id="fcAiAll" class="fc-ai-all"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2c.32 0 .6.21.7.52l1.36 4.3 4.3 1.36c.31.1.52.38.52.7s-.21.6-.52.7l-4.3 1.36-1.36 4.3c-.1.31-.38.52-.7.52s-.6-.21-.7-.52l-1.36-4.3-4.3-1.36c-.31-.1-.52-.38-.52-.7s.21-.6.52-.7l4.3-1.36 1.36-4.3c.1-.31.38-.52.7-.52z"/><path d="M18.5 14c.26 0 .49.17.57.42l.55 1.72 1.72.55c.25.08.42.31.42.57s-.17.49-.42.57l-1.72.55-.55 1.72c-.08.25-.31.42-.57.42s-.49-.17-.57-.42l-.55-1.72-1.72-.55c-.25-.08-.42-.31-.42-.57s.17-.49.42-.57l1.72-.55.55-1.72c.08-.25.31-.42.57-.42z"/></svg> <span id="fcAiAllLabel" data-i18n="aiAllLabel">এই তালিকার সব শব্দের AI একসাথে আনো</span></button>
       </div>
       <div class="fc-controls fc-controls-2">
-        <button id="fcPosterAll" class="fc-ai-all fc-poster-all"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg> <span id="fcPosterAllLabel">এই তালিকার সব শব্দের Poster Card একসাথে আনো</span></button>
+        <button id="fcPosterAll" class="fc-ai-all fc-poster-all"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg> <span id="fcPosterAllLabel" data-i18n="posterAllLabel">এই তালিকার সব শব্দের Poster Card একসাথে আনো</span></button>
       </div>
     </div>
   </div>
@@ -1612,6 +1623,7 @@ const I18N = {
   btnAiHelp: {bn:'AI ব্যাখ্যা', en:'AI Insight'},
   btnNext: {bn:'পরের', en:'Next'},
   aiAllLabel: {bn:'এই তালিকার সব শব্দের AI একসাথে আনো', en:'Fetch AI for every word in this list at once'},
+  posterAllLabel: {bn:'এই তালিকার সব শব্দের Poster Card একসাথে আনো', en:'Fetch Poster Card for every word in this list at once'},
   reExamTitle: {bn:'পুরনো MCQ থেকে re-exam', en:'Re-exam from old MCQs'},
   byNumber: {bn:'নম্বর দিয়ে', en:'By number'},
   byLetter: {bn:'অক্ষর দিয়ে (A–Z)', en:'By letter (A–Z)'},
@@ -2572,15 +2584,33 @@ function openFlashcards(words, title){
   document.getElementById('fcOverlay').classList.add('open');
   lockBodyScroll();
   renderFlashcard();
+  fcResetIdle();
 }
+// ── Auto-dim the control rows after a second of no interaction, so the
+// card itself stays the visual focus. Any touch/click/mouse-move anywhere
+// in the flashcard modal wakes the buttons back up immediately.
+let fcIdleTimer = null;
+function fcSetControlsDim(on){
+  document.querySelectorAll('#fcOverlay .fc-controls').forEach(el=>el.classList.toggle('fc-dim', on));
+}
+function fcResetIdle(){
+  fcSetControlsDim(false);
+  clearTimeout(fcIdleTimer);
+  fcIdleTimer = setTimeout(()=> fcSetControlsDim(true), 1000);
+}
+['touchstart','mousemove','mousedown','keydown'].forEach(evt=>{
+  document.getElementById('fcOverlay').addEventListener(evt, fcResetIdle, {passive:true});
+});
 function closeFlashcards(){
   document.getElementById('fcOverlay').classList.remove('open');
+  clearTimeout(fcIdleTimer);
+  fcSetControlsDim(false);
   unlockBodyScroll();
 }
 function renderFlashcard(dir){
   const w = fcDeck[fcIndex];
   document.getElementById('fcProgress').textContent = (fcIndex+1) + '/' + fcDeck.length;
-  document.getElementById('fcFrontWord').textContent = w.word;
+  paintFcFrontWord(w, aiCache[aiCacheKey(w)]);
   document.getElementById('fcBackSub').textContent = w.bn || '';
   document.getElementById('fcBackMeaning').textContent = w.val || '';
   document.getElementById('fcCard').classList.remove('flipped');
@@ -2684,6 +2714,57 @@ function isNaBlock(text){
   const t = (text||'').trim();
   return t === '' || /^প্রযোজ্য\s*নয়\.?$/.test(t);
 }
+// ── Root-word highlighting ─────────────────────────────────────────────
+// The AI's "শব্দের গঠন" (word structure) line looks like:
+//   "mal(খারাপ)+practice(চর্চা) = খারাপ চর্চা"
+// This pulls out just the Latin-script chunks before each "(" — i.e. the
+// actual prefix/root/suffix pieces ("mal", "practice") — so we can highlight
+// ONLY those exact letters inside the real word, instead of an arbitrary
+// portion of it. If the AI wrote "প্রযোজ্য নয়" (not applicable) or the line
+// is missing/empty, this returns an empty list and the word stays plain.
+function extractRootTokens(rootText){
+  if(!rootText || isNaBlock(rootText)) return [];
+  const tokens = [];
+  const re = /([A-Za-z]{2,})\s*\(/g;
+  let m;
+  while((m = re.exec(rootText))){ tokens.push(m[1]); }
+  return tokens;
+}
+// Builds safe HTML for a word with its root/prefix/suffix chunks wrapped in
+// .root-hl (the gold→teal gradient). Falls back to the plain escaped word
+// whenever there's no usable root data — so a simple word with no genuine
+// root breakdown is never force-highlighted.
+function highlightRootInWord(wordText, rootText){
+  const word = String(wordText || '');
+  const tokens = extractRootTokens(rootText);
+  if(tokens.length === 0) return escapeHtml(word);
+  // Match the longest tokens first so e.g. "practice" isn't partially
+  // shadowed by a shorter overlapping token, then escape+wrap case-insensitively.
+  const sorted = [...new Set(tokens)].sort((a,b)=>b.length-a.length);
+  const pattern = sorted.map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|');
+  if(!pattern) return escapeHtml(word);
+  const re = new RegExp('(' + pattern + ')', 'ig');
+  let matched = false;
+  const parts = word.split(re);
+  const html = parts.map((part,i)=>{
+    if(i % 2 === 1){ matched = true; return `<span class="root-hl">${escapeHtml(part)}</span>`; }
+    return escapeHtml(part);
+  }).join('');
+  return matched ? html : escapeHtml(word);
+}
+// Re-paints the flashcard's front word (highlighted if root data is
+// available, plain otherwise) for whichever word is passed in — used both
+// at initial render (from cache) and the moment a fresh AI answer arrives.
+function paintFcFrontWord(w, rawAnswer){
+  const el = document.getElementById('fcFrontWord');
+  if(!el || !w) return;
+  let rootText = '';
+  if(rawAnswer){
+    const m = rawAnswer.match(/শব্দের গঠন:\s*([\s\S]*?)(?=কাছাকাছি শব্দ সতর্কতা:|$)/);
+    if(m) rootText = m[1].trim();
+  }
+  el.innerHTML = highlightRootInWord(w.word, rootText);
+}
 function renderAiAnswer(aiBox, raw){
   const directEnMatch = raw.match(/সরাসরি ইংরেজি অর্থ:\s*([\s\S]*?)(?=মনে রাখার কৌশল:|উদাহরণ বাক্য:|শব্দের গঠন:|কাছাকাছি শব্দ সতর্কতা:|$)/);
   const memMatch = raw.match(/মনে রাখার কৌশল:\s*([\s\S]*?)(?=উদাহরণ বাক্য:|শব্দের গঠন:|কাছাকাছি শব্দ সতর্কতা:|$)/);
@@ -2736,7 +2817,7 @@ const AI_TYPE_META = {
 function buildAiPrompt(w){
   const meta = AI_TYPE_META[w.type] || AI_TYPE_META.wm;
   const rootBlock = meta.hasRoot ? `
-শব্দের গঠন: (শব্দটা যদি ইংরেজি এবং এর prefix/root/suffix থেকে অর্থ বোঝা যায়, তাহলে ১ লাইনে ভেঙে দেখাও, যেমন "mal(খারাপ)+practice(চর্চা) = খারাপ চর্চা" ফরম্যাটে। এটা দিয়ে ভবিষ্যতে অচেনা শব্দও আন্দাজ করা শেখা যায়। যদি স্পষ্ট prefix/root/suffix না থাকে বা শব্দটা সাধারণ/সরল হয়, এই লাইনে শুধু "প্রযোজ্য নয়" লিখো।)
+শব্দের গঠন: (এই লাইনটা optional — জোর করে সবসময় কিছু লেখার দরকার নেই। শুধু তখনই লেখো যখন শব্দটার prefix/root/suffix ভেঙে দেখানোটা সত্যিই পরীক্ষার্থীকে ভবিষ্যতে অচেনা শব্দ আন্দাজ করতে সাহায্য করবে — যেমন "mal(খারাপ)+practice(চর্চা) = খারাপ চর্চা" ফরম্যাটে ১ লাইনে। শব্দটা সাধারণ/ছোট/সরল হলে, prefix/root/suffix স্পষ্ট বা exam-এর কাজে লাগার মতো না হলে, অথবা ভাঙাটা কৃত্রিম/টানাটানি (forced) মনে হলে — এসব ক্ষেত্রে জোর করে কিছু বানিও না, শুধু "প্রযোজ্য নয়" লিখো।)
 কাছাকাছি শব্দ সতর্কতা: (exam-এ প্রায়ই গুলিয়ে ফেলা হয় এমন বানানে/উচ্চারণে কাছাকাছি একটা ইংরেজি শব্দ থাকলে, তার নাম আর অর্থের পার্থক্য ১ লাইনে বলো, যেমন "Considerable (যথেষ্ট) কে Considerate (বিবেচক)-এর সাথে গুলিও না"। এমন কোনো শব্দ মনে না পড়লে শুধু "প্রযোজ্য নয়" লিখো।)` : '';
   const directEnBlock = meta.hasDirectEn ? `
 সরাসরি ইংরেজি অর্থ: (এই group verb/phrasal verb-টার সবচেয়ে কাছাকাছি ১-২ শব্দের সরাসরি ইংরেজি প্রতিশব্দ (single-word বা খুব ছোট synonym) দাও, যেমন "Bring forth" এর জন্য "Produce", "Look into" এর জন্য "Investigate", "Call off" এর জন্য "Cancel"। শুধু শব্দ/শব্দগুচ্ছ লিখো, বাক্য বা ব্যাখ্যা লিখো না। একাধিক প্রতিশব্দ হলে কমা দিয়ে আলাদা করো।)` : '';
@@ -2918,7 +2999,7 @@ Definition: (এই হেডিং-এর উত্তর অবশ্যই �
 সমার্থক শব্দ: (exam-এ কাজে লাগে এমন ৩-৪টা সমার্থক শব্দ/Synonym, শুধু কমা দিয়ে আলাদা করে শব্দগুলো লিখো, বাক্য/ব্যাখ্যা লিখো না)
 বিপরীত শব্দ: (exam-এ কাজে লাগে এমন ২-৩টা বিপরীত শব্দ/Antonym, শুধু কমা দিয়ে আলাদা করে শব্দগুলো লিখো, বাক্য/ব্যাখ্যা লিখো না)
 মনে রাখার কৌশল: (১-২ লাইনের সহজ, মজার mnemonic বা association যা অর্থটা মাথায় গেঁথে দেবে)
-শব্দের গঠন: (শব্দটা ইংরেজি হলে এবং prefix/root/suffix থেকে অর্থ বোঝা গেলে ১ লাইনে ভেঙে দেখাও, যেমন "mal(খারাপ)+practice(চর্চা) = খারাপ চর্চা" ফরম্যাটে)
+শব্দের গঠন: (এই লাইনটা optional — জোর করে সবসময় কিছু লেখার দরকার নেই। শুধু তখনই লেখো যখন শব্দটার prefix/root/suffix ভেঙে দেখানোটা সত্যিই পরীক্ষার্থীকে ভবিষ্যতে অচেনা শব্দ আন্দাজ করতে সাহায্য করবে — যেমন "mal(খারাপ)+practice(চর্চা) = খারাপ চর্চা" ফরম্যাটে ১ লাইনে। শব্দটা সাধারণ/ছোট/সরল হলে, prefix/root/suffix স্পষ্ট বা exam-এর কাজে লাগার মতো না হলে, অথবা ভাঙাটা কৃত্রিম/টানাটানি (forced) মনে হলে — এসব ক্ষেত্রে জোর করে কিছু বানিও না, শুধু "প্রযোজ্য নয়" লিখো।)
 উদাহরণ বাক্য: (এই শব্দটা ব্যবহার করে exam-এর উপযোগী একটা ছোট বাক্য)
 কাছাকাছি শব্দ সতর্কতা: (exam-এ প্রায়ই গুলিয়ে ফেলা হয় এমন বানানে/উচ্চারণে কাছাকাছি একটা শব্দ থাকলে, তার নাম আর অর্থের পার্থক্য ১ লাইনে বলো)
 ছবির দৃশ্য: (এই হেডিং-এর উত্তর অবশ্যই ইংরেজিতে দাও, বাংলায় না। শব্দটার একদম নির্দিষ্ট সংজ্ঞা/ব্যবহার মাথায় রেখে এমন একটা একক, আক্ষরিক (literal) দৃশ্য বর্ণনা করো যেটা দেখলেই এক নজরে ঠিক এই অর্থটাই বোঝা যায় — অস্পষ্ট, প্রতীকী (symbolic), বা আলগোছালো কোনো কল্পনা না। দৃশ্যে অবশ্যই থাকতে হবে: (১) কে/কী আছে — ঠিক একজন/একটা মূল বিষয় (subject), একাধিক প্রধান চরিত্র বা বস্তু গুলিয়ে ফেলো না, (২) সে ঠিক কী করছে/কী ঘটছে (একটামাত্র স্পষ্ট action/moment, একসাথে একাধিক ঘটনা মেশাবে না), (৩) কোথায় — একটামাত্র নির্দিষ্ট, সহজবোধ্য background/setting (যেমন "in a quiet park", "on a factory floor") — এই তিনটা স্পষ্ট করে বলো যাতে prompt পড়েই কেউ দৃশ্যটা হুবহু কল্পনা করতে পারে, বিভ্রান্তিকর একাধিক ব্যাকগ্রাউন্ড এলিমেন্ট দিও না। মূল বিষয়টা যেন ছবির কেন্দ্রে, প্রথম দর্শনেই চোখে পড়ে এমন ফ্রেমিং কল্পনা করে লেখো। শব্দটা যদি মানুষের ভাব/আচরণ/অনুভূতি সংক্রান্ত হয় (যেমন arrogant, jealous, generous), তাহলে দৃশ্যে সহজ কার্টুন-স্টাইল মানুষ/চরিত্র (একটা বাচ্চাদের ছবির বইয়ের মতো, স্পষ্ট মুখভঙ্গি-অঙ্গভঙ্গি সহ, যেটা ওই ভাবটা স্পষ্টভাবে ফুটিয়ে তোলে) ব্যবহার করতে পারো — সবসময় সাধারণ পোশাক পরিহিত, নিরীহ, শিক্ষামূলক দৃশ্য হবে, বাস্তবসম্মত/photographic মানুষ কল্পনা কোরো না। শব্দটা বস্তু/প্রাণী/পরিস্থিতি সংক্রান্ত হলে সরাসরি সেটাই বর্ণনা করো, রূপক না। যেমন "abhor" শব্দের জন্য "a cartoon girl pushing away a plate of rotten broccoli with a disgusted grimace, one hand raised palm-out, at a dinner table" (শুধু "disgust" লিখলেই চলবে না, ঠিক কী কাজটা করছে সেটাও বলো), অথবা "ostentatious" শব্দের জন্য "an overly decorated mansion gate covered in gold ornaments, flashy chandeliers, and a peacock statue out front" — এভাবে concrete visual detail সহ লেখো, generic/ভাসাভাসা বাক্য (যেমন শুধু "a sad person" বা "someone feeling proud") চলবে না। ১ বাক্যে লেখো।)
@@ -3034,7 +3115,7 @@ function renderWordLookupAnswer(box, raw, wordText, autoLoadImage){
   // it is never asked to carry any text, so it can't come out garbled the
   // way a full AI-painted infographic does.
   let html = `<div class="wl-poster">`;
-  html += `<div class="wl-poster-banner"><span class="wl-poster-word">${escapeHtml(wordText || '')}</span>`;
+  html += `<div class="wl-poster-banner"><span class="wl-poster-word">${highlightRootInWord(wordText || '', parts['শব্দের গঠন'])}</span>`;
   if(parts['টাইপ']) html += `<span class="wl-poster-pos">${escapeHtml(parts['টাইপ'])}</span>`;
   html += `</div>`;
   if(parts['সংক্ষিপ্ত অর্থ']) html += `<div class="wl-poster-meaning">${mdBoldHtml(escapeHtml(parts['সংক্ষিপ্ত অর্থ']))}</div>`;
@@ -3304,6 +3385,7 @@ async function fcRunAi(forceRefresh){
     const cached = aiCache[cacheKey];
     if(cached){
       renderAiAnswer(aiBox, cached);
+      paintFcFrontWord(w, cached);
       return; // already fetched before — no API call, works offline too
     }
   }
@@ -3316,6 +3398,7 @@ async function fcRunAi(forceRefresh){
     aiCache[cacheKey] = answer;
     saveAiCache(aiCache);
     renderAiAnswer(aiBox, answer);
+    paintFcFrontWord(w, answer);
   }catch(err){
     aiBox.innerHTML = `<p class="fc-ai-error">⚠️ ${escapeHtml(err.message)}</p>`;
   }finally{
@@ -3373,6 +3456,7 @@ document.getElementById('fcAiAll').addEventListener('click', async (e)=>{
           const aiBox = document.getElementById('fcAiBox');
           aiBox.classList.add('show');
           renderAiAnswer(aiBox, answer);
+          paintFcFrontWord(w, answer);
         }
       }catch(err){
         failed++;
