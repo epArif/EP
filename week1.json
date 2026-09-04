@@ -1,6 +1,6 @@
 [
 {
-"cat": "Bangla Grammar",
+"cat": "Bangla",
 "q": "১. 'যাঁরা গুণী, তাঁরা সর্বত্র পূজিত হন'— এটি গঠন অনুসারে কোন ধরনের বাক্য? [Frequency: ★★★★★]",
 "o": [
 "সরল বাক্য",
@@ -12,7 +12,7 @@
 "e": "💡 যে বাক্যে একটি প্রধান খণ্ডবাক্যের সাথে এক বা একাধিক আশ্রিত খণ্ডবাক্য পরস্পর সাপেক্ষভাবে যুক্ত থাকে, তাকে জটিল বা মিশ্র বাক্য বলে।"
 },
 {
-"cat": "Bangla Grammar",
+"cat": "Bangla",
 "q": "২. 'কর্তব্য' শব্দটির সঠিক প্রকৃতি ও প্রত্যয় কোনটি? [Frequency: ★★★★★]",
 "o": [
 "কৃ + তব্য",
@@ -21,10 +21,10 @@
 "$\sqrt{\text{কর}} + \text{তব্য}$"
 ],
 "a": 1,
-"e": "💡 সংস্কৃত কৃ-ধাতুর সাথে তব্য প্রত্যয় যুক্ত হয়ে 'কর্তব্য' শব্দটি গঠিত হয়েছে। ধাতুর পূর্বে ধাতুচিহ্ন ($\sqrt{}$) বসানো আবশ্যক।"
+"e": "💡 সংস্কৃত কৃ-ধাতুর সাথে তব্য প্রত্যয় যুক্ত হয়ে 'কর্তব্য' শব্দটি গঠিত হয়েছে। धातুর পূর্বে ধাতুচিহ্ন ($\sqrt{}$) বসানো আবশ্যক।"
 },
 {
-"cat": "Bangla Grammar",
+"cat": "Bangla",
 "q": "৩. 'অনুতাপ' শব্দটি কোন সমাসের অন্তর্গত? [Frequency: ★★★★☆]",
 "o": [
 "অব্যয়ীভাব সমাস",
@@ -36,7 +36,7 @@
 "e": "💡 প্র, পরা, অনু ইত্যাদি প্রপাদি অব্যয়ের সাথে বিশেষ্য পদের সমাস হলে তাকে প্রাদি সমাস বলে (যেমন: অনুতে তাপ = অনুতাপ)।"
 },
 {
-"cat": "Bangla Grammar",
+"cat": "Bangla",
 "q": "৪. 'সন্ধি' ব্যাকরণের কোন অংশে বিস্তৃতভাবে আলোচিত হয়? [Frequency: ★★★★★]",
 "o": [
 "ধ্বনিতত্ত্ব",
@@ -48,20 +48,8 @@
 "e": "💡 সন্ধি হলো পাশাপাশি দুটি ধ্বনির মিলন, তাই এটি ব্যাকরণের ধ্বনিতত্ত্বে (Phonology) আলোচিত হয়।"
 },
 {
-"cat": "Bangla Grammar",
-"q": "৫. বাংলা ভাষার প্রথম ব্যাকরণগ্রন্থ 'Vocabolario em Idioma Bengalla e Portuguez' কোন ভাষায় রচিত? [Frequency: ★★★★☆]",
-"o": [
-"বাংলা",
-"পর্তুগিজ",
-"ইংরেজি",
-"ল্যাটিন"
-],
-"a": 1,
-"e": "💡 ম্যানুয়েল দা আস্সুম্পসাঁউ ১৭৪৩ সালে পর্তুগালের লিসবন থেকে পর্তুগিজ ভাষায় প্রথম বাংলা ব্যাকরণ ও অভিধান রচনা করেন।"
-},
-{
-"cat": "Bangla Grammar",
-"q": "৬. 'যে বাক্য বা বাক্যাংশে একটি মাত্র সমাপিকা ক্রিয়া থাকে, তাকে কী বলে?' [Frequency: ★★★★★]",
+"cat": "Bangla",
+"q": "৫. 'যে বাক্য বা বাক্যাংশে একটি মাত্র সমাপিকা ক্রিয়া থাকে, তাকে কী বলে?' [Frequency: ★★★★★]",
 "o": [
 "জটিল বাক্য",
 "সরল বাক্য",
@@ -72,8 +60,8 @@
 "e": "💡 যে বাক্যে একটি মাত্র কর্তা (উদ্দেশ্য) এবং একটি মাত্র সমাপিকা ক্রিয়া (বিধেয়) থাকে, তাকে সরল বাক্য বলে।"
 },
 {
-"cat": "Bangla Grammar",
-"q": "৭. 'রাজর্ষি' এর সঠিক ব্যাসবাক্য কোনটি এবং এটি কোন সমাস? [Frequency: ★★★★☆]",
+"cat": "Bangla",
+"q": "৬. 'রাজর্ষি' এর সঠিক ব্যাসবাক্য কোনটি এবং এটি কোন সমাস? [Frequency: ★★★★☆]",
 "o": [
 "যিনি রাজা তিনিই ঋষি (কর্মধারয়)",
 "রাজার ঋষি (ষষ্ঠী তৎপুরুষ)",
@@ -84,8 +72,8 @@
 "e": "💡 যিনি রাজা তিনিই ঋষি = রাজর্ষি। এটি সাধারণ কর্মধারয় সমাসের উদাহরণ।"
 },
 {
-"cat": "Bangla Grammar",
-"q": "৮. 'পঙ্কজ' শব্দটির সঠিক বুৎপত্তি ও প্রত্যয় কোনটি? [Frequency: ★★★★☆]",
+"cat": "Bangla",
+"q": "৭. 'পঙ্কজ' শব্দটির সঠিক বুৎপত্তি ও প্রত্যয় কোনটি? [Frequency: ★★★★☆]",
 "o": [
 "পঙ্ক + জ (ড)",
 "$\sqrt{\text{পঙ্ক}} + \text{জ}$",
@@ -96,8 +84,8 @@
 "e": "💡 পঙ্ক (কাদা) + $\sqrt{\text{জ}}$ + ড (অ) = পঙ্কজ। এটি কৃদন্ত শব্দ ও উপপদ তৎপুরুষ সমাস।"
 },
 {
-"cat": "Bangla Grammar",
-"q": "৯. 'ক্ষমার যোগ্য' — এর সঠিক বাক্য সংকোচন কোনটি? [Frequency: ★★★☆☆]",
+"cat": "Bangla",
+"q": "৮. 'ক্ষমার যোগ্য' — এর সঠিক বাক্য সংকোচন কোনটি? [Frequency: ★★★☆☆]",
 "o": [
 "ক্ষমাশীল",
 "ক্ষমার্হ",
@@ -108,20 +96,20 @@
 "e": "💡 'ক্ষমার যোগ্য' এর শুদ্ধ সংকুচিত রূপ হলো 'ক্ষমার্হ'। অন্যদিকে 'ক্ষমা করার ইচ্ছা' হলো 'চিকমিষা'।"
 },
 {
-"cat": "Bangla Grammar",
-"q": "১০. 'পাপ হতে বিরত হও' — বাক্যটিতে 'হতে' কোন কারকে কোন বিভক্তি? [Frequency: ★★★★★]",
+"cat": "Bangla",
+"q": "৯. 'পাপ হতে বিরত হও' — বাক্যটিতে 'হতে' কোন কারকে কোন বিভক্তি? [Frequency: ★★★★★]",
 "o": [
-"করনে পঞ্চমী",
+"করণে পঞ্চমী",
 "অপাদানে পঞ্চমী",
 "অধিকরণে পঞ্চমী",
 "কর্ম কারকে পঞ্চমী"
 ],
 "a": 1,
-"e": "💡 যা থেকে কিছু চ্যুত, গৃহীত, জাত, বিরত বা ভীত হয়, তাকে অপাদান কারক বলে। 'হতে' পঞ্চমী বিভক্তির অনুসর্গ।"
+"e": "💡 যা থেকে কিছু চ্যুত, গৃহীত, জাত, বিরত বা ভীত হয়, তাকে অপাদান কারক বলে।"
 },
 {
-"cat": "Bangla Grammar",
-"q": "১১. 'মহাত্মা' শব্দটির ব্যাসবাক্য ও সমাস কোনটি? [Frequency: ★★★★☆]",
+"cat": "Bangla",
+"q": "১০. 'মহাত্মা' শব্দটির ব্যাসবাক্য ও সমাস কোনটি? [Frequency: ★★★★☆]",
 "o": [
 "মহা যে আত্মা (কর্মধারয়)",
 "মহান যে আত্মা (কর্মধারয়)",
@@ -132,56 +120,44 @@
 "e": "💡 কর্মধারয় সমাসে সমস্তপদে 'মহৎ' শব্দের স্থানে 'মহান' হয় (মহান যে আত্মা = মহাত্মা)।"
 },
 {
-"cat": "Bangla Grammar",
-"q": "১২. 'পরাভব' শব্দে 'পরা' উপসর্গটি কী অর্থে ব্যবহৃত হয়েছে? [Frequency: ★★★★☆]",
+"cat": "Bangla",
+"q": "১১. 'যদিও তিনি দরিদ্র, তথাপি তিনি সৎ' — এটি কোন ধরনের বাক্য? [Frequency: ★★★★★]",
 "o": [
-"অতিশয়",
-"বিপরীত",
-"অভাব",
-"আধিক্য"
+"সরল বাক্য",
+"জটিল বাক্য",
+"যৌগিক বাক্য",
+"যৌগিক-মিশ্র বাক্য"
 ],
 "a": 1,
-"e": "💡 সংস্কৃত উপসর্গ 'পরা' জয়-এর পূর্বে বসে 'পরাজয়' বা 'পরাভব' গঠন করে যা বিপরীত অর্থ প্রকাশ করে।"
+"e": "💡 সাপেক্ষ অব্যয় (যদিও... তথাপি) দ্বারা যুক্ত খণ্ডবাক্য নিয়ে গঠিত বাক্যকে জটিল বা মিশ্র বাক্য বলে।"
 },
 {
-"cat": "Bangla Grammar",
-"q": "১৩. 'চলচ্চিত্র' শব্দটির সঠিক সন্ধি বিচ্ছেদ কোনটি? [Frequency: ★★★★★]",
+"cat": "Bangla",
+"q": "১২. 'মেঘ গর্জন করলে ময়ূর নৃত্য করে' — বাক্যের জটিল রূপ কোনটি? [Frequency: ★★★★☆]",
 "o": [
-"চল + চিত্র",
-"চলৎ + চিত্র",
-"চলন + চিত্র",
-"চলা + চিত্র"
+"মেঘ গর্জন করে এবং ময়ূর নৃত্য করে",
+"যখন মেঘ গর্জন করে, তখন ময়ূর নৃত্য করে",
+"মেঘের গর্জনে ময়ূরের নৃত্য হয়",
+"ময়ূর নৃত্য করে কারণ মেঘ গর্জন করছে"
 ],
 "a": 1,
-"e": "💡 ত্ বা দ্ এর পর চ্ বা ছ্ থাকলে ত্/দ্ স্থানে চ্ হয় (চলৎ + চিত্র = চলচ্চিত্র)।"
+"e": "💡 'যখন... তখন' সাপেক্ষ অব্যয় যোগে সরল বাক্য জটিল বাক্যে রূপান্তরিত হয়।"
 },
 {
-"cat": "Bangla Grammar",
-"q": "১৪. 'আকাশে চাঁদ উঠেছে' — এখানে 'আকাশে' কোন অধিকরণ কারক? [Frequency: ★★★★☆]",
+"cat": "Bangla",
+"q": "১৩. 'সত্য কথা না বলে বিপদে পড়েছি' — এটি কোন ধরনের বাক্য? [Frequency: ★★★★☆]",
 "o": [
-"ঐকদেশিক অধিকরণ",
-"অভিব্যাপক অধিকরণ",
-"বৈষয়িক অধিকরণ",
-"ভাবাধিকরণ"
+"সরল বাক্য",
+"জটিল বাক্য",
+"যৌগিক বাক্য",
+"আবেগমূলক বাক্য"
 ],
 "a": 0,
-"e": "💡 বিশাল স্থানের কোনো একটি অংশ বিশেষে ক্রিয়া সংঘটিত হলে তাকে ঐকদেশিক অধিকরণ বলে।"
+"e": "💡 বাক্যে একটিমাত্র কর্তা ও সমাপিকা ক্রিয়া থাকলে তা সরল বাক্য।"
 },
 {
-"cat": "Bangla Grammar",
-"q": "১৫. 'উপকূল' শব্দটি কোন সমাসের উদাহরণ? [Frequency: ★★★★★]",
-"o": [
-"উপমান কর্মধারয়",
-"অব্যয়ীভাব সমাস",
-"উপপদ তৎপুরুষ",
-"প্রাদি সমাস"
-],
-"a": 1,
-"e": "💡 কূলের সমীপে = উপকূল। সমীপ্য অর্থে 'উপ' অব্যয়যোগে এটি অব্যয়ীভাব সমাস হয়েছে।"
-},
-{
-"cat": "Bangla Grammar",
-"q": "১৬. 'গায়ক' শব্দটির সঠিক প্রকৃতি ও প্রত্যয় কোনটি? [Frequency: ★★★★☆]",
+"cat": "Bangla",
+"q": "১৪. 'গায়ক' শব্দটির সঠিক প্রকৃতি ও প্রত্যয় কোনটি? [Frequency: ★★★★☆]",
 "o": [
 "গাই + অক",
 "$\sqrt{\text{গৈ}} + \text{ণক}$",
@@ -189,107 +165,59 @@
 "গাই + ওক"
 ],
 "a": 1,
-"e": "💡 $\sqrt{\text{গৈ}} + \text{ণক}$ (বা অক) = গায়ক। ঐ-কারের স্থানে 'আয়্' হয়।"
+"e": "💡 $\sqrt{\text{গৈ}} + \text{ণক}$ (অক) = গায়ক।"
 },
 {
-"cat": "Bangla Grammar",
-"q": "১৭. 'জঙ্গম' শব্দটির সঠিক বিপরীত শব্দ কোনটি? [Frequency: ★★★★★]",
+"cat": "Bangla",
+"q": "১৫. 'স্মরণীয়' শব্দটির সঠিক প্রকৃতি-প্রত্যয় কোনটি? [Frequency: ★★★★☆]",
 "o": [
-"অজঙ্গম",
-"স্থাবর",
-"নিশ্চল",
-"স্থায়ী"
+"স্মরণ + ইীয়",
+"$\sqrt{\text{স্মৃ}} + \text{অনীয়}$",
+"স্মর + অনীয়",
+"$\sqrt{\text{স্মরণ}} + \text{ীয়}$"
 ],
 "a": 1,
-"e": "💡 'জঙ্গম' অর্থ যা গমন করে বা গতিশীল। এর বিপরীত শব্দ হলো 'স্থাবর' (যা এক স্থানে স্থির থাকে)।"
+"e": "💡 সংস্কৃত কৃদন্ত প্রত্যয় অনুযায়ী $\sqrt{\text{স্মৃ}} + \text{অনীয়} = \text{স্মরণীয়}$।"
 },
 {
-"cat": "Bangla Grammar",
-"q": "১৮. 'মনোযোগ' শব্দটির সঠিক সন্ধি বিচ্ছেদ কোনটি? [Frequency: ★★★★☆]",
+"cat": "Bangla",
+"q": "১৬. 'পঙ্কিল' শব্দটির সঠিক প্রকৃতি ও প্রত্যয় কোনটি? [Frequency: ★★★☆☆]",
 "o": [
-"মন + যোগ",
-"মনঃ + যোগ",
-"মনো + যোগ",
-"মনস্ + যোগ"
-],
-"a": 1,
-"e": "💡 অ-কারান্ত বিসর্গের পর ঘোষ ধ্বনি থাকলে বিসর্গ ও অ-কার মিলে ও-কার হয় (মনঃ + যোগ = মনোযোগ)।"
-},
-{
-"cat": "Bangla Grammar",
-"q": "১৯. 'তিল থেকে তেল হয়' — এখানে 'তিল' কোন কারকে কোন বিভক্তি? [Frequency: ★★★★★]",
-"o": [
-"করণে পঞ্চমী",
-"অপাদানে পঞ্চমী",
-"অধিকরণে পঞ্চমী",
-"উৎস কারক"
-],
-"a": 1,
-"e": "💡 যা থেকে কোনো কিছু জাত বা উৎপন্ন হয়, তা অপাদান কারক (তিল থেকে তেল জাত হয়)।"
-},
-{
-"cat": "Bangla Grammar",
-"q": "২০. 'তিনি ব্যাকরণে পণ্ডিত' — বাক্যে 'ব্যাকরণে' কোন কারক? [Frequency: ★★★★☆]",
-"o": [
-"ঐকদেশিক অধিকরণ",
-"বৈষয়িক অধিকরণ",
-"অভিব্যাপক অধিকরণ",
-"করণ কারক"
-],
-"a": 1,
-"e": "💡 কোনো বিষয় বা শাস্ত্রে দক্ষতা বা বিশেষ জ্ঞান প্রকাশ পেলে তা বৈষয়িক অধিকরণ কারক হয়।"
-},
-{
-"cat": "Bangla Grammar",
-"q": "২১. 'হাতভারী' বাগধারাটির সঠিক অর্থ কোনটি? [Frequency: ★★★★☆]",
-"o": [
-"দানশীল",
-"কৃপণ",
-"ভারী বস্তু বহনকারী",
-"অসৎ ব্যক্তি"
-],
-"a": 1,
-"e": "💡 'হাতভারী' একটি বহুল ব্যবহৃত বাংলা বাগধারা যার অর্থ কৃপণ বা কঞ্জুস।"
-},
-{
-"cat": "Bangla Grammar",
-"q": "২২. 'গবেষণা' শব্দটির সঠিক সন্ধি বিচ্ছেদ কোনটি? [Frequency: ★★★★★]",
-"o": [
-"গব + এষণা",
-"গো + এষণা",
-"গবে + ষণা",
-"গো + ষণা"
-],
-"a": 1,
-"e": "💡 ও-কারের পর অ/এ থাকলে ও-কার স্থানে অব্ হয় (গো + এষণা = গবেষণা)।"
-},
-{
-"cat": "Bangla Grammar",
-"q": "২৩. 'অনুরাগ' শব্দটির সঠিক বিপরীত শব্দ কোনটি? [Frequency: ★★★★☆]",
-"o": [
-"অননুরাগ",
-"বিরাগ",
-"রাগ",
-"দ্বেষ"
-],
-"a": 1,
-"e": "💡 'অনুরাগ' (আশক্তি বা প্রীতি) এর সঠিক বিপরীত শব্দ হলো 'বিরাগ' (অনাসক্তি)।"
-},
-{
-"cat": "Bangla Grammar",
-"q": "২৪. 'উপবন' শব্দটি সমাসবদ্ধ পদে কী অর্থ প্রকাশ করে? [Frequency: ★★★★☆]",
-"o": [
-"ক্ষুদ্র বন",
-"বনের সদৃশ",
-"বনের সমীপ",
-"বনকে অতিক্রম না করে"
+"পঙ্ক + ইল",
+"$\sqrt{\text{পঙ্ক}} + \text{ইলা}$",
+"পঙ্ক + ল",
+"পঙ্কে + ইল"
 ],
 "a": 0,
-"e": "💡 'উপবন' = ক্ষুদ্র বন। অব্যয়ীভাব সমাসে 'উপ' উপসর্গটি ক্ষুদ্র অর্থে ব্যবহৃত হয়েছে।"
+"e": "💡 'পঙ্কিল' একটি তদ্ধিতান্ত শব্দ। পঙ্ক + ইল = পঙ্কিল।"
 },
 {
-"cat": "Bangla Grammar",
-"q": "২৫. 'দম্পতি' শব্দটির সঠিক ব্যাসবাক্য কোনটি? [Frequency: ★★★★★]",
+"cat": "Bangla",
+"q": "১৭. 'চলন্ত' শব্দটির সঠিক প্রকৃতি ও প্রত্যয় কোনটি? [Frequency: ★★★★☆]",
+"o": [
+"চল + অন্ত",
+"$\sqrt{\text{চল্}} + \text{অন্ত}$",
+"$\sqrt{\text{চলা}} + \text{অন্ত}$",
+"চলন্ + ত"
+],
+"a": 1,
+"e": "💡 বাংলা কৃৎ প্রত্যয় অনুযায়ী $\sqrt{\text{চল্}} + \text{অন্ত} = \text{চলন্ত}$।"
+},
+{
+"cat": "Bangla",
+"q": "১৮. 'উপকূল' শব্দটি কোন সমাসের উদাহরণ? [Frequency: ★★★★★]",
+"o": [
+"উপমান কর্মধারয়",
+"অব্যয়ীভাব সমাস",
+"উপপদ তৎপুরুষ",
+"প্রাদি সমাস"
+],
+"a": 1,
+"e": "💡 কূলের সমীপে = উপকূল। সমীপ্য অর্থে 'উপ' অব্যয়যোগে এটি অব্যয়ীভাব সমাস।"
+},
+{
+"cat": "Bangla",
+"q": "১৯. 'দম্পতি' শব্দটির সঠিক ব্যাসবাক্য কোনটি? [Frequency: ★★★★★]",
 "o": [
 "দম্পতি ও পত্নী",
 "জায়া ও পতি",
@@ -300,7 +228,79 @@
 "e": "💡 জায়া ও পতি = দম্পতি। এটি দ্বন্দ্ব সমাসের বিশেষ নিপাতনে সিদ্ধ উদাহরণ।"
 },
 {
-"cat": "English Grammar",
+"cat": "Bangla",
+"q": "২০. 'স্মৃতিসৌধ' শব্দটির ব্যাসবাক্য ও সমাস কোনটি? [Frequency: ★★★★☆]",
+"o": [
+"স্মৃতির সৌধ (ষষ্ঠী তৎপুরুষ)",
+"স্মৃতি রক্ষার্থে সৌধ (মধ্যপদলোপী কর্মধারয়)",
+"স্মৃতি ও সৌধ (দ্বন্দ্ব)",
+"স্মৃতির ন্যায় সৌধ (উপমিত কর্মধারয়)"
+],
+"a": 1,
+"e": "💡 মধ্যপদলোপী কর্মধারয় সমাসে ব্যাসবাক্যের মধ্যবর্তী পদ (রক্ষার্থে) লোপ পায়।"
+},
+{
+"cat": "Bangla",
+"q": "২১. 'পাফেলা' কোন সমাসের উদাহরণ? [Frequency: ★★★☆☆]",
+"o": [
+"উপপদ তৎপুরুষ",
+"অব্যয়ীভাব",
+"বহুব্রীহি",
+"দ্বিগু"
+],
+"a": 0,
+"e": "💡 পা ফেলে যে = পাফেলা। এটি উপপদ তৎপুরুষ সমাস।"
+},
+{
+"cat": "Bangla",
+"q": "২২. 'ত্রিফলা' কোন সমাসের উদাহরণ? [Frequency: ★★★★☆]",
+"o": [
+"দ্বিগু সমাস",
+"বহুব্রীহি সমাস",
+"কর্মধারয় সমাস",
+"অ অব্যয়ীভাব সমাস"
+],
+"a": 0,
+"e": "💡 তিন ফলের সমাহার = ত্রিফলা। সংখ্যাবাচক শব্দ পূর্বে বসে সমাহার বোঝালে দ্বিগু সমাস হয়।"
+},
+{
+"cat": "Bangla",
+"q": "২৩. 'গবেষণা' শব্দটির সঠিক সন্ধি বিচ্ছেদ কোনটি? [Frequency: ★★★★★]",
+"o": [
+"গব + এষণা",
+"গো + এষণা",
+"গবে + ষণা",
+"গো + ষণা"
+],
+"a": 1,
+"e": "💡 ও-কারের পর অ/এ থাকলে ও-কার স্থানে অব্ হয় (গো + এষণা = গবেষণা)।"
+},
+{
+"cat": "Bangla",
+"q": "২৪. 'চলচ্চিত্র' শব্দটির সঠিক সন্ধি বিচ্ছেদ কোনটি? [Frequency: ★★★★★]",
+"o": [
+"চল + চিত্র",
+"চলৎ + চিত্র",
+"চলন + চিত্র",
+"চলা + চিত্র"
+],
+"a": 1,
+"e": "💡 ত্ বা দ্ এর পর চ্ বা ছ্ থাকলে ত্/দ্ স্থানে চ্ হয় (চলৎ + চিত্র = চলচ্চিত্র)।"
+},
+{
+"cat": "Bangla",
+"q": "২৫. 'হাতভারী' বাগধারাটির সঠিক অর্থ কোনটি? [Frequency: ★★★★☆]",
+"o": [
+"দানশীল",
+"কৃপণ",
+"ভারী বস্তু বহনকারী",
+"অসৎ ব্যক্তি"
+],
+"a": 1,
+"e": "💡 'হাতভারী' একটি বহুল ব্যবহৃত বাংলা বাগধারা যার অর্থ কৃপণ।"
+},
+{
+"cat": "English",
 "q": "26. Choose the grammatically correct sentence according to Subject-Verb Agreement rules. [Frequency: ★★★★★]",
 "o": [
 "One of the students are absent today.",
@@ -312,7 +312,7 @@
 "e": "💡 'One of the' takes a plural noun ('students') followed by a singular verb ('is')."
 },
 {
-"cat": "English Grammar",
+"cat": "English",
 "q": "27. Direct: He said to me, "May you be happy." Choose the correct indirect speech. [Frequency: ★★★★★]",
 "o": [
 "He told me that I may be happy.",
@@ -324,7 +324,7 @@
 "e": "💡 Optative sentences change reporting verb to 'wished/prayed' and 'may' becomes 'might'."
 },
 {
-"cat": "English Grammar",
+"cat": "English",
 "q": "28. What is the exact meaning of the group verb "bring up" in: "She was brought up by her aunt"? [Frequency: ★★★★☆]",
 "o": [
 "Educated",
@@ -333,10 +333,10 @@
 "Caused to happen"
 ],
 "a": 1,
-"e": "💡 'Bring up' means to care for and raise a child until they become an adult."
+"e": "💡 'Bring up' means to care for and raise a child until adulthood."
 },
 {
-"cat": "English Grammar",
+"cat": "English",
 "q": "29. Select the correct phrasal verb: "The meeting was _____ due to the strike." [Frequency: ★★★★★]",
 "o": [
 "called off",
@@ -348,7 +348,7 @@
 "e": "💡 'Call off' means to cancel a planned event or meeting."
 },
 {
-"cat": "English Grammar",
+"cat": "English",
 "q": "30. Transform to Affirmative: "No sooner had he seen the police than he ran away." [Frequency: ★★★★★]",
 "o": [
 "As soon as he sees the police, he ran away.",
@@ -360,7 +360,7 @@
 "e": "💡 'No sooner had... than' is replaced by 'As soon as' with both clauses in Past Indefinite tense."
 },
 {
-"cat": "English Grammar",
+"cat": "English",
 "q": "31. What is the exact meaning of the phrasal verb 'Call in'? [Frequency: ★★★★☆]",
 "o": [
 "To visit a place",
@@ -369,23 +369,11 @@
 "To demand something"
 ],
 "a": 1,
-"e": "💡 'Call in' means to summon or request the attendance of someone (e.g., 'Call in a doctor')."
+"e": "💡 'Call in' means to summon or send for someone (e.g., 'Call in a doctor')."
 },
 {
-"cat": "English Grammar",
-"q": "32. The idiom / phrase "Bring to light" means: [Frequency: ★★★★☆]",
-"o": [
-"To illuminate with lamps",
-"To disclose or reveal publicly",
-"To bring closer to the eye",
-"To praise someone lavishly"
-],
-"a": 1,
-"e": "💡 'Bring to light' means to make secret or hidden information known to the public."
-},
-{
-"cat": "English Grammar",
-"q": "33. Neither the teacher nor the students _____ present in the seminar yesterday. [Frequency: ★★★★★]",
+"cat": "English",
+"q": "32. Neither the teacher nor the students _____ present in the seminar yesterday. [Frequency: ★★★★★]",
 "o": [
 "was",
 "were",
@@ -396,8 +384,8 @@
 "e": "💡 When subjects are joined by 'neither... nor', the verb agrees with the closer subject ('students' -> 'were')."
 },
 {
-"cat": "English Grammar",
-"q": "34. The number of students applying for the BCS exam _____ increasing every year. [Frequency: ★★★★★]",
+"cat": "English",
+"q": "33. The number of students applying for the BCS exam _____ increasing every year. [Frequency: ★★★★★]",
 "o": [
 "are",
 "is",
@@ -408,8 +396,8 @@
 "e": "💡 'The number of' always takes a singular verb ('is'), whereas 'A number of' takes a plural verb."
 },
 {
-"cat": "English Grammar",
-"q": "35. Direct: He said, "I am writing a letter." Indirect: [Frequency: ★★★★☆]",
+"cat": "English",
+"q": "34. Direct: He said, "I am writing a letter." Indirect: [Frequency: ★★★★☆]",
 "o": [
 "He said that he is writing a letter.",
 "He said that he was writing a letter.",
@@ -420,44 +408,8 @@
 "e": "💡 Present Continuous Tense ('am writing') changes to Past Continuous Tense ('was writing') in indirect speech."
 },
 {
-"cat": "English Grammar",
-"q": "36. Direct: She said, "Honesty is the best policy." Indirect: [Frequency: ★★★★★]",
-"o": [
-"She said that honesty was the best policy.",
-"She said that honesty is the best policy.",
-"She told honesty is the best policy.",
-"She asked if honesty is the best policy."
-],
-"a": 1,
-"e": "💡 Universal truths (like 'Honesty is the best policy') do not change tense in indirect speech."
-},
-{
-"cat": "English Grammar",
-"q": "37. What is the meaning of the phrasal verb 'Call at'? [Frequency: ★★★☆☆]",
-"o": [
-"To visit a person",
-"To visit a place briefly",
-"To shout loudly",
-"To recall memories"
-],
-"a": 1,
-"e": "💡 'Call at' means to visit a location/place briefly, whereas 'Call on' means to visit a person."
-},
-{
-"cat": "English Grammar",
-"q": "38. The idiom / phrasal verb "Bring about" means: [Frequency: ★★★★☆]",
-"o": [
-"To publish a new book",
-"To cause something to happen",
-"To bring nearby",
-"To convince someone"
-],
-"a": 1,
-"e": "💡 'Bring about' means to cause something to happen or take place."
-},
-{
-"cat": "English Grammar",
-"q": "39. Bread and butter _____ my favorite breakfast item. [Frequency: ★★★★★]",
+"cat": "English",
+"q": "35. Bread and butter _____ my favorite breakfast item. [Frequency: ★★★★★]",
 "o": [
 "are",
 "is",
@@ -465,11 +417,11 @@
 "have been"
 ],
 "a": 1,
-"e": "💡 When two nouns connected by 'and' express a single idea or item, a singular verb ('is') is used."
+"e": "💡 When two nouns connected by 'and' express a single idea, a singular verb ('is') is used."
 },
 {
-"cat": "English Grammar",
-"q": "40. Either you or he _____ responsible for this mistake. [Frequency: ★★★★★]",
+"cat": "English",
+"q": "36. Either you or he _____ responsible for this mistake. [Frequency: ★★★★★]",
 "o": [
 "are",
 "is",
@@ -477,71 +429,11 @@
 "have"
 ],
 "a": 1,
-"e": "💡 In 'Either... or' constructions, the verb agrees with the subject closest to it ('he' -> 'is')."
+"e": "💡 In 'Either... or' constructions, the verb agrees with the closer subject ('he' -> 'is')."
 },
 {
-"cat": "English Grammar",
-"q": "41. Direct: The teacher said to the students, "Work hard to succeed." Indirect: [Frequency: ★★★★☆]",
-"o": [
-"The teacher said the students to work hard.",
-"The teacher advised the students to work hard to succeed.",
-"The teacher ordered that work hard to succeed.",
-"The teacher told students for working hard."
-],
-"a": 1,
-"e": "💡 Imperative sentences giving advice change the reporting verb to 'advised' followed by 'to + verb'."
-},
-{
-"cat": "English Grammar",
-"q": "42. What does the group verb "Call for" signify in: "This situation calls for immediate action"? [Frequency: ★★★★☆]",
-"o": [
-"Cancels",
-"Requires or demands",
-"Postpones",
-"Invites"
-],
-"a": 1,
-"e": "💡 'Call for' means to require or demand something as necessary."
-},
-{
-"cat": "English Grammar",
-"q": "43. What is the meaning of the phrasal verb 'Bring down'? [Frequency: ★★★☆☆]",
-"o": [
-"To increase prices",
-"To reduce or lower something",
-"To destroy completely",
-"To bring downstairs"
-],
-"a": 1,
-"e": "💡 'Bring down' means to reduce, lower, or overthrow (e.g., 'bring down prices/government')."
-},
-{
-"cat": "English Grammar",
-"q": "44. Transform to Comparative degree: "He is as strong as his brother." [Frequency: ★★★★☆]",
-"o": [
-"His brother is stronger than he.",
-"His brother is not stronger than he.",
-"He is stronger than his brother.",
-"His brother is as strong as him."
-],
-"a": 1,
-"e": "💡 Positive affirmative sentence becomes negative in comparative degree to maintain meaning."
-},
-{
-"cat": "English Grammar",
-"q": "45. Transform to Negative: "Every mother loves her child." [Frequency: ★★★★★]",
-"o": [
-"No mother loves her child.",
-"There is no mother but loves her child.",
-"Every mother does not love her child.",
-"Not every mother loves her child."
-],
-"a": 1,
-"e": "💡 'Every + Noun' transforms to 'There is no + Noun + but + Verb...' in negative sentences."
-},
-{
-"cat": "English Grammar",
-"q": "46. Fifty miles _____ a long distance to walk in a single day. [Frequency: ★★★★★]",
+"cat": "English",
+"q": "37. Fifty miles _____ a long distance to walk in a single day. [Frequency: ★★★★★]",
 "o": [
 "are",
 "is",
@@ -552,8 +444,44 @@
 "e": "💡 Distance, time, or money as a single unit takes a singular verb ('is')."
 },
 {
-"cat": "English Grammar",
-"q": "47. Direct: He said to me, "What is your name?" Indirect: [Frequency: ★★★★★]",
+"cat": "English",
+"q": "38. The chairman and secretary _____ present in the meeting yesterday. [Frequency: ★★★★☆]",
+"o": [
+"were",
+"was",
+"are",
+"have been"
+],
+"a": 1,
+"e": "💡 When one article ('The') is used before two titles, it refers to a single person, taking a singular verb ('was')."
+},
+{
+"cat": "English",
+"q": "39. Direct: She said, "Honesty is the best policy." Indirect: [Frequency: ★★★★★]",
+"o": [
+"She said that honesty was the best policy.",
+"She said that honesty is the best policy.",
+"She told honesty is the best policy.",
+"She asked if honesty is the best policy."
+],
+"a": 1,
+"e": "💡 Universal truths do not change tense in indirect speech."
+},
+{
+"cat": "English",
+"q": "40. Direct: The teacher said to the students, "Work hard to succeed." Indirect: [Frequency: ★★★★☆]",
+"o": [
+"The teacher said the students to work hard.",
+"The teacher advised the students to work hard to succeed.",
+"The teacher ordered that work hard to succeed.",
+"The teacher told students for working hard."
+],
+"a": 1,
+"e": "💡 Imperative sentences giving advice change the reporting verb to 'advised' followed by 'to + verb'."
+},
+{
+"cat": "English",
+"q": "41. Direct: He said to me, "What is your name?" Indirect: [Frequency: ★★★★★]",
 "o": [
 "He asked me what was my name.",
 "He asked me what my name was.",
@@ -561,10 +489,82 @@
 "He asked me that what my name was."
 ],
 "a": 1,
-"e": "💡 Wh-questions in indirect speech keep the WH-word and use assertive word order (Subject + Verb)."
+"e": "💡 Wh-questions in indirect speech use assertive word order (Subject + Verb)."
 },
 {
-"cat": "English Grammar",
+"cat": "English",
+"q": "42. The idiom / phrasal verb "Bring about" means: [Frequency: ★★★★☆]",
+"o": [
+"To publish a new book",
+"To cause something to happen",
+"To bring nearby",
+"To convince someone"
+],
+"a": 1,
+"e": "💡 'Bring about' means to cause something to happen or take place."
+},
+{
+"cat": "English",
+"q": "43. "The publisher will _____ a new edition of the book next month." [Frequency: ★★★★☆]",
+"o": [
+"bring out",
+"bring up",
+"bring in",
+"bring about"
+],
+"a": 0,
+"e": "💡 'Bring out' means to publish a book or release a product."
+},
+{
+"cat": "English",
+"q": "44. What is the meaning of the phrasal verb 'Bring down'? [Frequency: ★★★☆☆]",
+"o": [
+"To increase prices",
+"To reduce or lower something",
+"To destroy completely",
+"To bring downstairs"
+],
+"a": 1,
+"e": "💡 'Bring down' means to reduce, lower, or overthrow."
+},
+{
+"cat": "English",
+"q": "45. The police brought the hidden truth _____ during the investigation. [Frequency: ★★★★☆]",
+"o": [
+"to light",
+"to mind",
+"to end",
+"to book"
+],
+"a": 0,
+"e": "💡 'Bring to light' means to disclose or reveal hidden facts."
+},
+{
+"cat": "English",
+"q": "46. What is the meaning of the phrasal verb 'Call at'? [Frequency: ★★★☆☆]",
+"o": [
+"To visit a person",
+"To visit a place briefly",
+"To shout loudly",
+"To recall memories"
+],
+"a": 1,
+"e": "💡 'Call at' means to visit a location briefly, whereas 'Call on' means to visit a person."
+},
+{
+"cat": "English",
+"q": "47. What does the group verb "Call for" signify in: "This situation calls for immediate action"? [Frequency: ★★★★☆]",
+"o": [
+"Cancels",
+"Requires or demands",
+"Postpones",
+"Invites"
+],
+"a": 1,
+"e": "💡 'Call for' means to require or demand something as necessary."
+},
+{
+"cat": "English",
 "q": "48. Choose the correct phrasal verb: "I shall _____ you at your office tomorrow." [Frequency: ★★★★☆]",
 "o": [
 "call at",
@@ -576,19 +576,19 @@
 "e": "💡 'Call on' means to visit a person."
 },
 {
-"cat": "English Grammar",
-"q": "49. What is the meaning of the phrasal verb 'Bring out'? [Frequency: ★★★★☆]",
+"cat": "English",
+"q": "49. Transform to Comparative degree: "He is as strong as his brother." [Frequency: ★★★★☆]",
 "o": [
-"To publish or release",
-"To take outside",
-"To extinguish fire",
-"To highlight error"
+"His brother is stronger than he.",
+"His brother is not stronger than he.",
+"He is stronger than his brother.",
+"His brother is as strong as him."
 ],
-"a": 0,
-"e": "💡 'Bring out' means to publish a book, magazine, or release a product."
+"a": 1,
+"e": "💡 Positive affirmative sentence becomes negative in comparative degree to maintain meaning."
 },
 {
-"cat": "English Grammar",
+"cat": "English",
 "q": "50. Active: "Who can do this?" Choose the correct passive sentence. [Frequency: ★★★★★]",
 "o": [
 "By whom can this be done?",
@@ -697,91 +697,7 @@
 },
 {
 "cat": "Math",
-"q": "৫৯. দুটি সম্পূরক কোণের অনুপাত $3:2$ হলে, ক্ষুদ্রতম কোণটির মান কত? [Frequency: ★★★★★]",
-"o": [
-"$36^\circ$",
-"$54^\circ$",
-"$72^\circ$",
-"$108^\circ$"
-],
-"a": 2,
-"e": "💡 সম্পূরক কোণদ্বয়ের সমষ্টি $180^\circ$। ক্ষুদ্রতম কোণ = $180^\circ \times \frac{2}{3+2} = 72^\circ$।"
-},
-{
-"cat": "Math",
-"q": "৬০. একটি ত্রিভুজের তিনটি কোণের অনুপাত $1:2:3$ হলে, ত্রিভুজটি কোন ধরনের? [Frequency: ★★★★★]",
-"o": [
-"সূক্ষ্মকোণী ত্রিভুজ",
-"স্থূলকোণী ত্রিভুজ",
-"সমকোণী ত্রিভুজ",
-"সমবাহু ত্রিভুজ"
-],
-"a": 2,
-"e": "💡 কোণত্রয়ের সমষ্টি $180^\circ$। বৃহত্তর কোণ = $180^\circ \times \frac{3}{6} = 90^\circ$। তাই এটি সমকোণী ত্রিভুজ।"
-},
-{
-"cat": "Math",
-"q": "৬১. $35^\circ$ কোণের পুরক কোণের মান কত? [Frequency: ★★★★☆]",
-"o": [
-"$45^\circ$",
-"$55^\circ$",
-"$145^\circ$",
-"$65^\circ$"
-],
-"a": 1,
-"e": "💡 দুটি কোণের পরিমাপের যোগফল $90^\circ$ হলে একটিকে অপরটির পূরক কোণ বলে ($90^\circ - 35^\circ = 55^\circ$)।"
-},
-{
-"cat": "Math",
-"q": "৬২. যেকোনো ত্রিভুজের তিনটি অভ্যন্তরীণ কোণের সমষ্টি কত সমকোণ? [Frequency: ★★★★★]",
-"o": [
-"১ সমকোণ",
-"২ সমকোণ",
-"৩ সমকোণ",
-"৪ সমকোণ"
-],
-"a": 1,
-"e": "💡 ত্রিভুজের তিন কোণের সমষ্টি $180^\circ$, যা ২ সমকোণের ($2 \times 90^\circ$) সমান।"
-},
-{
-"cat": "Math",
-"q": "৬৩. দুটি সমান্তরাল সরলরেখাকে অপর একটি সরলরেখা ছেদ করলে উৎপন্ন একান্তর কোণদ্বয় কেমন হয়? [Frequency: ★★★★☆]",
-"o": [
-"পরস্পর সমান",
-"পরস্পর সম্পূরক",
-"পরস্পর পূরক",
-"একটির দ্বিগুণ অন্যটি"
-],
-"a": 0,
-"e": "💡 দুটি সমান্তরাল রেখাকে কোনো ছেদক ছেদ করলে একান্তর কোণগুলো সর্বদা সমান হয়।"
-},
-{
-"cat": "Math",
-"q": "৬৪. একটি কোণের মান $120^\circ$ হলে, এর সম্পূরক কোণটির মান কত? [Frequency: ★★★★★]",
-"o": [
-"$30^\circ$",
-"$60^\circ$",
-"$90^\circ$",
-"$180^\circ$"
-],
-"a": 1,
-"e": "💡 দুটি কোণের সমষ্টি $180^\circ$ হলে তারা পরস্পর সম্পূরক ($180^\circ - 120^\circ = 60^\circ$)।"
-},
-{
-"cat": "Math",
-"q": "৬৫. $90^\circ$ অপেক্ষা বড় কিন্তু $180^\circ$ অপেক্ষা ছোট কোণকে কী বলে? [Frequency: ★★★★☆]",
-"o": [
-"সূক্ষ্মকোণ",
-"সমকোণ",
-"স্থূলকোণ",
-"প্রবৃদ্ধ কোণ"
-],
-"a": 2,
-"e": "💡 এক সমকোণ ($90^\circ$) অপেক্ষা বড় এবং দুই সমকোণ ($180^\circ$) অপেক্ষা ছোট কোণকে স্থূলকোণ (Obtuse angle) বলে।"
-},
-{
-"cat": "Math",
-"q": "৬৬. যেকোনো অ-শূন্য বাস্তব সংখ্যা $a$-এর জন্য $\log_{a} 1$ এর মান কত? [Frequency: ★★★★★]",
+"q": "৫৯. যেকোনো অ-শূন্য বাস্তব সংখ্যা $a$-এর জন্য $\log_{a} 1$ এর মান কত? [Frequency: ★★★★★]",
 "o": [
 "$1$",
 "$0$",
@@ -793,7 +709,7 @@
 },
 {
 "cat": "Math",
-"q": "৬৭. $\log_{\sqrt{3}} 81$ এর মান কত? [Frequency: ★★★★☆]",
+"q": "৬০. $\log_{\sqrt{3}} 81$ এর মান কত? [Frequency: ★★★★☆]",
 "o": [
 "$4$",
 "$6$",
@@ -805,19 +721,7 @@
 },
 {
 "cat": "Math",
-"q": "৬৮. একটি সরলরেখার ওপর অবস্থিত দুটি সন্নিহিত কোণের সমষ্টি $180^\circ$ হলে কোণ দুটিকে কী বলে? [Frequency: ★★★★☆]",
-"o": [
-"বিপ্রতীপ কোণ",
-"সম্পূরক কোণ",
-"পূরক কোণ",
-"একান্তর কোণ"
-],
-"a": 1,
-"e": "💡 সরলরেখার ওপর গঠিত সন্নিহিত কোণদ্বয়ের যোগফল $180^\circ$ হলে তারা পরস্পর সম্পূরক কোণ।"
-},
-{
-"cat": "Math",
-"q": "৬৯. $\log_{2} \frac{1}{32}$ এর মান কত? [Frequency: ★★★★☆]",
+"q": "৬১. $\log_{2} \frac{1}{32}$ এর মান কত? [Frequency: ★★★★☆]",
 "o": [
 "$-5$",
 "$5$",
@@ -829,6 +733,102 @@
 },
 {
 "cat": "Math",
+"q": "৬২. দুটি সম্পূরক কোণের অনুপাত $3:2$ হলে, ক্ষুদ্রতম কোণটির মান কত? [Frequency: ★★★★★]",
+"o": [
+"$36^\circ$",
+"$54^\circ$",
+"$72^\circ$",
+"$108^\circ$"
+],
+"a": 2,
+"e": "💡 সম্পূরক কোণদ্বয়ের সমষ্টি $180^\circ$। ক্ষুদ্রতম কোণ = $180^\circ \times \frac{2}{3+2} = 72^\circ$।"
+},
+{
+"cat": "Math",
+"q": "৬৩. একটি ত্রিভুজের তিনটি কোণের অনুপাত $1:2:3$ হলে, ত্রিভুজটি কোন ধরনের? [Frequency: ★★★★★]",
+"o": [
+"সূক্ষ্মকোণী ত্রিভুজ",
+"স্থূলকোণী ত্রিভুজ",
+"সমকোণী ত্রিভুজ",
+"সমবাহু ত্রিভুজ"
+],
+"a": 2,
+"e": "💡 কোণত্রয়ের সমষ্টি $180^\circ$। বৃহত্তর কোণ = $180^\circ \times \frac{3}{6} = 90^\circ$। তাই এটি সমকোণী ত্রিভুজ।"
+},
+{
+"cat": "Math",
+"q": "৬৪. $35^\circ$ কোণের পুরক কোণের মান কত? [Frequency: ★★★★☆]",
+"o": [
+"$45^\circ$",
+"$55^\circ$",
+"$145^\circ$",
+"$65^\circ$"
+],
+"a": 1,
+"e": "💡 দুটি কোণের যোগফল $90^\circ$ হলে একটিকে অপরটির পূরক কোণ বলে ($90^\circ - 35^\circ = 55^\circ$)।"
+},
+{
+"cat": "Math",
+"q": "৬৫. যেকোনো ত্রিভুজের তিনটি অভ্যন্তরীণ কোণের সমষ্টি কত সমকোণ? [Frequency: ★★★★★]",
+"o": [
+"১ সমকোণ",
+"২ সমকোণ",
+"৩ সমকোণ",
+"৪ সমকোণ"
+],
+"a": 1,
+"e": "💡 ত্রিভুজের তিন কোণের সমষ্টি $180^\circ$, যা ২ সমকোণের সমান।"
+},
+{
+"cat": "Math",
+"q": "৬৬. দুটি সমান্তরাল সরলরেখাকে অপর একটি সরলরেখা ছেদ করলে উৎপন্ন একান্তর কোণদ্বয় কেমন হয়? [Frequency: ★★★★☆]",
+"o": [
+"পরস্পর সমান",
+"পরস্পর সম্পূরক",
+"পরস্পর পূরক",
+"একটির দ্বিগুণ অন্যটি"
+],
+"a": 0,
+"e": "💡 দুটি সমান্তরাল রেখাকে কোনো ছেদক ছেদ করলে একান্তর কোণগুলো সর্বদা সমান হয়।"
+},
+{
+"cat": "Math",
+"q": "৬৭. একটি কোণের মান $120^\circ$ হলে, এর সম্পূরক কোণটির মান কত? [Frequency: ★★★★★]",
+"o": [
+"$30^\circ$",
+"$60^\circ$",
+"$90^\circ$",
+"$180^\circ$"
+],
+"a": 1,
+"e": "💡 দুটি কোণের সমষ্টি $180^\circ$ হলে তারা পরস্পর সম্পূরক ($180^\circ - 120^\circ = 60^\circ$)।"
+},
+{
+"cat": "Math",
+"q": "৬৮. $90^\circ$ অপেক্ষা বড় কিন্তু $180^\circ$ অপেক্ষা ছোট কোণকে কী বলে? [Frequency: ★★★★☆]",
+"o": [
+"সূক্ষ্মকোণ",
+"সমকোণ",
+"স্থূলকোণ",
+"প্রবৃদ্ধ কোণ"
+],
+"a": 2,
+"e": "💡 এক সমকোণ ($90^\circ$) অপেক্ষা বড় এবং দুই সমকোণ ($180^\circ$) অপেক্ষা ছোট কোণকে স্থূলকোণ (Obtuse angle) বলে।"
+},
+{
+"cat": "Math",
+"q": "৬৯. একটি সরলরেখার ওপর অবস্থিত দুটি সন্নিহিত কোণের সমষ্টি $180^\circ$ হলে কোণ দুটিকে কী বলে? [Frequency: ★★★★☆]",
+"o": [
+"বিপ্রতীপ কোণ",
+"সম্পূরক কোণ",
+"পূরক কোণ",
+"একান্তর কোণ"
+],
+"a": 1,
+"e": "💡 সরলরেখার ওপর গঠিত সন্নিহিত কোণদ্বয়ের যোগফল $180^\circ$ হলে তারা পরস্পর সম্পূরক কোণ।"
+},
+{
+"cat": "Math",
 "q": "৭০. যেকোনো সুষম বহুভুজের বহিঃস্থ কোণগুলোর সমষ্টি কত ডিগ্রি? [Frequency: ★★★★☆]",
 "o": [
 "$180^\circ$",
@@ -837,10 +837,10 @@
 "$540^\circ$"
 ],
 "a": 2,
-"e": "💡 যেকোনো উত্তল বহুভুজের (Polygon) বহিস্থ কোণগুলোর সমষ্টি সর্বদা $360^\circ$ বা ৪ সমকোণ।"
+"e": "💡 যেকোনো উত্তল বহুভুজের বহিস্থ কোণগুলোর সমষ্টি সর্বদা $360^\circ$।"
 },
 {
-"cat": "Bangla Literature",
+"cat": "B. Lit",
 "q": "৭১. রবীন্দ্রনাথ ঠাকুরের 'শেষের কবিতা' কোন শ্রেণীর সাহিত্যকর্ম? [Frequency: ★★★★★]",
 "o": [
 "কাব্যগ্রন্থ",
@@ -852,7 +852,7 @@
 "e": "💡 'শেষের কবিতা' (১৯২৯) রবীন্দ্রনাথ ঠাকুর রচিত একটি বিখ্যাত রোমান্টিক কাব্যধর্মী উপন্যাস।"
 },
 {
-"cat": "Bangla Literature",
+"cat": "B. Lit",
 "q": "৭২. কাজী নজরুল ইসলামের প্রকাশিত প্রথম কাব্যগ্রন্থ কোনটি? [Frequency: ★★★★★]",
 "o": [
 "বিষের বাঁশী",
@@ -861,10 +861,10 @@
 "সর্বহারা"
 ],
 "a": 1,
-"e": "💡 ১৯২২ সালে প্রকাশিত 'অগ্নিবীণা' কাজী নজরুল ইসলামের প্রথম কাব্যগ্রন্থ। এতে প্রলয়োল্লাস, বিদ্রোহী ইত্যাদি বিখ্যাত কবিতা রয়েছে।"
+"e": "💡 ১৯২২ সালে প্রকাশিত 'অগ্নিবীণা' কাজী নজরুল ইসলামের প্রথম কাব্যগ্রন্থ।"
 },
 {
-"cat": "Bangla Literature",
+"cat": "B. Lit",
 "q": "৭৩. ঈশ্বরচন্দ্র বিদ্যাসাগরকে কোন শিক্ষাপ্রতিষ্ঠান থেকে 'বিদ্যাসাগর' উপাধি প্রদান করা হয়? [Frequency: ★★★★☆]",
 "o": [
 "ফোর্ট উইলিয়াম কলেজ",
@@ -873,10 +873,10 @@
 "হিন্দু কলেজ"
 ],
 "a": 1,
-"e": "💡 ১৮৩৯ সালে সংস্কৃত কলেজ গভর্নিং বডি তাঁর অসামান্য সংস্কৃত পণ্ডিত্য ও ব্যাকরণে মেধার স্বীকৃতিস্বরূপ 'বিদ্যাসাগর' উপাধি প্রদান করে।"
+"e": "💡 ১৮৩৯ সালে সংস্কৃত কলেজ গভর্নিং বডি তাঁকে 'বিদ্যাসাগর' উপাধি প্রদান করে।"
 },
 {
-"cat": "Bangla Literature",
+"cat": "B. Lit",
 "q": "৭৪. বাংলা সাহিত্যের প্রথম অমিত্রাক্ষর ছন্দে রচিত সার্থক মহাকাব্য 'মেঘনাদবধ কাব্য' কত সালে প্রকাশিত হয়? [Frequency: ★★★★★]",
 "o": [
 "১৮৫৮ সালে",
@@ -885,10 +885,10 @@
 "১৮৬৫ সালে"
 ],
 "a": 2,
-"e": "💡 মাইকেল মধুসূদন দত্তের শ্রেষ্ঠ সাহিত্যকীর্তি 'মেঘনাদবধ কাব্য' ৯টি স্বর্গে ১৮৬১ সালে প্রকাশিত হয়।"
+"e": "💡 মাইকেল মধুসূদন দত্তের শ্রেষ্ঠ সাহিত্যকীর্তি 'মেঘনাদবধ কাব্য' ১৮৬১ সালে প্রকাশিত হয়।"
 },
 {
-"cat": "Bangla Literature",
+"cat": "B. Lit",
 "q": "৭৫. আখতারুজ্জামান ইলিয়াসের উপন্যাস 'খোয়াবনামা'-র মূল রাজনৈতিক ও সামাজিক পটভূমি কোনটি? [Frequency: ★★★★☆]",
 "o": [
 "১৯৭১-এর মুক্তিযুদ্ধ",
@@ -897,10 +897,10 @@
 "ছয় দফা আন্দোলন"
 ],
 "a": 2,
-"e": "💡 'খোয়াবনামা' (১৯৯৬) উপন্যাসের পটভূমি হলো উত্তরবঙ্গের তেভাগা আন্দোলন এবং দেশবিভাগের পূর্ববর্তী সমাজ ব্যবস্থা।"
+"e": "💡 'খোয়াবনামা' (১৯৯৬) উপন্যাসের পটভূমি হলো উত্তরবঙ্গের তেভাগা আন্দোলন।"
 },
 {
-"cat": "Bangla Literature",
+"cat": "B. Lit",
 "q": "৭৬. বঙ্কিমচন্দ্র চট্টোপাধ্যায়ের প্রথম বাংলা উপন্যাস কোনটি? [Frequency: ★★★★★]",
 "o": [
 "দুর্গেশনন্দিনী",
@@ -912,7 +912,7 @@
 "e": "💡 ১৮ ১৯৬৫ সালে প্রকাশিত 'দুর্গেশনন্দিনী' বাংলা সাহিত্যের প্রথম সার্থক উপন্যাস।"
 },
 {
-"cat": "Bangla Literature",
+"cat": "B. Lit",
 "q": "৭৭. প্রমথ চৌধুরী সম্পাদিত বিখ্যাত সাময়িকপত্র 'সবুজপত্র' প্রথম কত সালে প্রকাশিত হয়? [Frequency: ★★★★★]",
 "o": [
 "১৯০১ সালে",
@@ -921,47 +921,23 @@
 "১৯২১ সালে"
 ],
 "a": 2,
-"e": "💡 বাংলা সাহিত্যে চলিত ভাষার রীতি প্রবর্তনে প্রমথ চৌধুরী সম্পাদিত 'সবুজপত্র' (১৯১৪) পত্রিকা ঐতিহাসিক ভূমিকা পালন করে।"
+"e": "💡 চলিত ভাষার রীতি প্রবর্তনে প্রমথ চৌধুরী সম্পাদিত 'সবুজপত্র' (১৯১৪) ঐতিহাসিক ভূমিকা পালন করে।"
 },
 {
-"cat": "Bangla Literature",
-"q": "৭৮. 'আসাদের শার্ট' কবিতাটির রচয়িতা কে? [Frequency: ★★★★☆]",
+"cat": "B. Lit",
+"q": "৭৮. রবীন্দ্রনাথ ঠাকুর কত সালে সাহিত্য নোবেল পুরস্কার লাভ করেন? [Frequency: ★★★★★]",
 "o": [
-"শামসুর রাহমান",
-"নির্মলেন্দু গুণ",
-"হাসান হাফিজুর রহমান",
-"আল মাহমুদ"
-],
-"a": 0,
-"e": "💡 ১৯৬৯ সালের গণঅভ্যুত্থানে শহীদ আসাদুজ্জামানের রক্তাপ্লুত শার্টকে কেন্দ্র করে কবি শামসুর রাহমান 'আসাদের শার্ট' কবিতাটি রচনা করেন।"
-},
-{
-"cat": "Bangla Literature",
-"q": "৭৯. 'স্বাধীনতা, এই শব্দটি কীভাবে আমাদের হলো' কবিতাটির রচয়িতা কে? [Frequency: ★★★★☆]",
-"o": [
-"শামসুর রাহমান",
-"নির্মলেন্দু গুণ",
-"সুনীল গঙ্গোপাধ্যায়",
-"হেলাল হাফিজ"
+"১৯১১ সালে",
+"১৯১৩ সালে",
+"১৯১৫ সালে",
+"১৯১৯ সালে"
 ],
 "a": 1,
-"e": "💡 কবি নির্মলেন্দু গুণ বঙ্গবন্ধুর ঐতিহাসিক ৭ই মার্চের ভাষণকে কেন্দ্র করে এই কালজয়ী কবিতাটি রচনা করেন।"
+"e": "💡 রবীন্দ্রনাথ ঠাকুর তাঁর 'গীতাঞ্জলি' কাব্যের ইংরেজি অনুবাদের জন্য ১৯১৩ সালে নোবেল পুরস্কার পান।"
 },
 {
-"cat": "Bangla Literature",
-"q": "৮০. 'নীললোহিত' কার সাহিত্যিক ছদ্মনাম? [Frequency: ★★★★☆]",
-"o": [
-"সুনীল গঙ্গোপাধ্যায়",
-"সমরেশ মজুমদার",
-"শীর্ষেন্দু মুখোপাধ্যায়",
-"বুদ্ধদেব বসু"
-],
-"a": 0,
-"e": "💡 বিখ্যাত ভারতীয় বাঙালি লেখক ও কবি সুনীল গঙ্গোপাধ্যায়ের অন্যতম সাহিত্যিক ছদ্মনাম ছিল 'নীললোহিত'।"
-},
-{
-"cat": "Bangla Literature",
-"q": "৮১. রবীন্দ্রনাথ ঠাকুরের প্রকাশিত প্রথম কাব্যগ্রন্থ কোনটি? [Frequency: ★★★★★]",
+"cat": "B. Lit",
+"q": "৭৯. রবীন্দ্রনাথ ঠাকুরের প্রকাশিত প্রথম কাব্যগ্রন্থ কোনটি? [Frequency: ★★★★★]",
 "o": [
 "কবিকাহিনী",
 "বনফুল",
@@ -969,10 +945,34 @@
 "ভানুসিংহ ঠাকুরের পদাবলী"
 ],
 "a": 0,
-"e": "💡 ১৮৭৮ সালে প্রকাশিত 'কবিকাহিনী' রবীন্দ্রনাথ ঠাকুরের প্রথম প্রকাশিত গ্রন্থ/কাব্যগ্রন্থ।"
+"e": "💡 ১৮৭৮ সালে প্রকাশিত 'কবিকাহিনী' রবীন্দ্রনাথ ঠাকুরের প্রথম প্রকাশিত কাব্যগ্রন্থ।"
 },
 {
-"cat": "Bangla Literature",
+"cat": "B. Lit",
+"q": "৮০. রবীন্দ্রনাথ ঠাকুরের বিখ্যাত রূপক-সংকেত নাটক কোনটি? [Frequency: ★★★★☆]",
+"o": [
+"রক্তকরবী",
+"বিসর্জন",
+"রাজা ও রানি",
+"চিরকুমার সভা"
+],
+"a": 0,
+"e": "💡 'রক্তকরবী' (১৯২৬) রবীন্দ্রনাথ ঠাকুরের বিখ্যাত রূপক-সাংকেতিক নাটক।"
+},
+{
+"cat": "B. Lit",
+"q": "৮১. কাজী নজরুল ইসলাম তাঁর 'সঞ্চিতা' কাব্যগ্রন্থটি কাকে উৎসর্গ করেছিলেন? [Frequency: ★★★★☆]",
+"o": [
+"রবীন্দ্রনাথ ঠাকুরকে",
+"শরৎচন্দ্র চট্টোপাধ্যায়কে",
+"বারীন্দ্রকুমার ঘোষকে",
+"মুজাফ্ফর আহমদকে"
+],
+"a": 0,
+"e": "💡 কাজী নজরুল ইসলাম তাঁর 'সঞ্চিতা' কাব্যগ্রন্থটি রবীন্দ্রনাথ ঠাকুরকে উৎসর্গ করেন।"
+},
+{
+"cat": "B. Lit",
 "q": "৮২. কাজী নজরুল ইসলামের বিখ্যাত 'বিদ্রোহী' কবিতাটি কোন কাব্যের অন্তর্গত? [Frequency: ★★★★★]",
 "o": [
 "বিষের বাঁশী",
@@ -981,11 +981,23 @@
 "প্রলয়শিখা"
 ],
 "a": 1,
-"e": "💡 ১৯২১ সালে রচিত এবং ১৯২২ সালে 'অগ্নিবীণা' কাব্যে সংকলিত 'বিদ্রোহী' কবিতাটি নজরুলের শ্রেষ্ঠ কবিতা।"
+"e": "💡 ১৯২১ সালে রচিত এবং ১৯২২ সালে 'অগ্নিবীণা' কাব্যে সংকলিত 'বিদ্রোহী' নজরুলের শ্রেষ্ঠ কবিতা।"
 },
 {
-"cat": "Bangla Literature",
-"q": "৮৩. ঈশ্বরচন্দ্র বিদ্যাসাগরের প্রথম রচিত গদ্যগ্রন্থ কোনটি? [Frequency: ★★★★☆]",
+"cat": "B. Lit",
+"q": "৮৩. কাজী নজরুল ইসলামের রচিত প্রথম উপন্যাস কোনটি? [Frequency: ★★★★☆]",
+"o": [
+"মৃত্যুক্ষুধা",
+"কুহেলিকা",
+"বাঁধন হারা",
+"ব্যথার দান"
+],
+"a": 2,
+"e": "💡 'বাঁধন হারা' (১৯২৭) কাজী নজরুল ইসলামের রচিত প্রথম উপন্যাস (পত্রোপন্যাস)।"
+},
+{
+"cat": "B. Lit",
+"q": "৮৪. ঈশ্বরচন্দ্র বিদ্যাসাগরের প্রথম রচিত গদ্যগ্রন্থ কোনটি? [Frequency: ★★★★☆]",
 "o": [
 "বেতাল পঞ্চবিংশতি",
 "শকুন্তলা",
@@ -993,11 +1005,23 @@
 "প্রভাবতী সম্ভাষণ"
 ],
 "a": 0,
-"e": "💡 ১৮৪৭ সালে প্রকাশিত 'বেতাল পঞ্চবিংশতি' ঈশ্বরচন্দ্র বিদ্যাসাগর রচিত প্রথম গদ্যগ্রন্থ (হিন্দি থেকে অনূদিত)।"
+"e": "💡 ১৮৪৭ সালে প্রকাশিত 'বেতাল পঞ্চবিংশতি' বিদ্যাসাগর রচিত প্রথম গদ্যগ্রন্থ।"
 },
 {
-"cat": "Bangla Literature",
-"q": "৮৪. 'কমলাকান্তের দপ্তর' বঙ্কিমচন্দ্র চট্টোপাধ্যায়ের কোন ধরণের রচনা? [Frequency: ★★★★☆]",
+"cat": "B. Lit",
+"q": "৮৫. ঈশ্বরচন্দ্র বিদ্যাসাগর রচিত বিখ্যাত ব্যাকরণ গ্রন্থ কোনটি? [Frequency: ★★★★☆]",
+"o": [
+"ব্যাকরণ কৌমুদী",
+"ভাষা প্রকাশ বাংলা ব্যাকরণ",
+"গৌড়ীয় ব্যাকরণ",
+"শব্দসূত্র"
+],
+"a": 0,
+"e": "💡 সংস্কৃত ব্যাকরণ সহজবোধ্য করার জন্য বিদ্যাসাগর 'ব্যাকরণ কৌমুদী' রচনা করেন।"
+},
+{
+"cat": "B. Lit",
+"q": "৮৬. 'কমলাকান্তের দপ্তর' বঙ্কিমচন্দ্র চট্টোপাধ্যায়ের কোন ধরণের রচনা? [Frequency: ★★★★☆]",
 "o": [
 "উপন্যাস",
 "ব্যঙ্গাত্মক রসাত্মক প্রবন্ধ",
@@ -1008,8 +1032,20 @@
 "e": "💡 ১৮৭৫ সালে প্রকাশিত 'কমলাকান্তের দপ্তর' বঙ্কিমচন্দ্রের বিখ্যাত ব্যঙ্গাত্মক ও রসাত্মক নিবন্ধ/প্রবন্ধ গ্রন্থ।"
 },
 {
-"cat": "Bangla Literature",
-"q": "৮৫. মাইকেল মধুসূদন দত্ত রচিত প্রথম বাংলা নাটক কোনটি? [Frequency: ★★★★★]",
+"cat": "B. Lit",
+"q": "৮৭. বঙ্কিমচন্দ্র চট্টোপাধ্যায়ের 'আনন্দমঠ' উপন্যাসের মূল পটভূমি কোনটি? [Frequency: ★★★★★]",
+"o": [
+"ছিয়াত্তরের মন্বন্তর ও সন্ন্যাসী বিদ্রোহ",
+"সিপাহী বিদ্রোহ",
+"নীল বিদ্রোহ",
+"সাঁওতাল বিদ্রোহ"
+],
+"a": 0,
+"e": "💡 ১৮৮২ সালে প্রকাশিত 'আনন্দমঠ' উপন্যাসের প্রেক্ষাপট ১৭৭০ সালের ছিয়াত্তরের মন্বন্তর ও সন্ন্যাসী বিদ্রোহ।"
+},
+{
+"cat": "B. Lit",
+"q": "৮৮. মাইকেল মধুসূদন দত্ত রচিত প্রথম বাংলা নাটক কোনটি? [Frequency: ★★★★★]",
 "o": [
 "কৃষ্ণকুমারী",
 "শর্মিষ্ঠা",
@@ -1020,8 +1056,20 @@
 "e": "💡 ১৮৫৯ সালে প্রকাশিত 'শর্মিষ্ঠা' মাইকেল মধুসূদন দত্তের রচিত প্রথম বাংলা নাটক।"
 },
 {
-"cat": "Bangla Literature",
-"q": "৮৬. আখতারুজ্জামান ইলিয়াসের প্রথম উপন্যাস কোনটি? [Frequency: ★★★★★]",
+"cat": "B. Lit",
+"q": "৮৯. 'একেই কি বলে সভ্যতা' মাইকেল মধুসূদন দত্তের কোন ধরনের রচনা? [Frequency: ★★★★☆]",
+"o": [
+"ট্র্যাজেডি নাটক",
+"সামাজিক প্রহসন",
+"মহাকাব্য",
+"কাব্যনাট্য"
+],
+"a": 1,
+"e": "💡 ১৮৬০ সালে প্রকাশিত 'একেই কি বলে সভ্যতা' মধুসূদন দত্তের একটি বিখ্যাত সামাজিক প্রহসন।"
+},
+{
+"cat": "B. Lit",
+"q": "৯০. আখতারুজ্জামান ইলিয়াসের প্রথম উপন্যাস কোনটি? [Frequency: ★★★★★]",
 "o": [
 "চিলেকোঠার সেপাই",
 "খোয়াবনামা",
@@ -1029,11 +1077,11 @@
 "দোজখের ওম"
 ],
 "a": 0,
-"e": "💡 ১৯৮৭ সালে প্রকাশিত 'চিলেকোঠার সেপাই' আখতারুজ্জামান ইলিয়াসের প্রথম কালজয়ী উপন্যাস (পটভূমি: ১৯৬৯-এর গণঅভ্যুত্থান)।"
+"e": "💡 ১৯৮৭ সালে প্রকাশিত 'চিলেকোঠার সেপাই' আখতারুজ্জামান ইলিয়াসের প্রথম উপন্যাস (পটভূমি: ১৯৬৯-এর গণঅভ্যুত্থান)।"
 },
 {
-"cat": "Bangla Literature",
-"q": "৮৭. শামসুর রাহমানের বিখ্যাত কবিতা 'তোমাকে পাওয়ার জন্য, হে স্বাধীনতা' কোন কাব্যগ্রন্থের অন্তর্গত? [Frequency: ★★★★★]",
+"cat": "B. Lit",
+"q": "৯১. শামসুর রাহমানের বিখ্যাত কবিতা 'তোমাকে পাওয়ার জন্য, হে স্বাধীনতা' কোন কাব্যগ্রন্থের অন্তর্গত? [Frequency: ★★★★★]",
 "o": [
 "প্রথম গান দ্বিতীয় মৃত্যুর আগে",
 "বন্দী শিবির থেকে",
@@ -1044,8 +1092,20 @@
 "e": "💡 ১৯৭১ সালের মুক্তিযুদ্ধের প্রেক্ষাপটে রচিত 'বন্দী শিবির থেকে' (১৯৭২) কাব্যগ্রন্থে এই কবিতাটি সংকলিত।"
 },
 {
-"cat": "Bangla Literature",
-"q": "৮৮. 'বীরবল' কার সাহিত্যিক ছদ্মনাম? [Frequency: ★★★★★]",
+"cat": "B. Lit",
+"q": "৯২. 'আসাদের শার্ট' কবিতাটির রচয়িতা কে? [Frequency: ★★★★☆]",
+"o": [
+"শামসুর রাহমান",
+"নির্মলেন্দু গুণ",
+"হাসান হাফিজুর রহমান",
+"আল মাহমুদ"
+],
+"a": 0,
+"e": "💡 ১৯৬৯ সালের গণঅভ্যুত্থানে শহীদ আসাদুজ্জামানকে কেন্দ্র করে শামসুর রাহমান 'আসাদের শার্ট' কবিতাটি রচনা করেন।"
+},
+{
+"cat": "B. Lit",
+"q": "৯৩. 'বীরবল' কার সাহিত্যিক ছদ্মনাম? [Frequency: ★★★★★]",
 "o": [
 "প্রমথ চৌধুরী",
 "প্যারীচাঁদ মিত্র",
@@ -1053,11 +1113,59 @@
 "রবীন্দ্রনাথ ঠাকুর"
 ],
 "a": 0,
-"e": "💡 'বীরবল' প্রমথ চৌধুরীর বিখ্যাত ছদ্মনাম। তাঁর হালকা রসাত্মক প্রবন্ধগুলোর সংকলন 'বীরবলের হালখাতা'।"
+"e": "💡 'বীরবল' প্রমথ চৌধুরীর বিখ্যাত ছদ্মনাম।"
 },
 {
-"cat": "Bangla Literature",
-"q": "৮৯. সুনীল গঙ্গোপাধ্যায়ের সাহিত্য একাডেমি পুরস্কারপ্রাপ্ত বিখ্যাত ইতিহাসভিত্তিক উপন্যাস কোনটি? [Frequency: ★★★★☆]",
+"cat": "B. Lit",
+"q": "৯৪. প্রমথ চৌধুরীর বিখ্যাত প্রবন্ধ সংকলন কোনটি? [Frequency: ★★★★☆]",
+"o": [
+"বীরবলের হালখাতা",
+"প্রবন্ধ সংগ্রহ",
+"তেল নুন লাকড়ি",
+"সবকটিই"
+],
+"a": 3,
+"e": "💡 'বীরবলের হালখাতা', 'প্রবন্ধ সংগ্রহ', 'তেল নুন লাকড়ি'— এগুলো সবই প্রমথ চৌধুরীর গদ্য/প্রবন্ধ গ্রন্থ।"
+},
+{
+"cat": "B. Lit",
+"q": "৯৫. কবি নির্মলেন্দু গুণের প্রথম কাব্যগ্রন্থ কোনটি? [Frequency: ★★★★★]",
+"o": [
+"প্রেমাংশুর রক্ত চাই (১৯৭০)",
+"না প্রেমিক না বিপ্লবী (১৯৭২)",
+"বাংলার মাটি বাংলার জল (১৯৭৮)",
+"চাষাভূষার কাব্য (১৯৮১)"
+],
+"a": 0,
+"e": "💡 ১৯৭০ সালে প্রকাশিত 'প্রেমাংশুর রক্ত চাই' নির্মলেন্দু গুণের প্রথম কাব্যগ্রন্থ।"
+},
+{
+"cat": "B. Lit",
+"q": "৯৬. 'স্বাধীনতা, এই শব্দটি কীভাবে আমাদের হলো' কবিতাটির রচয়িতা কে? [Frequency: ★★★★☆]",
+"o": [
+"শামসুর রাহমান",
+"নির্মলেন্দু গুণ",
+"সুনীল গঙ্গোপাধ্যায়",
+"হেলাল হাফিজ"
+],
+"a": 1,
+"e": "💡 কবি নির্মলেন্দু গুণ বঙ্গবন্ধুর ৭ই মার্চের ভাষণকে কেন্দ্র করে এই কবিতাটি রচনা করেন।"
+},
+{
+"cat": "B. Lit",
+"q": "৯৭. 'নীললোহিত' কার সাহিত্যিক ছদ্মনাম? [Frequency: ★★★★☆]",
+"o": [
+"সুনীল গঙ্গোপাধ্যায়",
+"সমরেশ মজুমদার",
+"শীর্ষেন্দু মুখোপাধ্যায়",
+"বুদ্ধদেব বসু"
+],
+"a": 0,
+"e": "💡 সুনীল গঙ্গোপাধ্যায়ের অন্যতম বিখ্যাত সাহিত্যিক ছদ্মনাম ছিল 'নীললোহিত'।"
+},
+{
+"cat": "B. Lit",
+"q": "৯৮. সুনীল গঙ্গোপাধ্যায়ের সাহিত্য একাডেমি পুরস্কারপ্রাপ্ত বিখ্যাত ইতিহাসভিত্তিক উপন্যাস কোনটি? [Frequency: ★★★★☆]",
 "o": [
 "প্রথম আলো",
 "সেই সময়",
@@ -1068,104 +1176,8 @@
 "e": "💡 ঊনবিংশ শতাব্দীর নবজাগরণের প্রেক্ষাপটে রচিত 'সেই সময়' (১৯৮২) সুনীল গঙ্গোপাধ্যায়ের শ্রেষ্ঠ উপন্যাস।"
 },
 {
-"cat": "Bangla Literature",
-"q": "৯০. রবীন্দ্রনাথ ঠাকুর কত সালে সাহিত্য নোবেল পুরস্কার লাভ করেন? [Frequency: ★★★★★]",
-"o": [
-"১৯১১ সালে",
-"১৯১৩ সালে",
-"১৯১৫ সালে",
-"১৯১৯ সালে"
-],
-"a": 1,
-"e": "💡 রবীন্দ্রনাথ ঠাকুর তাঁর 'গীতাঞ্জলি' কাব্যের ইংরেজি অনুবাদ 'Song Offerings'-এর জন্য ১৯১৩ সালে এশিয়ার প্রথম নোবেল বিজয়ী হন।"
-},
-{
-"cat": "Bangla Literature",
-"q": "৯১. কাজী নজরুল ইসলাম তাঁর 'সঞ্চিতা' কাব্যগ্রন্থটি কাকে উৎসর্গ করেছিলেন? [Frequency: ★★★★☆]",
-"o": [
-"রবীন্দ্রনাথ ঠাকুরকে",
-"শরৎচন্দ্র চট্টোপাধ্যায়কে",
-"বারীন্দ্রকুমার ঘোষকে",
-"মুজাফ্ফর আহমদকে"
-],
-"a": 0,
-"e": "💡 কাজী নজরুল ইসলাম তাঁর অন্যতম শ্রেষ্ঠ কাব্যসংকলন 'সঞ্চিতা' বিশ্বকবি রবীন্দ্রনাথ ঠাকুরকে উৎসর্গ করেন।"
-},
-{
-"cat": "Bangla Literature",
-"q": "৯২. ঈশ্বরচন্দ্র বিদ্যাসাগর রচিত বিখ্যাত ব্যাকরণ গ্রন্থ কোনটি? [Frequency: ★★★★☆]",
-"o": [
-"ব্যাকরণ কৌমুদী",
-"ভাষা প্রকাশ বাংলা ব্যাকরণ",
-"গৌড়ীয় ব্যাকরণ",
-"শব্দসূত্র"
-],
-"a": 0,
-"e": "💡 সংস্কৃত ব্যাকরণকে সহজবোধ্য করে শিক্ষার্থীদের শেখানোর জন্য বিদ্যাসাগর 'ব্যাকরণ কৌমুদী' রচনা করেন।"
-},
-{
-"cat": "Bangla Literature",
-"q": "৯৩. বঙ্কিমচন্দ্র চট্টোপাধ্যায়ের 'আনন্দমঠ' উপন্যাসের মূল পটভূমি কোনটি? [Frequency: ★★★★★]",
-"o": [
-"ছিয়াত্তরের মন্বন্তর ও সন্ন্যাসী বিদ্রোহ",
-"সিপাহী বিদ্রোহ",
-"নীল বিদ্রোহ",
-"সাঁওতাল বিদ্রোহ"
-],
-"a": 0,
-"e": "💡 ১৮৮২ সালে প্রকাশিত 'আনন্দমঠ' উপন্যাসের প্রেক্ষাপট ১৭৭০ সালের (১১৭৬ বঙ্গাব্দ) ছিয়াত্তরের মন্বন্তর ও সন্ন্যাসী বিদ্রোহ।"
-},
-{
-"cat": "Bangla Literature",
-"q": "৯৪. মাইকেল মধুসূদন দত্তের বিখ্যাত সামাজিক প্রহসন কোনটি? [Frequency: ★★★★☆]",
-"o": [
-"একেই কি বলে সভ্যতা",
-"বুড় সালিকের ঘাড়ে রোঁ",
-"উভয়টিই",
-"কোনোটিই নয়"
-],
-"a": 2,
-"e": "💡 ১৮৬০ সালে প্রকাশিত 'একেই কি বলে সভ্যতা' এবং 'বুড় সালিকের ঘাড়ে রোঁ' মধুসূদন দত্তের দুটি বিখ্যাত সামাজিক প্রহসন।"
-},
-{
-"cat": "Bangla Literature",
-"q": "৯৫. রবীন্দ্রনাথ ঠাকুরের বিখ্যাত রূপক-সংকেত নাটক কোনটি? [Frequency: ★★★★☆]",
-"o": [
-"রক্তকরবী",
-"বিসর্জন",
-"রাজা ও রানি",
-"চিরকুমার সভা"
-],
-"a": 0,
-"e": "💡 'রক্তকরবী' (১৯২৬) এবং 'ডাকঘর' (১৯১২) রবীন্দ্রনাথ ঠাকুরের বিখ্যাত রূপক-সাংকেতিক নাটক।"
-},
-{
-"cat": "Bangla Literature",
-"q": "৯৬. কাজী নজরুল ইসলামের রচিত উপন্যাস কোনটি? [Frequency: ★★★★☆]",
-"o": [
-"মৃত্যুক্ষুধা",
-"কুহেলিকা",
-"বাঁধন হারা",
-"সবকটিই"
-],
-"a": 3,
-"e": "💡 নজরুল মোট ৩টি উপন্যাস রচনা করেছিলেন: 'বাঁধন হারা' (পত্রোপন্যাস), 'মৃত্যুক্ষুধা' এবং 'কুহেলিকা'।"
-},
-{
-"cat": "Bangla Literature",
-"q": "৯৭. শামসুর রাহমানের প্রথম কাব্যগ্রন্থ কোনটি এবং এটি কত সালে প্রকাশিত হয়? [Frequency: ★★★★★]",
-"o": [
-"প্রথম গান দ্বিতীয় মৃত্যুর আগে (১৯৬০)",
-"রৌদ্র করোটিতে (১৯৬৭)",
-"বিধ্বস্ত নীলিমা (১৯৬৭)",
-"বন্দী শিবির থেকে (১৯৭২)"
-],
-"a": 0,
-"e": "💡 ১৯৬০ সালে প্রকাশিত 'প্রথম গান দ্বিতীয় মৃত্যুর আগে' কবি শামসুর রাহমানের প্রথম প্রকাশিত কাব্যগ্রন্থ।"
-},
-{
-"cat": "Bangla Literature",
-"q": "৯৮. সুনীল গঙ্গোপাধ্যায়ের সৃষ্টি করা বিখ্যাত গোয়েন্দা চরিত্র কোনটি? [Frequency: ★★★★☆]",
+"cat": "B. Lit",
+"q": "৯৯. সুনীল গঙ্গোপাধ্যায়ের সৃষ্টি করা বিখ্যাত গোয়েন্দা চরিত্র কোনটি? [Frequency: ★★★★☆]",
 "o": [
 "কাকাবাবু (রাজা রায়চৌধুরী)",
 "ফেলুদা",
@@ -1173,30 +1185,18 @@
 "কিরীটী রায়"
 ],
 "a": 0,
-"e": "💡 'কাকাবাবু' (প্রকৃত নাম রাজা রায়চৌধুরী) এবং তাঁর সন্তু সুনীল গঙ্গোপাধ্যায়ের অতি জনপ্রিয় কিশোর অ্যাডভেঞ্চার সিরিজ।"
+"e": "💡 'কাকাবাবু' (রাজা রায়চৌধুরী) সুনীল গঙ্গোপাধ্যায়ের অত্যন্ত জনপ্রিয় কিশোর অ্যাডভেঞ্চার চরিত্র।"
 },
 {
-"cat": "Bangla Literature",
-"q": "৯৯. প্রমথ চৌধুরীর বিখ্যাত প্রবন্ধ সংকলন কোনটি? [Frequency: ★★★★☆]",
+"cat": "B. Lit",
+"q": "১০০. রবীন্দ্রনাথ ঠাকুর ও কাজী নজরুল ইসলামের মধ্যে প্রথম সাক্ষাৎ কত সালে হয়? [Frequency: ★★★★☆]",
 "o": [
-"বীরবলের হালখাতা",
-"প্রবন্ধ সংগ্রহ",
-"তেল নুন লাকড়ি",
-"সবকটিই"
+"১৯১৯ সালে",
+"১৯২১ সালে",
+"১৯২৩ সালে",
+"১৯২৫ সালে"
 ],
-"a": 3,
-"e": "💡 'বীরবলের হালখাতা', 'প্রবন্ধ সংগ্রহ', 'তেল নুন লাকড়ি'— এগুলো সবই প্রমথ চৌধুরীর বিখ্যাত গদ্য/প্রবন্ধ গ্রন্থ।"
-},
-{
-"cat": "Bangla Literature",
-"q": "১০০. কবি নির্মলেন্দু গুণের প্রথম কাব্যগ্রন্থ কোনটি? [Frequency: ★★★★★]",
-"o": [
-"প্রেমাংশুর রক্ত চাই (১৯৭০)",
-"না প্রেমিক না বিপ্লবী (১৯৭২)",
-"বাংলার মাটি বাংলার জল (১৯৭৮)",
-"চাষাভূষার কাব্য (১৯৮১)"
-],
-"a": 0,
-"e": "💡 ১৯৭০ সালে প্রকাশিত 'প্রেমাংশুর রক্ত চাই' নির্মলেন্দু গুণের প্রথম অত্যন্ত প্রশংসিত কাব্যগ্রন্থ।"
+"a": 1,
+"e": "💡 ১৯২১ সালের অক্টোবর মাসে শান্তিনিকেতনে রবীন্দ্রনাথ ঠাকুর ও কাজী নজরুল ইসলামের প্রথম ঐতিহাসিক সাক্ষাৎ ঘটে।"
 }
 ]
