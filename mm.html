@@ -196,6 +196,11 @@ if('serviceWorker' in navigator){
   .word-val{ font-size:12px; color:#D8CFAE; }
 
   .routine-panel{ margin-bottom:16px; }
+  .routine-mode-bar{ display:flex; gap:6px; margin:2px 0 10px; }
+  .routine-mode-btn{ flex:1; font-family:'Noto Sans Bengali','Inter',sans-serif; font-size:11.5px; font-weight:600; padding:7px 8px; border-radius:10px; border:1px solid var(--border); background:var(--panel-2); color:var(--text-muted); cursor:pointer; line-height:1.3; }
+  .routine-mode-btn small{ display:block; font-weight:400; font-size:9.5px; font-family:'IBM Plex Mono',monospace; opacity:.85; margin-top:1px; }
+  .routine-mode-btn.active{ background:linear-gradient(90deg, rgba(217,168,78,0.2), rgba(79,167,158,0.14)); border-color:var(--gold); color:var(--gold); }
+  .routine-mode-note{ font-size:10.5px; color:var(--text-muted); margin:-4px 0 10px; font-family:'Noto Sans Bengali','Inter',sans-serif; }
   .routine-progress-wrap{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
   .routine-progress-bar{ flex:1; height:6px; border-radius:999px; background:var(--panel-2); overflow:hidden; }
   .routine-progress-fill{ height:100%; background:linear-gradient(90deg, var(--gold), var(--teal)); border-radius:999px; transition:width .3s ease; }
@@ -938,6 +943,8 @@ if('serviceWorker' in navigator){
           <button id="rtNextBtn" onclick="changeRoutineDay(1)">▶</button>
         </span>
       </div>
+      <div class="routine-mode-bar" id="routineModeBar"></div>
+      <div class="routine-mode-note" id="routineModeNote" style="display:none"></div>
       <div class="routine-progress-wrap">
         <div class="routine-progress-bar"><div class="routine-progress-fill" id="routineProgressFill" style="width:0%"></div></div>
         <span class="routine-progress-text" id="routineProgressText">0/6</span>
@@ -1517,6 +1524,14 @@ const TYPE_LABELS = {wm:'Word Meaning', syn:'Synonym', ant:'Antonym', bagdhara:'
 
 // ============ SETTINGS (Pantry cloud sync + Gemini API keys) ============
 const SETTINGS_KEY = 'memoria-settings-v1';
+// v-new: Pro আর free নয়, "-latest" alias ধীর (thinking model-এ যায়) — সরাসরি নতুন free model
+const DEFAULT_GEMINI_MODELS = [
+  {model:'gemini-3.8-flash', enabled:true},
+  {model:'gemini-3.6-flash', enabled:true},
+  {model:'gemini-3.5-flash-lite', enabled:true},
+  {model:'gemini-3.1-flash-lite', enabled:true}
+];
+const OLD_DEFAULT_MODEL_NAMES = ['gemini-pro-latest','gemini-flash-latest','gemini-flash-lite-latest','gemini-3.1-pro-preview'];
 function defaultSettings(){
   return {
     pantryId: '',
@@ -1525,11 +1540,7 @@ function defaultSettings(){
     fbDocId: 'default',
     autoBackupEnabled: true,
     language: 'bn', // 'bn' | 'en' | 'both'
-    geminiModels: [
-      {model:'gemini-pro-latest', enabled:true},
-      {model:'gemini-flash-latest', enabled:true},
-      {model:'gemini-flash-lite-latest', enabled:true}
-    ],
+    geminiModels: DEFAULT_GEMINI_MODELS.map(m => Object.assign({}, m)),
     geminiKeys: [
       {key:'', enabled:true},
       {key:'', enabled:true},
@@ -1555,6 +1566,13 @@ function loadSettings(){
     const keys = Array.isArray(parsed.geminiKeys) ? parsed.geminiKeys.slice() : [];
     while(keys.length < MAX_GEMINI_KEYS){ keys.push({key:'', enabled:true}); }
     merged.geminiKeys = keys;
+    // পুরোনো default model list (pro/latest alias) সেভ করা থাকলে নতুন list-এ আপগ্রেড
+    const sm = Array.isArray(parsed.geminiModels) ? parsed.geminiModels : [];
+    const looksOld = sm.length === 0 || sm.every(m => OLD_DEFAULT_MODEL_NAMES.indexOf(m.model) !== -1);
+    if(looksOld){
+      merged.geminiModels = DEFAULT_GEMINI_MODELS.map(m => Object.assign({}, m));
+      try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(merged)); }catch(e){}
+    }
     return merged;
   }catch(e){ return defaultSettings(); }
 }
@@ -1752,7 +1770,7 @@ function renderApiModelRows(){
   if(!wrap) return;
   wrap.innerHTML = settings.geminiModels.map((m, i)=>`
     <div class="key-row" style="grid-template-columns:1fr auto;">
-      <input type="text" data-modelname="${i}" placeholder="মডেলের নাম (যেমন gemini-flash-latest)" value="${(m.model||'').replace(/"/g,'&quot;')}">
+      <input type="text" data-modelname="${i}" placeholder="মডেলের নাম (যেমন gemini-3.8-flash)" value="${(m.model||'').replace(/"/g,'&quot;')}">
       <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-muted);white-space:nowrap;">
         <input type="checkbox" class="kr-toggle" data-modelenabled="${i}" ${m.enabled?'checked':''}> সক্রিয়
       </label>
@@ -2460,6 +2478,23 @@ setInterval(()=>{
 
 // ============ Gemini API (flashcard AI help) ============
 function sleep(ms){ return new Promise(res => setTimeout(res, ms)); }
+// ── দ্রুত করার কৌশল ──
+// ১) thinking কমানো (low) — আগে default thinking-এ প্রতিটা উত্তরে সেকেন্ড খরচ হতো
+// ২) যে key+model একবার 429/403/404 দিয়েছে তাকে ban (পরের call-এ সময় নষ্ট হয় না)
+// ৩) শেষবার যে key+model সফল হয়েছিল সেটাই আগে চেষ্টা
+// ৪) timeout ১৫s → ৯s, আর ৫xx/timeout হলে সাথে সাথে পরেরটায়
+const GEMINI_BAN_KEY = 'memoria_gemini_bans_v1';
+const GEMINI_LAST_OK_KEY = 'memoria_gemini_lastok_v1';
+let geminiBans = (function(){ try{ return JSON.parse(localStorage.getItem(GEMINI_BAN_KEY)||'{}'); }catch(e){ return {}; } })();
+function geminiSaveBans(){ try{ localStorage.setItem(GEMINI_BAN_KEY, JSON.stringify(geminiBans)); }catch(e){} }
+function geminiIsBanned(id){ const t = geminiBans[id]; if(!t) return false; if(Date.now() > t){ delete geminiBans[id]; return false; } return true; }
+function geminiBan(id, ms){ geminiBans[id] = Date.now() + ms; geminiSaveBans(); }
+function clearGeminiBans(){ geminiBans = {}; geminiSaveBans(); }
+function geminiThinkingCfg(model){
+  // 3.x family: thinkingLevel; অন্য/অচেনা model-এ কিছু পাঠাই না (error এড়াতে)
+  if(/^gemini-3(\.\d+)?-(flash|flash-lite)$/.test(model) && model !== 'gemini-3.1-flash-lite') return { thinkingConfig: { thinkingLevel: 'low' } };
+  return {};
+}
 async function callGeminiText(prompt, onProgress){
   const models = (settings.geminiModels || []).filter(m => m.enabled && m.model);
   const keys = (settings.geminiKeys || []).filter(k => k.enabled && k.key);
@@ -2469,56 +2504,59 @@ async function callGeminiText(prompt, onProgress){
   if(models.length === 0){
     throw new Error('কোনো মডেল configure করা নেই — Settings থেকে অন্তত একটা মডেলের নাম দাও।');
   }
-  const REQUEST_TIMEOUT_MS = 15000; // don't let one hung/slow key silently block everything
-  let lastErr = null;
-  let sawRateLimitAcrossPass = false;
-  const MAX_PASSES = 2; // 1st pass runs straight through (no waiting); a 2nd pass only happens if the failures actually looked rate-limit-related
-  for(let pass=0; pass<MAX_PASSES; pass++){
-    if(pass > 0){
-      if(!sawRateLimitAcrossPass){
-        // Nothing looked like a rate-limit (429) last pass — every key/model
-        // failed for a real reason (bad key, bad model name, network down).
-        // Waiting a minute and retrying the exact same thing won't fix that,
-        // it would just make the app look frozen for no reason.
-        break;
-      }
-      if(onProgress) onProgress(`Rate-limit-এ পড়েছে — ১ মিনিট অপেক্ষা করে আবার চেষ্টা করছি...`);
-      await sleep(60000);
-    }
-    sawRateLimitAcrossPass = false;
-    for(let ki=0; ki<keys.length; ki++){
-      const keyObj = keys[ki];
-      for(let mi=0; mi<models.length; mi++){
-        const modelObj = models[mi];
-        if(onProgress) onProgress(`চেষ্টা করছি: key #${ki+1}, মডেল ${modelObj.model}...`);
-        const controller = new AbortController();
-        const timer = setTimeout(()=>controller.abort(), REQUEST_TIMEOUT_MS);
-        try{
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelObj.model)}:generateContent?key=${encodeURIComponent(keyObj.key)}`;
-          const res = await fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-            signal: controller.signal
-          });
-          if(!res.ok){
-            if(res.status === 429) sawRateLimitAcrossPass = true;
-            lastErr = new Error('HTTP ' + res.status + ' (key #' + (ki+1) + ', ' + modelObj.model + ')');
-            continue;
-          }
-          const data = await res.json();
-          const text = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
-          if(text) return text.trim();
-          lastErr = new Error('খালি উত্তর এসেছে (key #' + (ki+1) + ', ' + modelObj.model + ')');
-        }catch(err){
-          lastErr = err && err.name === 'AbortError' ? new Error(`সময়মতো সাড়া দেয়নি (${REQUEST_TIMEOUT_MS/1000}s timeout, key #${ki+1}, ${modelObj.model})`) : err;
-        }finally{
-          clearTimeout(timer);
-        }
-      }
-    }
+  const REQUEST_TIMEOUT_MS = 9000;
+  // (model, key) জোড়ার তালিকা: model-আগে (সেরা model সব key-তে, তারপর পরের model)
+  const combos = [];
+  models.forEach(m => keys.forEach((k, ki) => combos.push({ m, k, ki })));
+  // শেষবার সফল জোড়া সামনে আনা
+  let lastOk = null; try{ lastOk = localStorage.getItem(GEMINI_LAST_OK_KEY); }catch(e){}
+  if(lastOk){
+    const i = combos.findIndex(c => (c.m.model + '|' + c.ki) === lastOk);
+    if(i > 0) combos.unshift(combos.splice(i, 1)[0]);
   }
-  throw lastErr || new Error('AI সাহায্য আনা যায়নি।');
+  let lastErr = null;
+  let tried = 0;
+  for(let pass=0; pass<2; pass++){
+    // pass 1 = ban-হীন সবগুলো; pass 2 = সব ban থাকলে একবার জোর করে চেষ্টা
+    const list = pass === 0 ? combos.filter(c => !geminiIsBanned(c.m.model + '|' + c.ki) && !geminiIsBanned('key|' + c.ki)) : (tried === 0 ? combos : []);
+    for(const c of list){
+      tried++;
+      const id = c.m.model + '|' + c.ki;
+      if(onProgress) onProgress(`চেষ্টা করছি: key #${c.ki+1}, মডেল ${c.m.model}...`);
+      const controller = new AbortController();
+      const timer = setTimeout(()=>controller.abort(), REQUEST_TIMEOUT_MS);
+      try{
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(c.m.model)}:generateContent?key=${encodeURIComponent(c.k.key)}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: Object.assign({ temperature: 0.4 }, geminiThinkingCfg(c.m.model)) }),
+          signal: controller.signal
+        });
+        if(!res.ok){
+          if(res.status === 429) geminiBan(id, 10*60*1000);              // quota: ১০ মিনিট বিশ্রাম
+          else if(res.status === 401 || res.status === 403) geminiBan('key|' + c.ki, 60*60*1000); // খারাপ key
+          else if(res.status === 400 || res.status === 404) geminiBan(id, 60*60*1000);            // model নাম/param ভুল
+          lastErr = new Error('HTTP ' + res.status + ' (key #' + (c.ki+1) + ', ' + c.m.model + ')');
+          continue;
+        }
+        const data = await res.json();
+        const parts = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts;
+        const text = parts ? parts.map(p => p.text || '').join('') : '';
+        if(text.trim()){
+          try{ localStorage.setItem(GEMINI_LAST_OK_KEY, id); }catch(e){}
+          return text.trim();
+        }
+        lastErr = new Error('খালি উত্তর এসেছে (key #' + (c.ki+1) + ', ' + c.m.model + ')');
+      }catch(err){
+        lastErr = err && err.name === 'AbortError' ? new Error(`সময়মতো সাড়া দেয়নি (${REQUEST_TIMEOUT_MS/1000}s timeout, key #${c.ki+1}, ${c.m.model})`) : err;
+      }finally{
+        clearTimeout(timer);
+      }
+    }
+    if(tried > 0) break;
+  }
+  throw lastErr || new Error('AI সাহায্য আনা যায়নি — সব key/model এখন বিশ্রামে (quota)। কিছুক্ষণ পরে চেষ্টা করো।');
 }
 
 // ---- AI answer cache (per word), so a word's mnemonic/example is fetched from
@@ -5458,6 +5496,42 @@ const ROUTINE_GROUPS = [
   { title:'রাত', range:'০৯:৩০ – ১২:০০', icon:'🌙', rows:[10,11,12] },
 ];
 
+// ── ওয়ার্কিং ডে রুটিন (রবি–বৃহস্পতি): অফিস ৯:৪৫–৭:০০, পড়া সকাল ৭–৯ + রাত ৮–১২ ──
+// ৬টা study block (b1..b6) একই থাকে, শুধু সময় বদলায় — তাই আগের রুটিনের দিন-ভিত্তিক টপিক ও টিক দুটোতেই চলে
+const ROUTINE_SKELETON_WORK = [
+  { time:'সকাল ০৬:১৫ – ০৭:০০', fixed:'ঘুম থেকে ওঠা + ফ্রেশ + নামাজ', dur:'৪৫ মিনিট', icon:'🌅', startMin:375, endMin:420 },
+  { time:'সকাল ০৭:০০ – ০৮:০০', key:'b1', label:'স্টাডি ব্লক ১ (বাংলা ব্যাকরণ)', dur:'১ ঘণ্টা', icon:'📖', startMin:420, endMin:480 },
+  { time:'সকাল ০৮:০০ – ০৯:০০', key:'b2', label:'স্টাডি ব্লক ২ (ইংরেজি গ্রামার)', dur:'১ ঘণ্টা', icon:'🔤', startMin:480, endMin:540 },
+  { time:'সকাল ০৯:০০ – ০৯:৪৫', fixed:'নাস্তা + অফিসের জন্য তৈরি', dur:'৪৫ মিনিট', icon:'🍳', startMin:540, endMin:585 },
+  { time:'সকাল ০৯:৪৫ – সন্ধ্যা ০৭:০০', fixed:'অফিস / কাজ', dur:'৯ ঘণ্টা ১৫ মিনিট', icon:'💼', startMin:585, endMin:1140 },
+  { time:'সন্ধ্যা ০৭:০০ – রাত ০৮:০০', fixed:'বাসায় ফেরা + এশা + ফ্রেশ + রাতের খাবার', dur:'১ ঘণ্টা', icon:'🍽️', startMin:1140, endMin:1200 },
+  { time:'রাত ০৮:০০ – ০৯:৩০', key:'b3', label:'স্টাডি ব্লক ৩ (গণিত – বোর্ড বই)', dur:'১ ঘণ্টা ৩০ মিনিট', icon:'➗', startMin:1200, endMin:1290 },
+  { time:'রাত ০৯:৩০ – ০৯:৪৫', fixed:'বিরতি (চা/হাঁটাহাঁটি)', dur:'১৫ মিনিট', icon:'☕', startMin:1290, endMin:1305 },
+  { time:'রাত ০৯:৪৫ – ১০:৪৫', key:'b4', label:'স্টাডি ব্লক ৪ (সাহিত্য/আন্তর্জাতিক)', dur:'১ ঘণ্টা', icon:'🌍', startMin:1305, endMin:1365 },
+  { time:'রাত ১০:৪৫ – ১১:৩০', key:'b5', label:'স্টাডি ব্লক ৫', dur:'৪৫ মিনিট', icon:'🎯', startMin:1365, endMin:1410 },
+  { time:'রাত ১১:৩০ – ১২:০০', key:'b6', label:'স্টাডি ব্লক ৬ (রাতের রিভিশন)', dur:'৩০ মিনিট', revision:true, icon:'🔁', startMin:1410, endMin:1440 }
+];
+const ROUTINE_GROUPS_WORK = [
+  { title:'সকাল', range:'০৬:১৫ – ০৯:৪৫', icon:'🌅', rows:[0,1,2,3] },
+  { title:'অফিস', range:'০৯:৪৫ – ০৭:০০', icon:'💼', rows:[4] },
+  { title:'রাত', range:'০৭:০০ – ১২:০০', icon:'🌙', rows:[5,6,7,8,9,10] }
+];
+const ROUTINE_MODE_KEY = 'memoria-routine-mode-v1'; // 'classic' | 'work'
+function getRoutineMode(){ try{ return localStorage.getItem(ROUTINE_MODE_KEY) === 'work' ? 'work' : 'classic'; }catch(e){ return 'classic'; } }
+function setRoutineMode(m){
+  try{ localStorage.setItem(ROUTINE_MODE_KEY, m); }catch(e){}
+  routineManualOpen = null;
+  renderRoutine();
+}
+// ওয়ার্কিং ডে মোড শুধু রবি–বৃহস্পতিতে (getDay 0..4); শুক্র/শনি সবসময় আগের রুটিন
+function getRoutineLayout(d){
+  const day = d.getDay();
+  if(getRoutineMode() === 'work' && day >= 0 && day <= 4){
+    return { skel: ROUTINE_SKELETON_WORK, groups: ROUTINE_GROUPS_WORK, startLabel: '০৬:১৫', work: true };
+  }
+  return { skel: ROUTINE_SKELETON, groups: ROUTINE_GROUPS, startLabel: '০৮:০০', work: false };
+}
+
 const BN_DIGITS = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
 function bnNum(n){ return String(n).split('').map(c=> /[0-9]/.test(c) ? BN_DIGITS[+c] : c).join(''); }
 function bnMinutes(min){
@@ -5486,7 +5560,7 @@ function routineActiveIndex(){
   if(routineDayOffset !== 0) return -1;
   const now = new Date();
   const nowMin = now.getHours()*60 + now.getMinutes();
-  return ROUTINE_SKELETON.findIndex(row => nowMin >= row.startMin && nowMin < row.endMin);
+  return getRoutineLayout(now).skel.findIndex(row => nowMin >= row.startMin && nowMin < row.endMin);
 }
 
 function renderRoutine(){
@@ -5496,6 +5570,8 @@ function renderRoutine(){
   d.setDate(d.getDate() + routineDayOffset);
   const iso = toISO(d);
   const dayInfo = ROUTINE_DAYS[d.getDay()];
+  const L = getRoutineLayout(d);
+  const mode = getRoutineMode();
   const dateLabel = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
     .toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'});
 
@@ -5504,15 +5580,27 @@ function renderRoutine(){
     labelEl.textContent = (routineDayOffset===0 ? 'আজ · ' : '') + dayInfo.name + ' · ' + dateLabel;
   }
 
+  const barEl = document.getElementById('routineModeBar');
+  if(barEl){
+    barEl.innerHTML =
+      `<button class="routine-mode-btn ${mode==='classic'?'active':''}" onclick="setRoutineMode('classic')">📘 আগের রুটিন<small>০৮:০০ – ১২:০০</small></button>` +
+      `<button class="routine-mode-btn ${mode==='work'?'active':''}" onclick="setRoutineMode('work')">💼 ওয়ার্কিং ডে<small>সকাল ৭–৯ · রাত ৮–১২ (রবি–বৃহ)</small></button>`;
+  }
+  const noteEl = document.getElementById('routineModeNote');
+  if(noteEl){
+    if(mode==='work' && !L.work){ noteEl.style.display='block'; noteEl.textContent = 'ℹ️ শুক্র/শনিবার অফিস নেই — এই দিনে আগের রুটিন দেখানো হচ্ছে।'; }
+    else { noteEl.style.display='none'; noteEl.textContent=''; }
+  }
+
   const dayState = routineState[iso] || {};
   let doneCount = 0;
   const activeIdx = routineActiveIndex();
-  const activeGi = activeIdx<0 ? -1 : ROUTINE_GROUPS.findIndex(g=>g.rows.includes(activeIdx));
+  const activeGi = activeIdx<0 ? -1 : L.groups.findIndex(g=>g.rows.includes(activeIdx));
 
-  wrap.innerHTML = ROUTINE_GROUPS.map((grp, gi)=>{
+  wrap.innerHTML = L.groups.map((grp, gi)=>{
     let grpDone = 0, grpTotal = 0;
     const rowsHtml = grp.rows.map(idx=>{
-      const row = ROUTINE_SKELETON[idx];
+      const row = L.skel[idx];
       const isNow = idx === activeIdx;
       if(!row.key){
         return `<div class="routine-row fixed ${isNow?'now':''}" id="rtRow-${idx}">
@@ -5552,9 +5640,9 @@ function renderRoutine(){
   if(nowCard){
     if(activeIdx<0){
       const nowMin = new Date().getHours()*60 + new Date().getMinutes();
-      if(routineDayOffset===0 && nowMin < ROUTINE_SKELETON[0].startMin){
+      if(routineDayOffset===0 && nowMin < L.skel[0].startMin){
         nowCard.className = 'routine-now show idle';
-        nowCard.innerHTML = `<span class="rn-dot"></span><div class="rn-body"><span class="rn-tag">শুরু হবে</span><div class="rn-label">রুটিন শুরু ০৮:০০ টায়</div></div>`;
+        nowCard.innerHTML = `<span class="rn-dot"></span><div class="rn-body"><span class="rn-tag">শুরু হবে</span><div class="rn-label">রুটিন শুরু ${L.startLabel} টায়</div></div>`;
       } else if(routineDayOffset===0){
         nowCard.className = 'routine-now show idle';
         nowCard.innerHTML = `<span class="rn-dot"></span><div class="rn-body"><span class="rn-tag">সম্পন্ন</span><div class="rn-label">আজকের রুটিন শেষ, ভালো ঘুম হোক</div></div>`;
@@ -5563,7 +5651,7 @@ function renderRoutine(){
         nowCard.innerHTML = '';
       }
     } else {
-      const row = ROUTINE_SKELETON[activeIdx];
+      const row = L.skel[activeIdx];
       const nowMin = new Date().getHours()*60 + new Date().getMinutes();
       const remain = row.endMin - nowMin;
       const label = row.key ? row.label : row.fixed;
@@ -5571,7 +5659,7 @@ function renderRoutine(){
       nowCard.innerHTML = `<span class="rn-dot"></span><div class="rn-body"><span class="rn-tag">এখন চলছে</span><div class="rn-label">${row.icon||''} ${escapeHtml(label)}</div></div><span class="rn-remain">বাকি ${bnMinutes(remain)}</span>`;
       nowCard.onclick = ()=>{
         const rowEl = document.getElementById('rtRow-'+activeIdx);
-        const gi = ROUTINE_GROUPS.findIndex(g=>g.rows.includes(activeIdx));
+        const gi = L.groups.findIndex(g=>g.rows.includes(activeIdx));
         const body = document.getElementById('rtGrp-'+gi);
         const caret = document.getElementById('caret-rtGrp-'+gi);
         if(body && !body.classList.contains('open')){ body.classList.add('open'); caret.classList.add('open'); }
@@ -5592,7 +5680,7 @@ function renderRoutine(){
       if(routineManualOpen===null){
         // seed manual state from whatever is currently open
         routineManualOpen = new Set();
-        ROUTINE_GROUPS.forEach((g,i)=>{ if(i===activeGi) routineManualOpen.add(i); });
+        L.groups.forEach((g,i)=>{ if(i===activeGi) routineManualOpen.add(i); });
       }
       const body = document.getElementById(id);
       const caret = document.getElementById('caret-'+id);
