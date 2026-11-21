@@ -279,6 +279,17 @@ if('serviceWorker' in navigator){
 
   .modal-overlay{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:130; align-items:center; justify-content:center; padding:16px; }
   .modal-overlay.open{ display:flex; }
+  /* no sideways drift/wobble inside any popup: lock horizontal axis, only vertical scroll */
+  .modal-overlay{ overflow:hidden; overscroll-behavior:contain; }
+  .modal-box{ overflow-x:hidden !important; overscroll-behavior:contain; touch-action:pan-y; box-sizing:border-box; }
+  .modal-box *{ min-width:0; }
+  .modal-box .modal-btn{ min-width:90px; }
+  .modal-box img{ max-width:100%; }
+  @keyframes wlSlideInL{ from{ opacity:0; transform:translateX(36px); } to{ opacity:1; transform:none; } }
+  @keyframes wlSlideInR{ from{ opacity:0; transform:translateX(-36px); } to{ opacity:1; transform:none; } }
+  #wordLookupBox.wl-anim-l{ animation:wlSlideInL .22s ease; }
+  #wordLookupBox.wl-anim-r{ animation:wlSlideInR .22s ease; }
+  .wl-swipe-hint{ text-align:center; font-size:10.5px; color:var(--text-muted); margin-top:10px; line-height:1.5; }
   .modal-box{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:16px; width:100%; max-width:420px; }
   .modal-title{ font-family:'Fraunces','Noto Sans Bengali',serif; font-size:16px; margin-bottom:8px; color:var(--gold); }
   .modal-box label{ display:block; font-size:11px; color:var(--text-muted); margin:10px 0 4px; font-family:'IBM Plex Mono',monospace; letter-spacing:0.04em; }
@@ -302,12 +313,13 @@ if('serviceWorker' in navigator){
   .section-status{ font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; letter-spacing:0.02em; color:var(--text-muted); border:1px solid var(--border); padding:2px 7px; border-radius:999px; white-space:nowrap; }
   .section-status.on{ color:var(--teal); border-color:var(--teal-dim); }
 
-  .settings-box{ max-width:520px; max-height:82vh; overflow-y:auto; }
+  .settings-box{ max-width:520px; max-height:82vh; overflow-y:auto; overflow-x:hidden; }
   .settings-section{ border-top:1px dashed var(--border); margin-top:14px; padding-top:12px; }
   .settings-section:first-of-type{ border-top:none; margin-top:0; padding-top:0; }
   .settings-section h4{ font-family:'Fraunces','Noto Sans Bengali',serif; font-size:13.5px; color:var(--teal); margin:0 0 6px; }
-  .settings-hint{ font-size:11px; color:var(--text-muted); margin-bottom:8px; line-height:1.5; }
+  .settings-hint{ font-size:11px; color:var(--text-muted); margin-bottom:8px; line-height:1.5; overflow-wrap:anywhere; word-break:break-word; }
   .key-row{ display:grid; grid-template-columns:1fr 1fr auto; gap:6px; align-items:center; margin-bottom:8px; }
+  .key-row > *{ min-width:0; }
   .key-row select, .key-row input{ background:var(--panel-2); border:1px solid var(--border); border-radius:8px; color:var(--text); padding:7px 8px; font-size:11.5px; font-family:'IBM Plex Mono',monospace; width:100%; }
   .key-row .kr-toggle{ width:auto; }
   .sync-status{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--text-muted); margin-top:6px; min-height:14px; }
@@ -787,7 +799,9 @@ if('serviceWorker' in navigator){
         <button id="wordLookupGoBtn" class="modal-btn teal" type="button" style="flex:0 0 auto;min-width:70px;">খুঁজো</button>
       </div>
       <div class="fc-ai-box show" id="wordLookupBox" style="margin-top:12px;min-height:24px;"></div>
+      <div class="wl-swipe-hint" id="wlSwipeHint" data-i18n="swipeHint">👈 বাঁয়ে swipe = পরের শব্দ · ডানে swipe = আগের শব্দ · স্ক্রিনের বাঁ কিনারা থেকে ডানে টানলে = ফিরে যাও</div>
       <div class="modal-actions">
+        <button id="wordLookupBack" class="modal-btn ghost" type="button" style="display:none;" data-i18n="btnBackWord">← ফিরে যাও</button>
         <button id="wordLookupClose" class="modal-btn ghost" type="button" data-i18n="btnCloseModal">বন্ধ করো</button>
       </div>
     </div>
@@ -1621,6 +1635,10 @@ const I18N = {
     bn:'শব্দের মানে বুঝতে যে illustration আসে সেটা এখন <b>Pollinations.ai</b> দিয়ে বানানো হয়। এটা বন্ধ করলে কোনো ছবি-অনুরোধই বাইরে যাবে না এবং "ছবি দিয়ে বুঝো" বাটনটাও আর দেখাবে না — ভবিষ্যতে অন্য কোনো Image AI বসাতে চাইলে এটা আগে বন্ধ করে রাখতে পারো। ছবি কোথাও save হয় না (শুধু ব্রাউজার ক্যাশে থাকে), আর এই সেটিং শুধু এই ডিভাইসে থাকে — cloud-এ যায় না।',
     en:'The word-meaning illustration is currently generated with <b>Pollinations.ai</b>. Turning this off sends no image requests at all and hides the "Understand with picture" button — handy if you later want to plug in a different Image AI. Images are not saved anywhere (only in the browser cache), and this setting stays on this device only — it never goes to the cloud.'
   },
+  swipeHint: {bn:'👈 বাঁয়ে swipe = পরের শব্দ · ডানে swipe = আগের শব্দ · স্ক্রিনের বাঁ কিনারা থেকে ডানে টানলে = ফিরে যাও', en:'👈 Swipe left = next word · swipe right = previous word · drag from the left screen edge = go back'},
+  btnBackWord: {bn:'← ফিরে যাও', en:'← Back'},
+  swipeEndNewest: {bn:'এটাই সবচেয়ে নতুন শব্দ', en:'This is the newest word'},
+  swipeEndOldest: {bn:'এটাই সবচেয়ে পুরোনো শব্দ', en:'This is the oldest word'},
   labelImgGenOn: {bn:'Pollinations দিয়ে ছবি বানানো চালু রাখো', en:'Keep Pollinations image generation on'},
   hintGemini: {
     bn:'নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ৮টা API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে (কোনো wait ছাড়াই); একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। সব key + সব মডেল একবার করে fail হয়ে গেলে rate-limit এড়াতে ১ মিনিট wait করে আবার প্রথম থেকে try করবে। প্রতিটা শব্দের AI উত্তর একবার আনলে save হয়ে থাকবে (ফোনেই), পরে আবার একই শব্দ দেখলে offline-এও কাজ করবে আর নতুন করে token খরচ হবে না। <b>এই key গুলো শুধু এই ডিভাইসের ব্রাউজারে (localStorage) সংরক্ষিত থাকে — কোনো sync/backup/cloud-এ কখনো পাঠানো হয় না, এমনকি Auto-Backup চালু থাকলেও না।</b>',
@@ -3301,6 +3319,7 @@ function openWordLookupModal(prefillWord, autoRun, itemCtx){
   } else {
     box.innerHTML = '';
   }
+  wlHistory = []; wlShownWord = prefillWord || ''; wlUpdateBackBtn();
   document.getElementById('wordLookupModalOverlay').classList.add('open');
   lockBodyScroll();
   if(prefillWord && autoRun && !findArchiveEntry(prefillWord)) runWordLookup();
@@ -3321,7 +3340,7 @@ async function runWordLookup(){
   const box = document.getElementById('wordLookupBox');
   if(!word){ box.innerHTML = '<p class="fc-ai-error">আগে একটা শব্দ লেখো।</p>'; return; }
   const cached = findArchiveEntry(word);
-  if(cached){ renderWordLookupAnswer(box, cached.answer, cached.word); renderArchiveList(); return; } // cache hit — no API call
+  if(cached){ renderWordLookupAnswer(box, cached.answer, cached.word); wlNoteShown(cached.word); renderArchiveList(); return; } // cache hit — no API call
   const itemCtx = (pendingLookupCtx && pendingLookupWord === word) ? pendingLookupCtx : null;
   pendingLookupCtx = null; pendingLookupWord = null; // one-shot — don't leak onto a later, unrelated lookup
   box.innerHTML = skeletonHtml();
@@ -3331,6 +3350,7 @@ async function runWordLookup(){
     const answer = await callGeminiText(prompt, msg => { box.innerHTML = skeletonHtml(msg); });
     upsertArchiveEntry(word, answer);
     renderWordLookupAnswer(box, answer, word, true); // brand new word — auto-load the picture too
+    wlNoteShown(word);
     renderArchiveList();
   }catch(err){
     box.innerHTML = `<p class="fc-ai-error">⚠️ ${escapeHtml(err.message)}</p>`;
@@ -3340,6 +3360,81 @@ async function runWordLookup(){
 }
 document.getElementById('wordLookupGoBtn').addEventListener('click', runWordLookup);
 document.getElementById('wordLookupInput').addEventListener('keydown', e=>{ if(e.key === 'Enter') runWordLookup(); });
+
+// ---- Photo-card navigation: swipe next/previous word + "back" like other apps ----
+// • swipe left  → next word in the archive      • swipe right → previous word
+// • drag from the very left edge (or ← button) → go back to the word you saw before
+//   (closes the card if there is nothing to go back to)
+let wlHistory = [];      // words seen earlier in this open card session (for Back)
+let wlShownWord = '';    // word currently on the card
+function wlUpdateBackBtn(){
+  const b = document.getElementById('wordLookupBack');
+  if(b) b.style.display = wlHistory.length ? '' : 'none';
+}
+function wlNoteShown(word){
+  if(wlShownWord && normalizeWordKey(wlShownWord) !== normalizeWordKey(word)) wlHistory.push(wlShownWord);
+  wlShownWord = word;
+  wlUpdateBackBtn();
+}
+function wlRenderFromArchive(word, dir){
+  const entry = findArchiveEntry(word);
+  if(!entry) return false;
+  const input = document.getElementById('wordLookupInput');
+  const box = document.getElementById('wordLookupBox');
+  input.value = capFirstWord(entry.word);
+  pendingLookupCtx = null; pendingLookupWord = null;
+  renderWordLookupAnswer(box, entry.answer, entry.word);
+  box.classList.add('show');
+  box.classList.remove('wl-anim-l','wl-anim-r');
+  void box.offsetWidth; // restart the slide animation
+  if(dir) box.classList.add(dir === 'l' ? 'wl-anim-l' : 'wl-anim-r');
+  const mb = box.closest('.modal-box'); if(mb) mb.scrollTop = 0;
+  return true;
+}
+function wlFlashHint(key){
+  const h = document.getElementById('wlSwipeHint'); if(!h) return;
+  h.textContent = trKey(key);
+  clearTimeout(wlFlashHint._t);
+  wlFlashHint._t = setTimeout(()=>{ h.textContent = trKey('swipeHint'); }, 1400);
+}
+function wlSwipeStep(step){ // step: +1 next (older), -1 previous (newer)
+  const cur = document.getElementById('wordLookupInput').value.trim();
+  const idx = wordArchive.findIndex(e => normalizeWordKey(e.word) === normalizeWordKey(cur));
+  if(idx < 0) return;
+  const target = wordArchive[idx + step];
+  if(!target){ wlFlashHint(step > 0 ? 'swipeEndOldest' : 'swipeEndNewest'); return; }
+  if(wlRenderFromArchive(target.word, step > 0 ? 'l' : 'r')) wlNoteShown(target.word);
+}
+function wlGoBack(){
+  if(wlHistory.length){
+    const prev = wlHistory.pop();
+    if(wlRenderFromArchive(prev, 'r')){ wlShownWord = prev; }
+    wlUpdateBackBtn();
+  } else {
+    closeWordLookupModal();
+  }
+}
+document.getElementById('wordLookupBack').addEventListener('click', wlGoBack);
+(function(){
+  const ov = document.getElementById('wordLookupModalOverlay');
+  let sx = 0, sy = 0, tracking = false, fromEdge = false;
+  ov.addEventListener('touchstart', e=>{
+    if(e.touches.length !== 1){ tracking = false; return; }
+    if(e.target.closest && e.target.closest('input, textarea')){ tracking = false; return; }
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    fromEdge = sx <= 30;
+    tracking = true;
+  }, {passive:true});
+  ov.addEventListener('touchend', e=>{
+    if(!tracking) return;
+    tracking = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - sx, dy = t.clientY - sy;
+    if(Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.6) return; // not a clear sideways swipe
+    if(fromEdge && dx > 0){ wlGoBack(); return; }
+    wlSwipeStep(dx < 0 ? 1 : -1);
+  }, {passive:true});
+})();
 
 function renderArchiveList(){
   const wrap = document.getElementById('archiveListWrap');
