@@ -456,6 +456,7 @@ if('serviceWorker' in navigator){
   .wl-poster-meaning{ text-align:center; font-family:'Noto Sans Bengali','Inter',sans-serif; font-size:15px; color:var(--text); margin-top:8px; }
   .wl-poster-illustration{ margin:12px 0; border-radius:12px; overflow:hidden; border:1px solid var(--border); }
   .wl-poster-illustration img{ width:100%; max-height:220px; object-fit:cover; display:block; }
+  body.no-img-gen .wl-img-block, body.no-img-gen .wl-poster-illustration, body.no-img-gen img.wl-generated-img{ display:none !important; }
   .wl-root-box{ border:1.5px dashed var(--teal-dim); border-radius:12px; padding:10px 12px; margin:12px 0; text-align:center; }
   .wl-root-box .wl-root-title{ font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.08em; color:var(--teal); display:block; margin-bottom:5px; }
   .wl-root-box .wl-root-body{ font-family:'Noto Sans Bengali','Inter',sans-serif; font-size:13px; color:var(--text); }
@@ -726,6 +727,14 @@ if('serviceWorker' in navigator){
           <input type="checkbox" id="autoBackupToggle"> <span data-i18n="labelAutoBackupOn">Auto-backup চালু রাখো</span>
         </label>
         <div class="sync-status" id="autoBackupStatus"></div>
+      </div>
+
+      <div class="settings-section">
+        <h4>🎨 <span data-i18n="imgGenTitle">ছবি জেনারেশন (Image AI)</span></h4>
+        <div class="settings-hint" data-i18n-html="hintImgGen">শব্দের মানে বুঝতে যে illustration আসে সেটা এখন <b>Pollinations.ai</b> দিয়ে বানানো হয়। এটা বন্ধ করলে কোনো ছবি-অনুরোধই বাইরে যাবে না এবং "ছবি দিয়ে বুঝো" বাটনটাও আর দেখাবে না — ভবিষ্যতে অন্য কোনো Image AI বসাতে চাইলে এটা আগে বন্ধ করে রাখতে পারো। ছবি কোথাও save হয় না (শুধু ব্রাউজার ক্যাশে থাকে), আর এই সেটিং শুধু এই ডিভাইসে থাকে — cloud-এ যায় না।</div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;">
+          <input type="checkbox" id="imgGenToggle"> <span data-i18n="labelImgGenOn">Pollinations দিয়ে ছবি বানানো চালু রাখো</span>
+        </label>
       </div>
 
       <div class="settings-section">
@@ -1539,6 +1548,8 @@ function defaultSettings(){
     fbApiKey: '',
     fbDocId: 'default',
     autoBackupEnabled: true,
+    imageGenEnabled: true,
+    imageProvider: 'pollinations',
     language: 'bn', // 'bn' | 'en' | 'both'
     geminiModels: DEFAULT_GEMINI_MODELS.map(m => Object.assign({}, m)),
     geminiKeys: [
@@ -1605,6 +1616,12 @@ const I18N = {
   btnInfoSave: {bn:'তথ্য সংরক্ষণ করো', en:'Save info'},
   hintAutoBackup: {bn:'চালু থাকলে, উপরের Pantry ID / Firebase URL যেটাই বসানো থাকুক (Firebase-কে আগে চেষ্টা করবে, না থাকলে Pantry), তোমার প্রতিটা checkbox-click বা শব্দ যোগ/এডিট করার কিছুক্ষণ পর নিজে থেকেই চুপচাপ cloud-এ backup হয়ে যাবে — আলাদা করে Upload বাটনে চাপতে হবে না। Backup শুধু তোমার progress (কোনটা পড়া হয়েছে, override) পাঠায় — কোনো API key/ID কখনো cloud-এ যায় না।', en:'When on, whichever of Pantry ID / Firebase URL is set (Firebase is tried first, then Pantry) will quietly back up to the cloud a few moments after every checkbox click or word add/edit — no need to press Upload separately. Backup only sends your progress (what has been read, overrides) — no API key/ID is ever sent to the cloud.'},
   labelAutoBackupOn: {bn:'Auto-backup চালু রাখো', en:'Keep auto-backup on'},
+  imgGenTitle: {bn:'ছবি জেনারেশন (Image AI)', en:'Image generation (Image AI)'},
+  hintImgGen: {
+    bn:'শব্দের মানে বুঝতে যে illustration আসে সেটা এখন <b>Pollinations.ai</b> দিয়ে বানানো হয়। এটা বন্ধ করলে কোনো ছবি-অনুরোধই বাইরে যাবে না এবং "ছবি দিয়ে বুঝো" বাটনটাও আর দেখাবে না — ভবিষ্যতে অন্য কোনো Image AI বসাতে চাইলে এটা আগে বন্ধ করে রাখতে পারো। ছবি কোথাও save হয় না (শুধু ব্রাউজার ক্যাশে থাকে), আর এই সেটিং শুধু এই ডিভাইসে থাকে — cloud-এ যায় না।',
+    en:'The word-meaning illustration is currently generated with <b>Pollinations.ai</b>. Turning this off sends no image requests at all and hides the "Understand with picture" button — handy if you later want to plug in a different Image AI. Images are not saved anywhere (only in the browser cache), and this setting stays on this device only — it never goes to the cloud.'
+  },
+  labelImgGenOn: {bn:'Pollinations দিয়ে ছবি বানানো চালু রাখো', en:'Keep Pollinations image generation on'},
   hintGemini: {
     bn:'নিচে ৩টা মডেলের নাম দাও (latest ভার্সন যেটা এখন চলছে — flash/pro/flash-lite) এবং ৮টা API key। প্রতিটা key দিয়ে ক্রমান্বয়ে ৩টা মডেল try হবে (কোনো wait ছাড়াই); একটা key-র সব মডেল fail হলে পরের key দিয়ে আবার ৩টা মডেল try হবে। সব key + সব মডেল একবার করে fail হয়ে গেলে rate-limit এড়াতে ১ মিনিট wait করে আবার প্রথম থেকে try করবে। প্রতিটা শব্দের AI উত্তর একবার আনলে save হয়ে থাকবে (ফোনেই), পরে আবার একই শব্দ দেখলে offline-এও কাজ করবে আর নতুন করে token খরচ হবে না। <b>এই key গুলো শুধু এই ডিভাইসের ব্রাউজারে (localStorage) সংরক্ষিত থাকে — কোনো sync/backup/cloud-এ কখনো পাঠানো হয় না, এমনকি Auto-Backup চালু থাকলেও না।</b>',
     en:'Give the names of 3 models below (whatever latest version is current — flash/pro/flash-lite) and 8 API keys. Each key tries the 3 models in order (no waiting); if all models fail for a key, the next key tries all 3 again. If every key + model combination fails once, it waits 1 minute to avoid rate-limits and tries again from the top. Each word answer from AI is saved once fetched (on this phone), so seeing the same word again later works offline too and spends no new tokens. <b>These keys are stored only in this device browser (localStorage) — never sent to any sync/backup/cloud, even with Auto-Backup on.</b>'
@@ -1877,6 +1894,7 @@ function openSettingsModal(){
   document.getElementById('fbApiKeyInput').value = settings.fbApiKey || '';
   document.getElementById('fbDocIdInput').value = settings.fbDocId || 'default';
   document.getElementById('autoBackupToggle').checked = settings.autoBackupEnabled !== false;
+  document.getElementById('imgGenToggle').checked = settings.imageGenEnabled !== false;
   renderAutoBackupStatus();
   renderApiModelRows();
   renderApiKeyRows();
@@ -1913,6 +1931,8 @@ function collectSettingsFromForm(){
     fbApiKey: document.getElementById('fbApiKeyInput').value.trim(),
     fbDocId: document.getElementById('fbDocIdInput').value.trim() || 'default',
     autoBackupEnabled: document.getElementById('autoBackupToggle').checked,
+    imageGenEnabled: document.getElementById('imgGenToggle').checked,
+    imageProvider: settings.imageProvider || 'pollinations',
     language: settings.language || 'bn',
     geminiModels,
     geminiKeys
@@ -1927,6 +1947,7 @@ document.getElementById('settingsModalOverlay').addEventListener('click', e=>{
 document.getElementById('settingsSave').addEventListener('click', ()=>{
   settings = collectSettingsFromForm();
   saveSettings(settings);
+  applyImageGenClass();
   updateSettingsStatusIndicators();
   closeSettingsModal();
 });
@@ -1934,6 +1955,11 @@ document.getElementById('autoBackupToggle').addEventListener('change', e=>{
   settings.autoBackupEnabled = e.target.checked;
   saveSettings(settings);
   renderAutoBackupStatus();
+});
+document.getElementById('imgGenToggle').addEventListener('change', e=>{
+  settings.imageGenEnabled = e.target.checked;
+  saveSettings(settings);
+  applyImageGenClass();
 });
 document.getElementById('fullResetBtn').addEventListener('click', ()=>{
   if(!confirm(trKey('resetConfirm1'))) return;
@@ -3111,13 +3137,29 @@ function pollinationsImageUrl(word, sceneDescription, meaningHint){
   seed = Math.abs(seed) % 100000;
   return `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1024&height=768&seed=${seed}&model=flux&nologo=true&safe=true`;
 }
+// Image provider registry — to try another Image AI later, add one entry here
+// ({ label, buildUrl(word, scene, meaningHint) → image URL }) and set
+// settings.imageProvider to its key. The on/off switch lives in Settings.
+const IMAGE_PROVIDERS = {
+  pollinations: { label: 'Pollinations.ai', buildUrl: pollinationsImageUrl }
+};
+function isImageGenEnabled(){
+  return settings.imageGenEnabled !== false && !!IMAGE_PROVIDERS[settings.imageProvider || 'pollinations'];
+}
+function applyImageGenClass(){ if(document.body) document.body.classList.toggle('no-img-gen', !isImageGenEnabled()); }
+applyImageGenClass();
+function buildImageUrl(word, scene, meaningHint){
+  const prov = IMAGE_PROVIDERS[settings.imageProvider || 'pollinations'];
+  return prov ? prov.buildUrl(word, scene, meaningHint) : '';
+}
 // Shared image loader — used both for the manual button (old/cached words)
 // and auto-fire (brand new words), so retry-after-error works identically
 // either way.
 function loadWlImage(box, wordText, sceneDescription, meaningHint){
   const block = box.querySelector('#wlImgBlock');
   if(!block) return;
-  const url = pollinationsImageUrl(wordText || '', sceneDescription, meaningHint);
+  if(!isImageGenEnabled()){ block.innerHTML = ''; return; }
+  const url = buildImageUrl(wordText || '', sceneDescription, meaningHint);
   block.innerHTML = `<p class="fc-ai-loading">ছবি বানাচ্ছে (কয়েক সেকেন্ড লাগতে পারে)...</p>`;
   const probe = new Image();
   probe.onload = ()=>{
@@ -3170,7 +3212,7 @@ function renderWordLookupAnswer(box, raw, wordText, autoLoadImage){
   html += `</div>`;
   if(parts['সংক্ষিপ্ত অর্থ']) html += `<div class="wl-poster-meaning">${mdBoldHtml(escapeHtml(parts['সংক্ষিপ্ত অর্থ']))}</div>`;
   if(parts['Definition']) html += `<div class="wl-poster-meaning" style="font-family:'Inter',sans-serif;font-size:12.5px;font-style:italic;color:var(--text-muted);margin-top:4px;">${mdBoldHtml(escapeHtml(parts['Definition']))}</div>`;
-  html += `<div class="wl-img-block" id="wlImgBlock"><button id="wlImgBtn" class="modal-btn ghost" type="button" style="width:100%;">🎨 ছবি দিয়ে বুঝো (শুধু illustration, লেখা ছাড়া)</button></div>`;
+  if(isImageGenEnabled()) html += `<div class="wl-img-block" id="wlImgBlock"><button id="wlImgBtn" class="modal-btn ghost" type="button" style="width:100%;">🎨 ছবি দিয়ে বুঝো (শুধু illustration, লেখা ছাড়া)</button></div>`;
   if(parts['শব্দের গঠন']) html += `<div class="wl-root-box"><span class="wl-root-title">🧩 WORD ROOT</span><div class="wl-root-body">${mdBoldHtml(escapeHtml(parts['শব্দের গঠন']))}</div></div>`;
   if(parts['সমার্থক শব্দ'] || parts['বিপরীত শব্দ']){
     html += `<div class="wl-synant-grid">`;
@@ -3225,7 +3267,9 @@ function renderWordLookupAnswer(box, raw, wordText, autoLoadImage){
   });
   const sceneDescription = parts['ছবির দৃশ্য'] || ''; // English scene, hidden from the user, used only for the image prompt
   const meaningHint = parts['সংক্ষিপ্ত অর্থ'] || '';
-  if(autoLoadImage){
+  if(!isImageGenEnabled()){
+    // image AI switched off in Settings — no button, no request
+  } else if(autoLoadImage){
     loadWlImage(box, wordText, sceneDescription, meaningHint);
   } else {
     const wlImgBtn = box.querySelector('#wlImgBtn');
