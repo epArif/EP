@@ -6,6 +6,17 @@
 <meta name="apple-mobile-web-app-title" content="Cash Book"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Salary Cash Book</title>
 </head><body>
+<div id="splash" aria-hidden="true">
+<svg viewBox="0 0 120 120"><defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#7a6ff0"/></linearGradient></defs>
+<rect class="cv" x="20" y="18" width="80" height="86" rx="12" fill="url(#spg)"/>
+<rect class="pg" x="29" y="27" width="62" height="68" rx="6" fill="#fff"/>
+<line class="ln" x1="38" y1="46" x2="78" y2="46" stroke="#4f46e5" stroke-width="3.5" stroke-linecap="round"/>
+<line class="ln" x1="38" y1="58" x2="72" y2="58" stroke="#c7c4f7" stroke-width="3.5" stroke-linecap="round"/>
+<line class="ln" x1="38" y1="70" x2="78" y2="70" stroke="#c7c4f7" stroke-width="3.5" stroke-linecap="round"/>
+<line class="ln" x1="38" y1="82" x2="64" y2="82" stroke="#c7c4f7" stroke-width="3.5" stroke-linecap="round"/>
+<g class="coin"><circle cx="92" cy="30" r="15" fill="#0b8a5e"/><circle cx="92" cy="30" r="15" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="2"/><text x="92" y="37" text-anchor="middle" font-size="19" font-weight="700" fill="#fff" font-family="Inter,Hind Siliguri,sans-serif">৳</text></g>
+</svg><div class="ttl">হিসাব খাতা</div></div>
+
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -435,12 +446,64 @@ body { background: var(--bgimg), var(--bg); }
 .cu-list { display: flex; flex-direction: column; gap: 8px; }
 .chips.wrap { flex-wrap: wrap; overflow: visible; }
 .chip.add[data-cat-new], .chip.add[data-cat-edit], .chip.add[data-qedit] { padding: 7px 11px; }
+
+/* ---- Final polish: calm, spacious, clearly separated ---- */
+.wrap { gap: 24px; }
+.view { gap: 20px; }
+.card, .period, .search, .tabs, .seg, .chip-btn, .chip, .section-head .ico, .set-row { -webkit-backdrop-filter: none; backdrop-filter: none; }
+.card { border-radius: 22px; box-shadow: 0 12px 32px -18px rgba(10,10,40,.28); }
+.period, .search, .tabs, .chip-btn { box-shadow: none; }
+.top { padding: 6px 2px 0; }
+.top h1 { font-size: 24px; }
+.section-head { margin-top: 10px; padding: 0 6px; }
+.section-head h2 { font-size: 14px; font-weight: 700; color: var(--muted); }
+.balance-head { padding: 22px 20px 18px; }
+.big { font-size: 38px; }
+.balance-foot > div { padding: 15px 20px; }
+.daily { padding: 12px 20px; line-height: 1.55; }
+.plan { padding: 8px 0; }
+.env { padding: 15px 20px; }
+.chart, .insight { padding: 18px 20px; gap: 14px; }
+.entry { padding: 14px 18px; gap: 14px; }
+.day { padding: 16px 6px 8px; }
+.tools { gap: 12px; }
+.note { line-height: 1.55; }
+.card.savebox { padding: 12px 14px 12px 18px; border-radius: 20px; }
+.bottom { padding-top: 14px; }
+.big-btn { padding: 15px 10px; box-shadow: 0 10px 22px -10px rgba(0,0,0,.4); }
+
+/* ---- Opening splash (change SPLASH_MS in the script below to adjust) ---- */
+#splash { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: var(--bgimg), var(--bg); transition: opacity .35s ease; }
+#splash.out { opacity: 0; pointer-events: none; }
+#splash svg { width: 124px; height: 124px; overflow: visible; filter: drop-shadow(0 18px 24px rgba(79,70,229,.35)); }
+#splash .cv { transform-box: fill-box; transform-origin: center; animation: spPop .5s cubic-bezier(.2,1.3,.4,1) both; }
+#splash .pg { transform-box: fill-box; transform-origin: left center; animation: spOpen .5s .3s cubic-bezier(.3,.9,.3,1) both; }
+#splash .ln { stroke-dasharray: 46; stroke-dashoffset: 46; animation: spDraw .4s ease forwards; }
+#splash .ln:nth-of-type(1) { animation-delay: .7s; } #splash .ln:nth-of-type(2) { animation-delay: .82s; }
+#splash .ln:nth-of-type(3) { animation-delay: .94s; } #splash .ln:nth-of-type(4) { animation-delay: 1.06s; }
+#splash .coin { transform-box: fill-box; transform-origin: center; animation: spDrop .6s 1s cubic-bezier(.3,1.5,.5,1) both; }
+#splash .ttl { font-family: var(--font-bn); font-weight: 700; font-size: 22px; color: var(--fg); animation: spUp .5s .9s ease both; }
+@keyframes spPop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes spOpen { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes spDraw { to { stroke-dashoffset: 0; } }
+@keyframes spDrop { from { transform: translateY(-34px) scale(.5); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes spUp { from { transform: translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { #splash { display: none; } }
+
+/* ---- Header logo: cash in (green) / cash out (red) ---- */
+.top h1 { display: flex; align-items: center; gap: 11px; }
+.logo { flex: none; width: 38px; height: 38px; border-radius: 13px; display: grid; place-items: center; background: linear-gradient(145deg, var(--in-bg), var(--out-bg)); border: 1px solid var(--line); box-shadow: 0 8px 18px -10px rgba(10,10,40,.45); }
+
+/* ---- Cash In / Cash Out buttons: same depth, white text, both themes ---- */
+.big-btn.in, .sheet-actions .save.in { background: linear-gradient(135deg, #0a7d55, #14a36f) !important; color: #fff !important; }
+.big-btn.out, .sheet-actions .save.out { background: linear-gradient(135deg, #c8222b, #e4474c) !important; color: #fff !important; }
+.big-btn { border: 0; text-shadow: 0 1px 2px rgba(0,0,0,.25); box-shadow: 0 10px 22px -10px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.22); }
 </style>
 
 <div id="scroller">
 <div class="wrap">
   <div class="top">
-    <h1>হিসাব খাতা</h1>
+    <h1><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 11.5 19 5M13 5h6v6" stroke="var(--out)"/><path d="M11.5 12.5 5 19M5 13v6h6" stroke="var(--in)"/></svg></span><span>হিসাব খাতা</span></h1>
     <div class="top-actions">
       <button class="chip-btn" data-act="settings" id="btn-set" aria-label="Settings">⚙</button>
     </div>
@@ -2536,5 +2599,10 @@ body { background: var(--bgimg), var(--bg); }
   obs.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRS });
   setLang(LANG);
 })();
+</script>
+<script>
+/* Splash length in ms (animation itself takes about 1.6s). */
+(function () { var SPLASH_MS = 1700, el = document.getElementById('splash'); if (!el) return;
+  setTimeout(function () { el.classList.add('out'); setTimeout(function () { el.remove(); }, 400); }, SPLASH_MS); })();
 </script>
 </body></html>
