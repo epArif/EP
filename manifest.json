@@ -86,7 +86,7 @@
       "name": "হিসাব খাতা",
       "short_name": "Cash Book",
       "description": "স্যালারি ক্যাশ বুক খুলুন",
-      "url": "./cashbook.html"
+      "url": "./cb.html"
     }
   ]
 }
