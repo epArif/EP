@@ -6,13 +6,20 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["fullscreen", "standalone", "minimal-ui"],
+  "display_override": [
+    "fullscreen",
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "portrait-primary",
   "theme_color": "#020308",
   "background_color": "#020308",
   "lang": "bn",
   "dir": "ltr",
-  "categories": ["education", "productivity"],
+  "categories": [
+    "education",
+    "productivity"
+  ],
   "prefer_related_applications": false,
   "icons": [
     {
@@ -74,6 +81,12 @@
       "short_name": "Start",
       "description": "সরাসরি পরীক্ষা শুরু করুন",
       "url": "./"
+    },
+    {
+      "name": "হিসাব খাতা",
+      "short_name": "Cash Book",
+      "description": "স্যালারি ক্যাশ বুক খুলুন",
+      "url": "./cashbook.html"
     }
   ]
 }
