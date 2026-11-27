@@ -197,6 +197,14 @@ button.tile:active { background: var(--surface2); }
 .check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; font-family: var(--font-bn); background: var(--surface2); border-radius: 12px; padding: 11px 13px; cursor: pointer; }
 .check[hidden], .field[hidden] { display: none; }
 .check input { margin-top: 4px; accent-color: var(--accent); }
+.check { text-align: left; }
+.check input[type="checkbox"], .field .check input[type="checkbox"] { flex: none !important; width: 20px !important; min-width: 20px !important; height: 20px !important; margin: 1px 0 0 !important; padding: 0 !important; border-radius: 5px; }
+.field .check { justify-content: flex-start; align-items: center; width: 100%; }
+.check > span { flex: 1; min-width: 0; text-align: left; }
+.set-row.danger span:first-child { color: var(--out); }
+.sheet-actions .save.danger { background: var(--out); color: #fff; }
+.sheet-actions .save.danger:disabled { opacity: .4; }
+.warn-box { background: var(--surface2); border: 1px solid var(--out); border-radius: 12px; padding: 12px 13px; font-size: 13px; line-height: 1.55; font-family: var(--font-bn); }
 .pe-row { display: grid; grid-template-columns: 1fr 96px 32px; gap: 8px; align-items: center; }
 .pe-row input, .pe-top input { font: inherit; color: var(--fg); background: var(--surface2); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; width: 100%; min-width: 0; }
 .pe-row .pe-amt, .pe-top input { text-align: right; }
@@ -285,6 +293,23 @@ button.tile:active { background: var(--surface2); }
 @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
 @keyframes grow { from { width: var(--from); } to { width: var(--to); } }
 @keyframes pop { 0% { opacity: 0; transform: translateY(-10px) scale(.97); background: var(--surface2); } 60% { background: var(--surface2); } 100% { opacity: 1; transform: none; } }
+
+
+/* ---- date-wise collapsible groups ---- */
+.daygrp { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.day-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 11px 14px; box-shadow: var(--shadow); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5); }
+.day-head:active { background: var(--surface2); }
+.dh-l { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.dh-chev { flex: none; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; background: var(--surface2); color: var(--accent); font-size: 16px; font-weight: 700; line-height: 1; transition: transform .18s; }
+.day-head[aria-expanded="true"] .dh-chev { transform: rotate(90deg); }
+.dh-txt { display: flex; flex-direction: column; min-width: 0; }
+.dh-date { font-weight: 600; font-size: 14px; }
+.dh-n { font-size: 12px; color: var(--muted); font-family: var(--font-bn); }
+.dh-r { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; flex: none; }
+.dh-amt { font-size: 15px; font-weight: 700; white-space: nowrap; }
+.dh-amt.out { color: var(--out); }
+.dh-amt.in { color: var(--in); font-size: 12px; font-weight: 600; }
+.dh-r .dh-amt.in:only-child { font-size: 15px; font-weight: 700; }
 
 /* ---- native-app feel (iOS standalone) ---- */
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; background: var(--bg); overflow-x: hidden; overscroll-behavior: none; }
@@ -601,10 +626,12 @@ body { background: var(--bgimg), var(--bg); }
     <button type="button" class="set-row" data-act="copy-sum"><span>এই পিরিয়ডের সামারি কপি করো</span><span class="muted">⧉</span></button>
     <button type="button" class="set-row" data-act="pin" id="btn-pin" hidden><span id="pin-lbl">PIN লক চালু করো</span><span class="muted">›</span></button>
     <button type="button" class="set-row" data-act="sync" id="btn-sync" hidden><span>Google Sheet Sync</span><span class="muted" id="sync-st">বন্ধ</span></button>
+    <button type="button" class="set-row" data-act="gmail" id="btn-gmail" hidden><span>Gmail Backup</span><span class="muted" id="gm-st">বন্ধ</span></button>
     <button type="button" class="set-row" data-act="pdf" id="btn-pdf"><span>PDF রিপোর্ট নামাও (এই পিরিয়ড)</span><span class="muted">↓</span></button>
     <button type="button" class="set-row" data-act="csv" id="btn-csv"><span>CSV নামাও (এই পিরিয়ড)</span><span class="muted">↓</span></button>
     <button type="button" class="set-row" data-act="bak" id="btn-bak" hidden><span>Backup নামাও (JSON)</span><span class="muted">↓</span></button>
     <button type="button" class="set-row" data-act="res" id="btn-res" hidden><span>Backup থেকে Restore (merge)</span><span class="muted">↑</span></button>
+    <button type="button" class="set-row danger" data-act="reset" id="btn-reset"><span>সব ডাটা রিসেট করো</span><span class="muted">⚠</span></button>
     <input type="file" id="res-file" accept="application/json,.json" hidden>
     <div class="note" id="pin-note" hidden>PIN শুধু পাশের কেউ যেন স্ক্রিনে হিসাব না দেখে সেজন্য। ডাটা এনক্রিপ্ট হয় না। PIN ভুলে গেলে browser data মুছতে হবে, তাই Sync বা Backup রাখো।</div>
     <div class="sheet-actions"><button type="button" class="cancel" data-act="close" style="flex:1">Close</button></div>
@@ -645,6 +672,42 @@ body { background: var(--bgimg), var(--bg); }
     </div>
     <button type="button" class="lock-x" id="lock-x" data-act="lock-cancel" hidden>বাতিল</button>
   </div>
+</div>
+
+<div class="scrim" id="scrim-reset" hidden>
+  <div class="sheet" role="dialog" aria-label="Reset">
+    <h3>⚠ সব ডাটা রিসেট</h3>
+    <div class="warn-box"><b>সাবধান, এটা আর ফেরানো যাবে না।</b><br>এই ডিভাইস থেকে সব ক্যাশ এন্ট্রি, সেভিংস, প্ল্যান, সেটিংস, PIN আর Sync/Gmail কানেকশন মুছে যাবে। তোমার Google Sheet আর Gmail-এ থাকা backup মুছবে না। আগে Backup নামিয়ে বা Gmail-এ পাঠিয়ে রাখো।</div>
+    <div class="field"><label for="rs-in">নিশ্চিত করতে <b>RESET</b> লেখো</label><input id="rs-in" type="text" autocomplete="off" autocapitalize="characters" placeholder="RESET"></div>
+    <div class="sheet-actions">
+      <button type="button" class="again" data-act="rs-bak">Backup নামাও</button>
+      <button type="button" class="again" data-act="gmail">Gmail Backup</button>
+    </div>
+    <div class="sheet-actions">
+      <button type="button" class="cancel" data-act="close">Cancel</button>
+      <button type="button" class="save danger" data-act="rs-do" id="rs-do" disabled>সব মুছে ফেলো</button>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim-gmail" hidden>
+  <form class="sheet" id="gm-form" novalidate>
+    <h3>Gmail Backup</h3>
+    <div class="note">Sync-এর Code.gs (Gmail সহ নতুন ভার্সন) deploy করা থাকলে URL আর token নিজেই বসে যাবে। Backup পাঠালে তোমার নিজের Gmail-এ JSON ফাইলসহ মেইল যাবে, আর Restore দিলে সবচেয়ে নতুন backup থেকে ডাটা ফিরে আসবে (merge)।</div>
+    <div class="field"><label for="gm-url">Web app URL</label><input id="gm-url" type="url" placeholder="https://script.google.com/macros/s/…/exec"></div>
+    <div class="field"><label for="gm-token">Token</label><input id="gm-token" type="password" autocomplete="off"></div>
+    <div class="chips"><button type="button" class="chip" data-act="gm-auto" id="gm-auto" aria-pressed="false">প্রতিদিন নিজে থেকে backup</button></div>
+    <div class="note" id="gm-status"></div>
+    <div class="err" id="gm-err" role="alert"></div>
+    <div class="sheet-actions">
+      <button type="button" class="again" data-act="gm-restore">Gmail থেকে Restore</button>
+      <button type="button" class="save" data-act="gm-backup">Gmail-এ Backup পাঠাও</button>
+    </div>
+    <div class="sheet-actions">
+      <button type="button" class="cancel" data-act="close">Cancel</button>
+      <button type="button" class="again" data-act="gm-off">Disconnect</button>
+    </div>
+  </form>
 </div>
 
 <div class="scrim" id="scrim-sync" hidden>
@@ -705,6 +768,7 @@ body { background: var(--bgimg), var(--bg); }
     <button type="button" class="set-row" data-act="cu-quick"><span>দ্রুত টাকার বাটন</span><span class="muted">›</span></button>
     <button type="button" class="set-row" data-act="cu-goal"><span>সেভিংস লক্ষ্য</span><span class="muted">›</span></button>
     <button type="button" class="set-row" data-act="cu-plan"><span>স্যালারি, মাস শুরুর তারিখ, নিয়মিত খরচ</span><span class="muted">›</span></button>
+    <button type="button" class="set-row danger" data-act="reset"><span>⚠ সব ডাটা রিসেট করো</span><span class="muted">›</span></button>
     <div class="sheet-actions"><button type="button" class="cancel" data-act="close" style="flex:1">Close</button></div>
   </div>
 </div>
@@ -769,6 +833,7 @@ body { background: var(--bgimg), var(--bg); }
   var tomb = lsGet('cb-tomb') || {}, syncCfg = lsGet('cb-sync'), syncTimer = null, syncBusy = false, syncAgain = false, localMode = false, syncErr = '';
   var entries = [], savings = [];
   var filter = 'all', query = '', confirmId = null;
+  var openDays = {};
   var tab = 'book', sfilter = 'all', squery = '';
   var mode = 'in', editId = null, selCat = '', recents = [];
   var viewStart = null, db = null, dl = null;
@@ -820,6 +885,7 @@ body { background: var(--bgimg), var(--bg); }
   function saveEntry(e, list) {
     var sav = list === 'sav';
     e.u = Date.now();
+    if (e.date) openDays[(sav ? 's:' : 'b:') + e.date] = 1;
     if (db) return db.collection(sav ? 'savings' : 'entries').doc(e.id).set(e);
     if (sav) { savings = savings.filter(function (x) { return x.id !== e.id; }).concat([e]); lsSet('cb-savings', savings); }
     else { entries = entries.filter(function (x) { return x.id !== e.id; }).concat([e]); lsSet('cb-entries', entries); }
@@ -889,6 +955,30 @@ body { background: var(--bgimg), var(--bg); }
       '<div class="entry-amt num ' + e.type + '">' + (e.type === 'in' ? '+' : '−') + fmt(e.amount) + '</div>' + ctrl + '</div>';
   }
 
+
+  /* ---------- date-wise collapsible groups ---------- */
+  function dayGroups(rows, sav, forceOpen) {
+    var groups = [], map = {};
+    rows.forEach(function (e) {
+      var g = map[e.date];
+      if (!g) { g = map[e.date] = { date: e.date, list: [], tin: 0, tout: 0 }; groups.push(g); }
+      g.list.push(e);
+      if (e.type === 'in') g.tin += e.amount; else g.tout += e.amount;
+    });
+    return groups.map(function (g) {
+      var key = (sav ? 's:' : 'b:') + g.date;
+      var open = !!openDays[key] || !!forceOpen || g.list.some(function (e) { return e.id === confirmId; });
+      var tot = '';
+      if (g.tout > 0) tot += '<b class="dh-amt out num">−' + fmt(g.tout) + '</b>';
+      if (g.tin > 0) tot += '<span class="dh-amt in num">+' + fmt(g.tin) + '</span>';
+      var body = '';
+      if (open) body = '<div class="card list">' + g.list.map(function (e) { return entryRow(e, sav ? null : catName(e.type, e.cat), sav); }).join('') + '</div>';
+      return '<div class="daygrp"><button type="button" class="day-head" data-act="toggle-day" data-key="' + esc(key) + '" aria-expanded="' + (open ? 'true' : 'false') + '">' +
+        '<span class="dh-l"><span class="dh-chev" aria-hidden="true">›</span><span class="dh-txt"><span class="dh-date">' + esc(longDate(g.date)) + '</span><span class="dh-n">' + g.list.length + T('টা এন্ট্রি', ' entries') + '</span></span></span>' +
+        '<span class="dh-r">' + tot + '</span></button>' + body + '</div>';
+    }).join('');
+  }
+
   function renderSav() {
     var tin = 0, tout = 0;
     savings.forEach(function (e) { if (e.type === 'in') tin += e.amount; else tout += e.amount; });
@@ -909,12 +999,7 @@ body { background: var(--bgimg), var(--bg); }
     var box = $('sentries');
     if (!savings.length) { box.innerHTML = '<div class="card empty"><h3>সেভিংসে কিছু নেই</h3><p>নিচের In চাপলে জমা হবে, Out চাপলে তোলা হবে।</p></div>'; return; }
     if (!rows.length) { box.innerHTML = '<div class="card empty"><h3>কিছু পাওয়া যায়নি</h3><p>অন্য শব্দ বা ফিল্টার দিয়ে দেখো।</p></div>'; return; }
-    var out = '', last = '';
-    rows.forEach(function (e) {
-      if (e.date !== last) { if (last) out += '</div>'; out += '<div class="day">' + esc(longDate(e.date)) + '</div><div class="card list">'; last = e.date; }
-      out += entryRow(e, null, true);
-    });
-    box.innerHTML = out + '</div>';
+    box.innerHTML = dayGroups(rows, true, !!q);
     if (tab === 'sav') rows.forEach(function (e) { seen[e.id] = 1; });
   }
 
@@ -996,12 +1081,7 @@ body { background: var(--bgimg), var(--bg); }
       return;
     }
     if (!rows.length) { box.innerHTML = strip + '<div class="card empty"><h3>কিছু পাওয়া যায়নি</h3><p>অন্য শব্দ বা ফিল্টার দিয়ে দেখো।</p></div>'; return; }
-    var out = strip, last = '';
-    rows.forEach(function (e) {
-      if (e.date !== last) { if (last) out += '</div>'; out += '<div class="day">' + esc(longDate(e.date)) + '</div><div class="card list">'; last = e.date; }
-      out += entryRow(e, catName(e.type, e.cat), false);
-    });
-    box.innerHTML = out + '</div>';
+    box.innerHTML = strip + dayGroups(rows, false, !!q);
     if (tab === 'book') rows.forEach(function (e) { seen[e.id] = 1; });
   }
 
@@ -1099,7 +1179,7 @@ body { background: var(--bgimg), var(--bg); }
     }).join('') : '<div class="hist-empty">' + T('এই খাতে এখনো কোনো খরচ নেই', 'No spending in this category yet') + '</div>';
     $('hist-add').setAttribute('data-cat', c.id);
   }
-  function closeSheets() { backToCustom = false; $('scrim-hist').hidden = true; $('scrim-dl').hidden = true; $('scrim-custom').hidden = true; $('scrim-quick').hidden = true; $('scrim-cat').hidden = true; $('scrim-entry').hidden = true; $('scrim-plan').hidden = true; $('scrim-sync').hidden = true; $('scrim-set').hidden = true; $('scrim-goal').hidden = true; $('scrim-send').hidden = true; }
+  function closeSheets() { backToCustom = false; $('scrim-hist').hidden = true; $('scrim-dl').hidden = true; $('scrim-custom').hidden = true; $('scrim-quick').hidden = true; $('scrim-cat').hidden = true; $('scrim-entry').hidden = true; $('scrim-plan').hidden = true; $('scrim-sync').hidden = true; $('scrim-gmail').hidden = true; $('scrim-reset').hidden = true; $('scrim-set').hidden = true; $('scrim-goal').hidden = true; $('scrim-send').hidden = true; }
   function newId() { return 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
   function toast(msg, undo) {
@@ -1838,6 +1918,83 @@ body { background: var(--bgimg), var(--bg); }
   document.addEventListener('visibilitychange', function () { if (!document.hidden) doSync(); });
   window.addEventListener('online', function () { doSync(); });
 
+  /* ---------- restore + Gmail backup ---------- */
+  function restoreData(d) {
+    var items;
+    if (d && Array.isArray(d.items)) items = d.items;
+    else if (d && Array.isArray(d.entries) && Array.isArray(d.savings)) {
+      items = [];
+      d.entries.forEach(function (e) { items.push({ id: e.id, list: 'e', u: e.u || e.ts || 0, rec: e }); });
+      d.savings.forEach(function (e) { items.push({ id: e.id, list: 's', u: e.u || e.ts || 0, rec: e }); });
+    } else throw 0;
+    applyRemote({ items: items, plan: d.plan }); schedSync();
+    if (d.prefs && typeof d.prefs === 'object') { prefs = d.prefs; savePrefs(); }
+    if (d.goal > 0) setGoal(d.goal);
+    toast('Restore (merge) হয়েছে: এখন ' + entries.length + ' + ' + savings.length + ' এন্ট্রি');
+  }
+  var gmailCfg = lsGet('cb-gmail'), gmBusy = false;
+  function gmPayload() { return { v: 2, plan: plan, items: toItems(), prefs: prefs, goal: goalT }; }
+  function gmHash(str) { var h = 5381, i; for (i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0; return h; }
+  function gmState() {
+    var b = $('gm-st'); if (!b) return;
+    b.textContent = gmailCfg ? (gmailCfg.last ? '✓ ' + new Date(gmailCfg.last).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : 'চালু') : 'বন্ধ';
+  }
+  function openGmail() {
+    var gsrc = gmailCfg || syncCfg;
+    $('gm-url').value = gsrc ? gsrc.url : ''; $('gm-token').value = gsrc ? gsrc.token : '';
+    $('gm-auto').setAttribute('aria-pressed', gmailCfg && gmailCfg.auto ? 'true' : 'false');
+    $('gm-err').textContent = '';
+    $('gm-status').textContent = gmailCfg && gmailCfg.last ? 'শেষ Gmail backup: ' + new Date(gmailCfg.last).toLocaleString('en-GB') : '';
+    $('scrim-set').hidden = true; $('scrim-gmail').hidden = false;
+  }
+  function gmRead() {
+    var url = $('gm-url').value.trim(), tk = $('gm-token').value.trim();
+    if (!/^https:\/\/script\.google\.com\//.test(url)) { $('gm-err').textContent = 'URL script.google.com/… দিয়ে শুরু হতে হবে।'; return false; }
+    if (!tk) { $('gm-err').textContent = 'Token দাও।'; return false; }
+    gmailCfg = { url: url, token: tk, auto: $('gm-auto').getAttribute('aria-pressed') === 'true', last: gmailCfg ? gmailCfg.last : 0, hash: gmailCfg ? gmailCfg.hash : 0 };
+    lsSet('cb-gmail', gmailCfg); gmState(); return true;
+  }
+  function gmCall(body) {
+    return fetch(gmailCfg.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); })
+      .then(function (res) { if (res.error) throw { msg: res.error === 'auth' ? 'token ভুল' : String(res.error) }; return res; });
+  }
+  function gmailBackup(silent) {
+    if (gmBusy) return;
+    if (!silent && !gmRead()) return;
+    if (!gmailCfg) return;
+    var data = gmPayload(), hs = gmHash(JSON.stringify(data.items) + JSON.stringify(data.plan));
+    if (silent && hs === gmailCfg.hash) return;
+    gmBusy = true; if (!silent) $('gm-err').textContent = 'Gmail-এ পাঠানো হচ্ছে…';
+    gmCall({ token: gmailCfg.token, action: 'backup', data: data })
+      .then(function (res) {
+        gmailCfg.last = Date.now(); gmailCfg.hash = hs; lsSet('cb-gmail', gmailCfg); gmState();
+        if (!silent) { closeSheets(); toast(T('Gmail-এ backup গেছে: ', 'Backup sent to Gmail: ') + (res.to || '')); }
+      })
+      .catch(function (err) { var m = err && err.msg ? err.msg : 'নেটওয়ার্ক বা URL ঠিক নেই'; if (!silent) $('gm-err').textContent = m; })
+      .then(function () { gmBusy = false; });
+  }
+  function gmailRestore() {
+    if (gmBusy || !gmRead()) return;
+    gmBusy = true; $('gm-err').textContent = 'Gmail থেকে আনা হচ্ছে…';
+    gmCall({ token: gmailCfg.token, action: 'restore' })
+      .then(function (res) {
+        if (!res.data) throw { msg: 'Gmail-এ কোনো backup পাওয়া যায়নি' };
+        restoreData(res.data); closeSheets();
+      })
+      .catch(function (err) { $('gm-err').textContent = err && err.msg ? err.msg : (err === 0 ? 'ব্যাকআপ ফাইলটা ঠিক নয়' : 'নেটওয়ার্ক বা URL ঠিক নেই'); })
+      .then(function () { gmBusy = false; });
+  }
+  function gmAuto() {
+    if (!localMode || !gmailCfg || !gmailCfg.auto || !navigator.onLine) return;
+    if (Date.now() - (gmailCfg.last || 0) < 86400000) return;
+    if (!entries.length && !savings.length) return;
+    gmailBackup(true);
+  }
+  $('rs-in').addEventListener('input', function () { $('rs-do').disabled = $('rs-in').value.trim().toUpperCase() !== 'RESET'; });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) setTimeout(gmAuto, 3000); });
+  setTimeout(gmAuto, 5000);
+
   /* ---------- export ---------- */
   function sortAsc(list) { return list.slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : (a.ts || 0) - (b.ts || 0); }); }
   function exportName(ext) { var p = P(); return 'cash-book_' + p.s + '_to_' + p.e + '.' + ext; }
@@ -1999,6 +2156,7 @@ body { background: var(--bgimg), var(--bg); }
       var id0 = a.getAttribute('data-id'), l0 = a.getAttribute('data-list'), e0 = findEntry(id0, l0);
       if (e0) { $('scrim-hist').hidden = true; } if (e0) openEntry(e0.type, e0.cat, { id: e0.id, amount: e0.amount, note: e0.note, date: e0.date });
     }
+    else if (act === 'toggle-day') { var dk = a.getAttribute('data-key'); if (openDays[dk]) delete openDays[dk]; else openDays[dk] = 1; render(); }
     else if (act === 'edit-plan') openPlan(a.getAttribute('data-focus') === 'salary');
     else if (act === 'pe-add') {
       var row = document.createElement('div'); row.innerHTML = peRow('c' + Date.now().toString(36), '', 0);
@@ -2006,6 +2164,25 @@ body { background: var(--bgimg), var(--bg); }
       var ns = $('p-items').querySelectorAll('.pe-name'); ns[ns.length - 1].focus();
     }
     else if (act === 'pe-del') { var rw = a.closest('.pe-row'); if (rw) { rw.remove(); updatePSum(); } }
+    else if (act === 'reset') { $('rs-in').value = ''; $('rs-do').disabled = true; $('scrim-set').hidden = true; $('scrim-custom').hidden = true; $('scrim-reset').hidden = false; }
+    else if (act === 'rs-bak') askDownload('bak');
+    else if (act === 'rs-do') {
+      if ($('rs-in').value.trim().toUpperCase() !== 'RESET') return;
+      function wipeLocal() { try { Object.keys(localStorage).forEach(function (k) { if (/^cb-/.test(k) && k !== 'cb-lang' && k !== 'cb-theme') localStorage.removeItem(k); }); } catch (x) {} location.reload(); }
+      if (db) {
+        $('rs-do').disabled = true; $('rs-do').textContent = '...';
+        var jobs = [];
+        entries.forEach(function (x) { jobs.push(db.collection('entries').doc(x.id).delete()); });
+        savings.forEach(function (x) { jobs.push(db.collection('savings').doc(x.id).delete()); });
+        ['plan', 'prefs', 'goal'].forEach(function (n) { try { jobs.push(db.doc('config/' + n).delete()); } catch (x) {} });
+        Promise.all(jobs).then(wipeLocal).catch(function () { wipeLocal(); });
+      } else wipeLocal();
+    }
+    else if (act === 'gmail') openGmail();
+    else if (act === 'gm-auto') { var on = a.getAttribute('aria-pressed') !== 'true'; a.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+    else if (act === 'gm-backup') gmailBackup(false);
+    else if (act === 'gm-restore') gmailRestore();
+    else if (act === 'gm-off') { gmailCfg = null; try { localStorage.removeItem('cb-gmail'); } catch (x) {} gmState(); closeSheets(); toast(T('Gmail Backup বন্ধ করা হয়েছে', 'Gmail Backup turned off')); }
     else if (act === 'sync') { $('s-url').value = syncCfg ? syncCfg.url : ''; $('s-token').value = syncCfg ? syncCfg.token : ''; $('s-err').textContent = ''; $('s-status').textContent = syncCfg && syncCfg.last ? 'শেষ sync: ' + new Date(syncCfg.last).toLocaleString('en-GB') : ''; $('scrim-sync').hidden = false; }
     else if (act === 'sync-off') { syncCfg = null; try { localStorage.removeItem('cb-sync'); } catch (x) {} setSyncState('idle'); closeSheets(); toast('Sync বন্ধ করা হয়েছে'); }
     else if (act === 'rc-add') { var fi = PL().items.filter(function (i) { return i.id !== 'save'; })[0]; var w = document.createElement('div'); w.innerHTML = recRow({ id: 'q' + Date.now().toString(36), cat: fi ? fi.id : '', amount: fi ? fi.amt : 0, day: 1 }); $('p-rec').appendChild(w.firstChild); }
@@ -2071,24 +2248,14 @@ body { background: var(--bgimg), var(--bg); }
   if (!window.claude || !window.claude.use) {
     var th = lsGet('cb-theme'); if (th) applyTheme(th);
     if (lsGet('cb-pin')) showLock('unlock', 'PIN দাও', false);
-    goLocal(); $('btn-bak').hidden = false; $('btn-res').hidden = false; $('btn-pin').hidden = false; $('set-theme').hidden = false;
+    goLocal(); $('btn-bak').hidden = false; $('btn-res').hidden = false; $('btn-gmail').hidden = false; $('btn-reset').hidden = false; gmState(); $('btn-pin').hidden = false; $('set-theme').hidden = false;
     if (!lsGet('cb-plan') && !lsGet('cb-onboarded') && !entries.length && !savings.length && !syncCfg) $('scrim-first').hidden = false;
     $('res-file').addEventListener('change', function (ev) {
       var f = ev.target.files && ev.target.files[0]; if (!f) return;
       var r = new FileReader();
       r.onload = function () {
         try {
-          var d = JSON.parse(r.result), items;
-          if (d && Array.isArray(d.items)) items = d.items;
-          else if (d && Array.isArray(d.entries) && Array.isArray(d.savings)) {
-            items = [];
-            d.entries.forEach(function (e) { items.push({ id: e.id, list: 'e', u: e.u || e.ts || 0, rec: e }); });
-            d.savings.forEach(function (e) { items.push({ id: e.id, list: 's', u: e.u || e.ts || 0, rec: e }); });
-          } else throw 0;
-          applyRemote({ items: items, plan: d.plan }); schedSync();
-          if (d.prefs && typeof d.prefs === 'object') { prefs = d.prefs; savePrefs(); }
-          if (d.goal > 0) setGoal(d.goal);
-          toast('Restore (merge) হয়েছে: এখন ' + entries.length + ' + ' + savings.length + ' এন্ট্রি');
+          restoreData(JSON.parse(r.result));
         } catch (e) { toast('ব্যাকআপ ফাইলটা ঠিক নয়'); }
         ev.target.value = '';
       };
@@ -2187,6 +2354,14 @@ body { background: var(--bgimg), var(--bg); }
     '＋ নতুন খাত': '＋ New category', '＋ নিয়মিত খরচ': '＋ Recurring expense', '＋ স্যালারি যোগ করো': '＋ Add salary',
     'এই পিরিয়ডের সামারি কপি করো': 'Copy this period’s summary',
     'Backup নামাও (JSON)': 'Download backup (JSON)', 'Backup থেকে Restore (merge)': 'Restore from backup (merge)',
+    'সব ডাটা রিসেট করো': 'Reset all data', '⚠ সব ডাটা রিসেট করো': '⚠ Reset all data', '⚠ সব ডাটা রিসেট': '⚠ Reset all data', 'সব মুছে ফেলো': 'Erase everything', 'Backup নামাও': 'Download backup',
+    'নিশ্চিত করতে': 'To confirm, type', 'লেখো': '',
+    'সাবধান, এটা আর ফেরানো যাবে না।': 'Careful, this cannot be undone.',
+    'এই ডিভাইস থেকে সব ক্যাশ এন্ট্রি, সেভিংস, প্ল্যান, সেটিংস, PIN আর Sync/Gmail কানেকশন মুছে যাবে। তোমার Google Sheet আর Gmail-এ থাকা backup মুছবে না। আগে Backup নামিয়ে বা Gmail-এ পাঠিয়ে রাখো।': 'All cash entries, savings, plan, settings, PIN and the Sync/Gmail connection will be erased from this device. Your Google Sheet and backups in Gmail are not deleted. Download a backup or send one to Gmail first.',
+    'Gmail Backup': 'Gmail Backup', 'বন্ধ': 'Off', 'চালু': 'On',
+    'Sync-এর Code.gs (Gmail সহ নতুন ভার্সন) deploy করা থাকলে URL আর token নিজেই বসে যাবে। Backup পাঠালে তোমার নিজের Gmail-এ JSON ফাইলসহ মেইল যাবে, আর Restore দিলে সবচেয়ে নতুন backup থেকে ডাটা ফিরে আসবে (merge)।': 'If the Sync Code.gs (new version with Gmail) is deployed, the URL and token fill in automatically. Backup emails a JSON file to your own Gmail, and Restore brings data back from the newest backup (merge).',
+    'প্রতিদিন নিজে থেকে backup': 'Automatic daily backup', 'Gmail থেকে Restore': 'Restore from Gmail', 'Gmail-এ Backup পাঠাও': 'Send backup to Gmail',
+    'Gmail-এ পাঠানো হচ্ছে…': 'Sending to Gmail…', 'Gmail থেকে আনা হচ্ছে…': 'Fetching from Gmail…', 'Gmail-এ কোনো backup পাওয়া যায়নি': 'No backup found in Gmail',
     'PIN দাও': 'Enter PIN', 'PIN লক চালু করো': 'Turn on PIN lock', 'PIN লক বন্ধ করো': 'Turn off PIN lock',
     'PIN লক চালু হয়েছে': 'PIN lock turned on', 'PIN লক বন্ধ হয়েছে': 'PIN lock turned off',
     'নতুন ৪ সংখ্যার PIN দাও': 'Enter a new 4-digit PIN', 'আবার একই PIN দাও': 'Enter the same PIN again',
@@ -2278,6 +2453,7 @@ body { background: var(--bgimg), var(--bg); }
     [/^✓ Sync হয়েছে · (.*)$/, '✓ Synced · $1'],
     [/^Sync হয়নি: (.*)$/, 'Sync failed: $1'],
     [/^শেষ sync: (.*)$/, 'Last sync: $1'],
+    [/^শেষ Gmail backup: (.*)$/, 'Last Gmail backup: $1'],
     [/^Restore \(merge\) হয়েছে: এখন (\d+) \+ (\d+) এন্ট্রি$/, 'Restored (merged): now $1 + $2 entries']
   ];
   var KEEP_RX = [[/^মাস শেষে বাকি \((.*)\)$/, 'Month-end remainder ($1)']];
