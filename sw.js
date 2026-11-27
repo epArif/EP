@@ -1,4 +1,8 @@
-const CACHE_NAME = 'ep-v10';
+const CACHE_NAME = 'ep-v11';
+const EXTRA_URLS = [
+  'https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap',
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
+];
 const SYNC_TAG   = 'ep-result-sync';
 const SYNC_DB    = 'ep_sw_sync';
 const SYNC_STORE = 'queue';
@@ -71,13 +75,17 @@ self.addEventListener('install', function(e) {
     caches.open(CACHE_NAME).then(function(cache) {
       // Cache app shell
       var shellCache = Promise.allSettled
-        ? Promise.allSettled(['./','./index.html','./ExamPortal.html','./ev.html','./ejob.html','./mm.html','./cashbook.html','./manifest.json'].map(function(u){return cache.add(u).catch(function(){});}))
+        ? Promise.allSettled(['./','./index.html','./ExamPortal.html','./ev.html','./ejob.html','./mm.html','./cashbook.html','./cb.html','./manifest.json'].map(function(u){return cache.add(u).catch(function(){});}))
         : cache.addAll(['./','./index.html']).catch(function(){});
       // Cache logo with no-cors so it works offline on every device
       var logoCache = fetch(new Request(LOGO_URL, { mode: 'no-cors' }))
         .then(function(res) { if (res) return cache.put(LOGO_URL, res); })
         .catch(function(){});
-      return Promise.all([shellCache, logoCache]);
+      // Fonts + jsPDF for the Cash Book (opaque responses are fine to cache)
+      var extraCache = Promise.all(EXTRA_URLS.map(function(u) {
+        return fetch(new Request(u, { mode: 'no-cors' })).then(function(res) { return cache.put(u, res); }).catch(function(){});
+      }));
+      return Promise.all([shellCache, logoCache, extraCache]);
     })
   );
 });
@@ -119,6 +127,7 @@ self.addEventListener('fetch', function(e) {
   var isFont      = url.indexOf('fonts.googleapis.com') !== -1 || url.indexOf('fonts.gstatic.com') !== -1;
   var isLogo      = url === LOGO_URL || url.indexOf('i.ibb.co') !== -1;
   var isSameOrigin = url.indexOf(self.location.origin) === 0;
+  var isCdn       = url.indexOf('cdnjs.cloudflare.com') !== -1;
 
   // ── Logo: cache-first, background refresh ──
   if (isLogo) {
@@ -137,7 +146,7 @@ self.addEventListener('fetch', function(e) {
     return;
   }
 
-  if (!isSameOrigin && !isFont) return;
+  if (!isSameOrigin && !isFont && !isCdn) return;
 
   // ── Navigation: network-first, fallback to cache ──
   if (req.mode === 'navigate') {
@@ -159,7 +168,7 @@ self.addEventListener('fetch', function(e) {
     caches.open(CACHE_NAME).then(function(cache) {
       return cache.match(req).then(function(cached) {
         var fresh = fetch(req).then(function(res) {
-          if (res && res.status === 200 && res.type !== 'opaque') cache.put(req, res.clone());
+          if (res && (res.status === 200 || res.type === 'opaque')) cache.put(req, res.clone());
           return res;
         }).catch(function() { return cached || new Response('', { status: 408 }); });
         return cached || fresh;
