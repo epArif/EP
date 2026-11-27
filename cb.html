@@ -156,6 +156,28 @@ button.tile:active { background: var(--surface2); }
 .note { font-size: 12px; color: var(--muted); padding: 0 4px; }
 .note.warn { color: var(--warn); }
 
+.env-main[role=button] { cursor: pointer; }
+.env-plus-btn { flex: none; padding: 8px; margin: -8px -8px -8px 0; border-radius: 50%; }
+.env-plus-btn:active .env-plus { transform: scale(.88); }
+.scrim.hist { align-items: center; padding: 18px; }
+.hist-card { width: 100%; max-width: 440px; max-height: min(78vh, 640px); display: flex; flex-direction: column; background: var(--sheet, var(--surface)); border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 24px 70px rgba(0,0,0,.45); overflow: hidden; -webkit-backdrop-filter: blur(28px) saturate(1.6); backdrop-filter: blur(28px) saturate(1.6); }
+.hist-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 16px 18px 12px; border-bottom: 1px solid var(--line); }
+.hist-head h3 { margin: 0; font-family: var(--font-bn); font-size: 18px; }
+.hist-sub { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.hist-sub b { color: var(--fg); }
+.hist-x { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--surface2); color: var(--muted); font-size: 18px; line-height: 1; }
+.hist-list { flex: 1; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 6px 0; }
+.hist-row { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 12px 18px; border-top: 1px solid var(--line); }
+.hist-row:first-child { border-top: 0; }
+.hist-row:active { background: var(--surface2); }
+.hist-main { flex: 1; min-width: 0; }
+.hist-note { font-family: var(--font-bn); font-weight: 500; overflow-wrap: anywhere; }
+.hist-time { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.hist-amt { font-weight: 700; color: var(--out); white-space: nowrap; }
+.hist-empty { text-align: center; color: var(--muted); font-family: var(--font-bn); padding: 30px 20px; }
+.hist-foot { padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px) * 0); border-top: 1px solid var(--line); }
+.hist-add { width: 100%; border-radius: 13px; padding: 12px; font-weight: 700; font-family: var(--font-bn); color: #fff; background: linear-gradient(135deg, var(--out), #f0504f); }
+@media (prefers-reduced-motion: no-preference) { .scrim.hist:not([hidden]) .hist-card { animation: histIn .24s cubic-bezier(.2,.9,.3,1); } @keyframes histIn { from { opacity: 0; transform: translateY(16px) scale(.96); } to { opacity: 1; transform: none; } } }
 .scrim { position: fixed; inset: 0; z-index: 40; background: rgba(5,5,15,.55); display: flex; align-items: flex-end; justify-content: center; }
 .scrim[hidden] { display: none; }
 .sheet { width: 100%; max-width: 560px; max-height: 94%; overflow-y: auto; background: var(--surface); border-radius: 22px 22px 0 0; padding: 18px 18px calc(20px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
@@ -525,6 +547,8 @@ body { background: var(--bgimg), var(--bg); }
     </div>
   </form>
 </div>
+
+<div class="scrim hist" id="scrim-hist" hidden><div class="hist-card" role="dialog" aria-modal="true"><div class="hist-head"><div><h3 id="hist-title"></h3><div class="hist-sub" id="hist-sub"></div></div><button type="button" class="hist-x" data-act="close" aria-label="Close">×</button></div><div class="hist-list" id="hist-list"></div><div class="hist-foot"><button type="button" class="hist-add" id="hist-add" data-act="hist-add">＋ নতুন খরচ</button></div></div></div>
 
 <div class="scrim" id="scrim-plan" hidden>
   <form class="sheet" id="plan-form" novalidate>
@@ -936,11 +960,19 @@ body { background: var(--bgimg), var(--bg); }
         : '<b class="num">' + fmt(sp) + '</b> / <span class="num">' + fmt(budget) + '</span>';
       var sub = c.id === 'other' ? '' : (isSave && sp > budget ? '<span class="num" style="color:var(--accent)">' + fmt(sp - budget) + ' এক্সট্রা জমা</span>' : over ? '<span class="over-note num">' + fmt(sp - budget) + ' বেশি</span>' : '<span class="num">' + fmt(budget - sp) + ' বাকি</span>');
       var edm = editCats && c.id !== 'other';
-      html += '<button class="env" data-act="' + (edm ? 'edit-cat' : 'add-out') + '" data-cat="' + esc(c.id) + '" aria-label="Add expense to ' + esc(c.en) + '">' +
-        '<div class="env-main"><div class="env-row"><span class="env-name">' + esc(c.bn) + '</span><span class="env-amt">' + right + '</span></div>' +
-        '<div class="bar' + (over ? ' over' : '') + '"><i style="--from:' + from + '%;--to:' + pct + '%;width:' + pct + '%"></i></div>' +
-        (sub ? '<div class="env-amt" style="text-align:right">' + sub + '</div>' : '') + '</div>' +
-        '<span class="env-plus' + (edm ? ' ed' : '') + '" aria-hidden="true">' + (edm ? '✎' : '+') + '</span></button>';
+      if (edm) {
+        html += '<button class="env" data-act="edit-cat" data-cat="' + esc(c.id) + '" aria-label="Edit ' + esc(c.en) + '">' +
+          '<div class="env-main"><div class="env-row"><span class="env-name">' + esc(c.bn) + '</span><span class="env-amt">' + right + '</span></div>' +
+          '<div class="bar' + (over ? ' over' : '') + '"><i style="--from:' + from + '%;--to:' + pct + '%;width:' + pct + '%"></i></div>' +
+          (sub ? '<div class="env-amt" style="text-align:right">' + sub + '</div>' : '') + '</div>' +
+          '<span class="env-plus ed" aria-hidden="true">✎</span></button>';
+      } else {
+        html += '<div class="env">' +
+          '<div class="env-main" role="button" tabindex="0" data-act="cat-hist" data-cat="' + esc(c.id) + '" aria-label="History of ' + esc(c.en) + '"><div class="env-row"><span class="env-name">' + esc(c.bn) + '</span><span class="env-amt">' + right + '</span></div>' +
+          '<div class="bar' + (over ? ' over' : '') + '"><i style="--from:' + from + '%;--to:' + pct + '%;width:' + pct + '%"></i></div>' +
+          (sub ? '<div class="env-amt" style="text-align:right">' + sub + '</div>' : '') + '</div>' +
+          '<button type="button" class="env-plus-btn" data-act="add-out" data-cat="' + esc(c.id) + '" aria-label="Add expense to ' + esc(c.en) + '"><span class="env-plus" aria-hidden="true">+</span></button></div>';
+      }
     });
     $('plan').innerHTML = html;
     renderChart(t, p);
@@ -1048,7 +1080,26 @@ body { background: var(--bgimg), var(--bg); }
     var d = sal - tot;
     $('p-sum').innerHTML = 'প্ল্যান <b>' + fmt(tot) + '</b> · ' + (d >= 0 ? 'ফ্রি <b style="color:var(--in)">' + fmt(d) + '</b>' : 'বেশি <b style="color:var(--out)">' + fmt(-d) + '</b>');
   }
-  function closeSheets() { backToCustom = false; $('scrim-dl').hidden = true; $('scrim-custom').hidden = true; $('scrim-quick').hidden = true; $('scrim-cat').hidden = true; $('scrim-entry').hidden = true; $('scrim-plan').hidden = true; $('scrim-sync').hidden = true; $('scrim-set').hidden = true; $('scrim-goal').hidden = true; $('scrim-send').hidden = true; }
+  var histCat = null;
+  function fmtTime(ts) { return ts ? new Date(ts).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : ''; }
+  function openHist(id) {
+    var c = allOutCats().filter(function (x) { return x.id === id; })[0]; if (!c) return;
+    histCat = id; renderHist(); $('scrim-hist').hidden = false;
+  }
+  function renderHist() {
+    var c = allOutCats().filter(function (x) { return x.id === histCat; })[0]; if (!c) return;
+    var rows = curEntries().filter(function (e) { return e.type === 'out' && e.cat === histCat; })
+      .sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : (b.ts || 0) - (a.ts || 0); });
+    var sp = rows.reduce(function (a, e) { return a + e.amount; }, 0);
+    $('hist-title').textContent = c.bn;
+    $('hist-sub').innerHTML = '<b class="num">' + fmt(sp) + '</b>' + (c.id === 'other' ? '' : ' / <span class="num">' + fmt(c.amt || 0) + '</span>') + ' · ' + rows.length + T('টা এন্ট্রি', ' entries');
+    $('hist-list').innerHTML = rows.length ? rows.map(function (e) {
+      var tm = fmtTime(e.ts);
+      return '<button type="button" class="hist-row" data-act="edit" data-list="" data-id="' + esc(e.id) + '"><div class="hist-main"><div class="hist-note">' + esc(e.note || c.bn) + '</div><div class="hist-time">' + esc(longDate(e.date)) + (tm ? ' · ' + tm : '') + '</div></div><div class="hist-amt num">−' + fmt(e.amount) + '</div></button>';
+    }).join('') : '<div class="hist-empty">' + T('এই খাতে এখনো কোনো খরচ নেই', 'No spending in this category yet') + '</div>';
+    $('hist-add').setAttribute('data-cat', c.id);
+  }
+  function closeSheets() { backToCustom = false; $('scrim-hist').hidden = true; $('scrim-dl').hidden = true; $('scrim-custom').hidden = true; $('scrim-quick').hidden = true; $('scrim-cat').hidden = true; $('scrim-entry').hidden = true; $('scrim-plan').hidden = true; $('scrim-sync').hidden = true; $('scrim-set').hidden = true; $('scrim-goal').hidden = true; $('scrim-send').hidden = true; }
   function newId() { return 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
   function toast(msg, undo) {
@@ -1139,7 +1190,7 @@ body { background: var(--bgimg), var(--bg); }
   $('scrim-cat').addEventListener('click', function (ev) { if (ev.target === $('scrim-cat')) closeCatSheet(); });
   $('scrim-quick').addEventListener('click', function (ev) { if (ev.target === $('scrim-quick')) closeQuick(); });
   $('scrim-custom').addEventListener('click', function (ev) { if (ev.target === $('scrim-custom')) closeSheets(); });
-  ['scrim-entry', 'scrim-plan'].forEach(function (id) {
+  ['scrim-entry', 'scrim-plan', 'scrim-hist'].forEach(function (id) {
     $(id).addEventListener('click', function (ev) { if (ev.target === $(id)) closeSheets(); });
   });
   document.addEventListener('keydown', function (ev) {
@@ -1938,13 +1989,15 @@ body { background: var(--bgimg), var(--bg); }
     else if (act === 'pin') pinToggle();
     else if (act === 'lock-cancel') $('lock').hidden = true;
     else if (act === 'w-sync') { lsSet('cb-onboarded', 1); $('scrim-first').hidden = true; a.setAttribute('data-act', 'w-sync'); document.querySelector('[data-act=sync]').click(); }
+    else if (act === 'cat-hist') openHist(a.getAttribute('data-cat'));
+    else if (act === 'hist-add') { var hc = a.getAttribute('data-cat'); $('scrim-hist').hidden = true; if (hc === 'save') { switchTab('sav'); openEntry('in'); } else openEntry('out', hc); }
     else if (act === 'add-out') {
       var cat = a.getAttribute('data-cat');
       if (cat === 'save') { switchTab('sav'); openEntry('in'); } else openEntry('out', cat);
     }
     else if (act === 'edit') {
       var id0 = a.getAttribute('data-id'), l0 = a.getAttribute('data-list'), e0 = findEntry(id0, l0);
-      if (e0) openEntry(e0.type, e0.cat, { id: e0.id, amount: e0.amount, note: e0.note, date: e0.date });
+      if (e0) { $('scrim-hist').hidden = true; } if (e0) openEntry(e0.type, e0.cat, { id: e0.id, amount: e0.amount, note: e0.note, date: e0.date });
     }
     else if (act === 'edit-plan') openPlan(a.getAttribute('data-focus') === 'salary');
     else if (act === 'pe-add') {
