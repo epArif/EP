@@ -498,6 +498,25 @@ body { background: var(--bgimg), var(--bg); }
 .big-btn.in, .sheet-actions .save.in { background: linear-gradient(135deg, #0a7d55, #14a36f) !important; color: #fff !important; }
 .big-btn.out, .sheet-actions .save.out { background: linear-gradient(135deg, #c8222b, #e4474c) !important; color: #fff !important; }
 .big-btn { border: 0; text-shadow: 0 1px 2px rgba(0,0,0,.25); box-shadow: 0 10px 22px -10px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.22); }
+
+/* ---- Final audit: entry-sheet alignment ---- */
+.sheet .row2 { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.sheet .row2 > * { min-width: 0; }
+.sheet .row2 input[type="date"] { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 46px; min-height: 46px; margin: 0; padding: 0 12px; text-align: center; text-align-last: center; line-height: 46px; font-size: 16px; }
+.sheet .row2 input[type="date"]::-webkit-date-and-time-value { text-align: center; margin: 0 auto; min-height: 0; }
+.sheet .row2 .chips { overflow: visible; padding: 0; gap: 8px; flex-wrap: nowrap; -webkit-mask-image: none; mask-image: none; }
+.sheet .row2 .chip { height: 46px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; }
+.sheet .chips .chip { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
+.sheet .field > .chips:not(.wrap) { padding: 2px 18px 2px 0; margin-right: -18px; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
+.sheet .field > .chips.wrap { -webkit-mask-image: none; mask-image: none; padding: 0; margin: 0; }
+.sheet .field { gap: 8px; }
+.sheet .field > label, .sheet .field > .lbl { line-height: 1.3; }
+.sheet-actions { align-items: stretch; gap: 10px; }
+.sheet-actions button { min-height: 52px; display: inline-flex; align-items: center; justify-content: center; text-align: center; font-size: 15px; line-height: 1.1; padding: 0 10px; white-space: nowrap; }
+.sheet-actions .cancel { flex: .8 1 0; }
+.sheet-actions .again { flex: 1.3 1 0; font-size: 14px; }
+.sheet-actions .save { flex: 1 1 0; }
+@media (max-width: 380px) { .sheet-actions button { font-size: 14px; } .sheet-actions .again { font-size: 13px; } }
 </style>
 
 <div id="scroller">
@@ -2604,5 +2623,74 @@ body { background: var(--bgimg), var(--bg); }
 /* Splash length in ms (animation itself takes about 1.6s). */
 (function () { var SPLASH_MS = 1700, el = document.getElementById('splash'); if (!el) return;
   setTimeout(function () { el.classList.add('out'); setTimeout(function () { el.remove(); }, 400); }, SPLASH_MS); })();
+</script>
+
+<style>
+/* ---- iOS-style edge swipe back ---- */
+#swipe-ind { position: fixed; left: 0; top: 50%; z-index: 200; width: 38px; height: 38px; margin-top: -19px; border-radius: 50%; display: grid; place-items: center; background: rgba(120,115,255,.92); color: #fff; font-size: 26px; font-weight: 600; line-height: 1; padding-bottom: 3px; box-shadow: 0 6px 18px rgba(0,0,0,.35); pointer-events: none; opacity: 0; transform: translateX(-44px); will-change: transform, opacity; }
+</style>
+<script>
+/* swipe from the left edge (like iOS) = go back: closes the top sheet, or returns from Savings to Cash Book */
+(function () {
+  var EDGE = 28, sx = 0, sy = 0, st = 0, dx = 0, mode = null, ctx = null, busy = false;
+  var ind = document.createElement('div'); ind.id = 'swipe-ind'; ind.textContent = '\u2039'; ind.setAttribute('aria-hidden', 'true'); document.body.appendChild(ind);
+  function byId(i) { return document.getElementById(i); }
+  function context() {
+    var lk = byId('lock'), fs = byId('scrim-first'), lx = byId('lock-x');
+    if (lk && !lk.hidden) return (lx && !lx.hidden) ? { lock: lx, el: lk.querySelector('.lock-in') || lk } : null;
+    if (fs && !fs.hidden) return null;
+    var open = document.querySelectorAll('.scrim:not([hidden])');
+    if (open.length) { var sc = open[open.length - 1]; return { scrim: sc, el: sc.querySelector('.sheet, .hist-card') }; }
+    var sav = document.querySelector('[data-tab="sav"][aria-pressed="true"]');
+    if (sav) return { tab: true, el: byId('scroller') };
+    return null;
+  }
+  function paint(d, el, scrim) {
+    var p = Math.min(1, d / 110);
+    ind.style.transition = 'none'; ind.style.opacity = String(Math.min(1, p * 1.4));
+    ind.style.transform = 'translateX(' + (Math.min(d, 110) * 0.55 - 44 + 10) + 'px) scale(' + (0.7 + 0.3 * p) + ')';
+    if (el) { el.style.transition = 'none'; el.style.transform = 'translateX(' + (d * (ctx && ctx.tab ? 0.35 : 0.6)) + 'px)'; if (!(ctx && ctx.tab)) el.style.opacity = String(1 - Math.min(.35, d / 500)); }
+  }
+  function release(el) {
+    if (el) { el.style.transition = 'transform .2s cubic-bezier(.2,.9,.3,1), opacity .2s'; el.style.transform = ''; el.style.opacity = ''; setTimeout(function () { el.style.transition = ''; }, 230); }
+    ind.style.transition = 'opacity .18s, transform .2s'; ind.style.opacity = '0'; ind.style.transform = 'translateX(-44px)';
+  }
+  function commit(c) {
+    busy = true; var el = c.el;
+    ind.style.transition = 'opacity .18s'; ind.style.opacity = '0';
+    if (el) { el.style.transition = 'transform .18s ease-in, opacity .18s'; el.style.transform = 'translateX(' + (c.tab ? 40 : window.innerWidth) + 'px)'; el.style.opacity = c.tab ? '' : '0'; }
+    setTimeout(function () {
+      var ae = document.activeElement; if (ae && ae.blur && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) ae.blur();
+      if (c.lock) c.lock.click();
+      else if (c.tab) { var b = document.querySelector('[data-tab="book"]'); if (b) b.click(); }
+      else { var x = c.scrim.querySelector('[data-act="close"]'); if (x) x.click(); else c.scrim.click(); }
+      if (el) { el.style.transition = 'none'; el.style.transform = ''; el.style.opacity = ''; setTimeout(function () { el.style.transition = ''; }, 30); }
+      busy = false;
+    }, 180);
+  }
+  document.addEventListener('touchstart', function (e) {
+    mode = null; if (busy || e.touches.length !== 1) return;
+    var t = e.touches[0]; if (t.clientX > EDGE) return;
+    ctx = context(); if (!ctx) return;
+    sx = t.clientX; sy = t.clientY; st = Date.now(); dx = 0; mode = 'maybe';
+  }, { passive: true, capture: true });
+  document.addEventListener('touchmove', function (e) {
+    if (!mode) return;
+    var t = e.touches[0], mx = t.clientX - sx, my = t.clientY - sy;
+    if (mode === 'maybe') {
+      if (Math.abs(mx) < 8 && Math.abs(my) < 8) return;
+      if (mx > 0 && Math.abs(mx) > Math.abs(my) * 1.3) mode = 'drag'; else { mode = null; return; }
+    }
+    dx = Math.max(0, mx); paint(dx, ctx.el);
+    if (e.cancelable) e.preventDefault();
+  }, { passive: false, capture: true });
+  function end() {
+    if (mode !== 'drag') { mode = null; return; }
+    var v = dx / Math.max(1, Date.now() - st), c = ctx; mode = null;
+    if (dx > 90 || (dx > 40 && v > 0.45)) commit(c); else release(c.el);
+  }
+  document.addEventListener('touchend', end, { passive: true, capture: true });
+  document.addEventListener('touchcancel', function () { if (mode === 'drag' && ctx) release(ctx.el); mode = null; }, { passive: true, capture: true });
+})();
 </script>
 </body></html>
