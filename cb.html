@@ -355,6 +355,9 @@ body { padding: 0 !important; margin: 0; }
 /* ---- insights: summary, alerts, tips, comparison, trend, goal ---- */
 .insight { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
 .num { font-variant-numeric: tabular-nums; }
+.pdf-row { padding: 5px 6px 5px 14px; }
+.pdf-row .pdf-go { flex: 1; text-align: left; font: inherit; font-weight: 600; color: inherit; background: none; padding: 9px 0; }
+.pdf-row select { width: 52%; flex: none; padding: 9px 10px; font-size: 13px; border-radius: 10px; }
 .kd { font-style: normal; font-size: 10px; font-weight: 600; padding: 1px 7px; margin-left: 7px; border-radius: 999px; vertical-align: middle; background: var(--surface2); color: var(--muted); }
 .kd.fx { color: var(--accent); }
 .kd.ex { color: var(--warn); }
@@ -663,7 +666,7 @@ body { background: var(--bgimg), var(--bg); }
       <div class="preview num" id="f-prev"></div>
       <div class="chips" id="f-amts" aria-label="Quick amounts"></div>
     </div>
-    <div class="field" id="f-cat-wrap"><span class="lbl">Category</span><div class="chips" id="f-cats"></div></div>
+    <div class="field" id="f-cat-wrap"><span class="lbl">Category <i class="kd fx" id="f-cat-hint" hidden></i></span><div class="chips" id="f-cats"></div></div>
     <div class="field">
       <label for="f-note">Description</label>
       <input id="f-note" type="text" maxlength="120" placeholder="যেমন: বাজার, রিকশা ভাড়া…">
@@ -742,7 +745,7 @@ body { background: var(--bgimg), var(--bg); }
     <button type="button" class="set-row" data-act="lock-time" id="btn-lockt" hidden><span id="lockt-lbl">Auto-lock</span><span class="muted" id="lockt-val"></span></button>
     <button type="button" class="set-row" data-act="sync" id="btn-sync" hidden><span>Google Sheet Sync</span><span class="muted" id="sync-st">বন্ধ</span></button>
     <button type="button" class="set-row" data-act="gmail" id="btn-gmail" hidden><span>Gmail Backup</span><span class="muted" id="gm-st">বন্ধ</span></button>
-    <button type="button" class="set-row" data-act="pdf" id="btn-pdf"><span>PDF রিপোর্ট নামাও (এই পিরিয়ড)</span><span class="muted">↓</span></button>
+    <div class="set-row pdf-row" id="pdf-row"><button type="button" class="pdf-go" data-act="pdf" id="btn-pdf">PDF নামাও ↓</button><select id="pdf-range" aria-label="PDF period"></select></div>
     <button type="button" class="set-row" data-act="csv" id="btn-csv"><span>CSV নামাও (এই পিরিয়ড)</span><span class="muted">↓</span></button>
     <button type="button" class="set-row" data-act="bak" id="btn-bak" hidden><span>Backup নামাও (JSON)</span><span class="muted">↓</span></button>
     <button type="button" class="set-row" data-act="res" id="btn-res" hidden><span>Backup থেকে Restore (merge)</span><span class="muted">↑</span></button>
@@ -950,7 +953,7 @@ body { background: var(--bgimg), var(--bg); }
   var filter = 'all', query = '', confirmId = null;
   var openDays = {};
   var tab = 'book', sfilter = 'all', squery = '';
-  var mode = 'in', editId = null, selCat = '', recents = [];
+  var mode = 'in', editId = null, selCat = '', recents = [], catTouched = true, lrn = {};
   var viewStart = null, db = null, dl = null;
   var seen = {}, seenInit = { e: false, s: false }, lastPct = {};
   var reduce = false;
@@ -1095,7 +1098,7 @@ body { background: var(--bgimg), var(--bg); }
     return { tin: tin, tout: tout, spent: spent };
   }
 
-  function render() { renderBook(); renderSav(); }
+  function render() { refreshHints(); renderBook(); renderSav(); fillPdfRange(); }
 
   function switchTab(t) {
     tab = t; confirmId = null;
@@ -1275,6 +1278,61 @@ body { background: var(--bgimg), var(--bg); }
       '<button type="button" class="chip add" data-cat-new="1" aria-label="নতুন খাত যোগ করো">＋</button><button type="button" class="chip add" data-cat-edit="1" aria-label="খাত এডিট">✎</button>';
   }
   function curCatList() { return mode === 'in' ? inCats() : allOutCats(); }
+
+  /* ---------- auto category from the note: built-in keywords + category names + what you chose before ---------- */
+  /* a category is matched to a group by its NAME, so it works with your own category names too.
+     t = words in the category name that put it in the group, s = strong keywords, w = weak keywords */
+  var KW = [
+    { t: ['বাসা ভাড়া', 'বাড়ি ভাড়া', 'বাড়ী ভাড়া', 'rent'], s: ['বাসা', 'বাড়ি', 'বাড়ী', 'rent', 'basa', 'bari'], w: ['ভাড়া', 'vara', 'bhara'] },
+    { t: ['পরিবার', 'বাসায় দেওয়া', 'family'], s: ['আম্মু', 'আব্বু', 'মা', 'বাবা', 'ভাই', 'বোন', 'পরিবার', 'বাসায়', 'বাড়িতে', 'family', 'mom', 'dad', 'home', 'ammu', 'abbu'], w: [] },
+    { t: ['খাওয়া', 'খাবার', 'food', 'meal'], s: ['বাজার', 'ভাত', 'খাবার', 'খাওয়া', 'খাওয়াদাওয়া', 'নাস্তা', 'নাশতা', 'চা', 'চাল', 'ডাল', 'মাছ', 'মাংস', 'সবজি', 'ফল', 'দুধ', 'ডিম', 'বিরিয়ানি', 'তেহারি', 'পরোটা', 'রুটি', 'হোটেল', 'রেস্টুরেন্ট', 'ফুচকা', 'কফি', 'জুস', 'food', 'lunch', 'dinner', 'breakfast', 'tea', 'bazar', 'bazaar', 'meal', 'snack', 'snacks', 'rice', 'fish', 'chicken', 'biryani', 'restaurant', 'hotel', 'coffee', 'juice'], w: [] },
+    { t: ['যাতায়াত', 'travel', 'transport', 'ভ্রমণ'], s: ['রিকশা', 'রিক্সা', 'বাস', 'সিএনজি', 'উবার', 'পাঠাও', 'ট্রেন', 'লঞ্চ', 'বাইক', 'তেল', 'ফুয়েল', 'টিকিট', 'টেম্পু', 'অটো', 'rickshaw', 'rikshaw', 'bus', 'cng', 'uber', 'pathao', 'train', 'launch', 'ticket', 'bike', 'fuel', 'petrol', 'taxi', 'auto', 'fare'], w: ['ভাড়া', 'vara', 'bhara'] },
+    { t: ['ইমার্জেন্সি', 'জরুরি', 'emergency'], s: ['ডাক্তার', 'ওষুধ', 'হাসপাতাল', 'চিকিৎসা', 'টেস্ট', 'জরুরি', 'doctor', 'medicine', 'hospital', 'emergency', 'test'], w: [] },
+    { t: ['ঋণ', 'ঋন', 'ধার', 'loan', 'দেনা'], s: ['ঋণ', 'ঋন', 'ধার', 'লোন', 'কিস্তি', 'কর্জ', 'দেনা', 'loan', 'installment', 'emi'], w: [] },
+    { t: ['স্যালারি', 'salary', 'বেতন'], s: ['বেতন', 'স্যালারি', 'সালারি', 'salary', 'বোনাস', 'bonus'], w: [] }
+  ];
+  function tok(str) {
+    var m = String(str || '').toLowerCase().match(/[\p{L}\p{M}\p{N}]+/gu) || [], seen = {};
+    return m.filter(function (w) { if (w.length < 2 || /^[\d০-৯]+$/.test(w) || seen[w]) return false; seen[w] = 1; return true; });
+  }
+  var SUF = ['কে', 'র', 'ের', 'তে', 'েত', 'য়', 'ে', 'টা', 'টি', 'গুলো', 'দের', 'ও'];   /* Bengali endings: আম্মুকে = আম্মু + কে */
+  function stemOf(w, x) { return x.length >= 3 && w.length > x.length && w.indexOf(x) === 0 && SUF.indexOf(w.slice(x.length)) >= 0; }
+  function isWeak(w) { return KW.some(function (g) { return g.w.indexOf(w) >= 0; }); }
+  function seedScore(c, w) {
+    var nm = (c.bn + ' ' + c.en).toLowerCase(), sc = 0;
+    KW.forEach(function (g) {
+      if (!g.t.some(function (x) { return nm.indexOf(x) >= 0; })) return;
+      if (g.s.indexOf(w) >= 0) sc += 2;
+      else if (g.w.indexOf(w) >= 0) sc += 1;
+      else if (g.s.some(function (x) { return stemOf(w, x); })) sc += 1.5;
+    });
+    return sc;
+  }
+  function buildLearn(type) {
+    var m = {};
+    entries.forEach(function (e) {
+      if (e.type !== type || !e.note || !e.cat || e.cat === 'save') return;
+      tok(e.note).forEach(function (w) { var o = m[w] || (m[w] = {}); o[e.cat] = (o[e.cat] || 0) + 1; });
+    });
+    return m;
+  }
+  function guessCat(note) {
+    var tk = tok(note); if (!tk.length) return null;
+    var best = null, bs = 0, second = 0, total = 0;
+    curCatList().forEach(function (c) {
+      if (c.id === 'save') return;
+      var nm = tok(c.bn + ' ' + c.en), sc = 0;
+      tk.forEach(function (w) {
+        sc += seedScore(c, w);
+        if (w.length >= 3 && !isWeak(w) && nm.some(function (n) { return n === w || n.indexOf(w) === 0 || stemOf(w, n); })) sc += 3;
+        sc += (lrn[w] && lrn[w][c.id]) || 0;
+      });
+      total += sc;
+      if (sc > bs) { second = bs; bs = sc; best = c; } else if (sc > second) second = sc;
+    });
+    return best && bs >= 1.5 && bs > second && bs >= total * 0.6 ? best.id : null;
+  }
+  function showCatHint(on) { var h = $('f-cat-hint'); if (!h) return; h.hidden = !on; if (on) h.textContent = T('✨ নোট দেখে বুঝেছে', '✨ Auto-picked'); }
   function buildRecents() {
     var src = tab === 'sav' ? savings : entries, map = {};
     src.forEach(function (e) {
@@ -1298,6 +1356,7 @@ body { background: var(--bgimg), var(--bg); }
     var list = curCatList();
     var lastC = !sav && prefs[type === 'in' ? 'lastIn' : 'lastOut'];
     selCat = cat && list.some(function (c) { return c.id === cat; }) ? cat : (lastC && list.some(function (c) { return c.id === lastC; }) ? lastC : list[0].id);
+    catTouched = !!cat || !!editId; lrn = buildLearn(type); showCatHint(false);
     renderCatChips(list);
     renderQuickChips();
     $('f-amount').value = pre.amount != null ? pre.amount : '';
@@ -1412,7 +1471,7 @@ body { background: var(--bgimg), var(--bg); }
     job.then(function () {
       vib(); toast(msg, undo);
       if (again && !old) {
-        $('f-amount').value = ''; $('f-note').value = ''; $('f-err').textContent = ''; $('f-prev').textContent = '';
+        $('f-amount').value = ''; $('f-note').value = ''; $('f-err').textContent = ''; $('f-prev').textContent = ''; catTouched = false; showCatHint(false);
         buildRecents(); $('f-amount').focus();
       } else closeSheets();
     }).catch(function () { $('f-err').textContent = 'সেভ হয়নি। আবার চেষ্টা করো।'; });
@@ -1593,11 +1652,20 @@ body { background: var(--bgimg), var(--bg); }
      exc = no budget (loan, unplanned, one-off): count only what was actually paid, never project it
      fix = budgeted lump (rent, family) or recurring: counts as its full budget, never scaled by days
      var = budgeted day-to-day spending: projected from the real daily pace */
+  var fixHint = {};   /* categories that were a lump (fixed) last period: still fixed this period even before they are paid */
   function costKind(id, it, sp, cnt, fxIds) {
     var amt = it && it.amt > 0 ? it.amt : 0;
     if (!amt) return 'exc';
-    if (fxIds.indexOf(id) >= 0 || (cnt <= 2 && sp >= amt * 0.5)) return 'fix';
+    if (fxIds.indexOf(id) >= 0 || (cnt <= 2 && (sp >= amt * 0.5 || fixHint[id]))) return 'fix';
     return 'var';
+  }
+  function refreshHints() {
+    fixHint = {};
+    try {
+      var ps = shiftStart(P().s, -1), a = aggPeriod(ps), its = planAt(ps).items, fxI = (plan.rec || []).map(function (r) { return r.cat; }), h = {};
+      Object.keys(a.spent).forEach(function (id) { if (costKind(id, its.filter(function (i) { return i.id === id; })[0], a.spent[id], a.cnt[id] || 0, fxI) === 'fix') h[id] = 1; });
+      fixHint = h;
+    } catch (e) { fixHint = {}; }
   }
   /* totals of one salary period; "exp" = spending without money moved to savings */
   function aggPeriod(s, lim) {
@@ -1906,8 +1974,8 @@ body { background: var(--bgimg), var(--bg); }
   }
   function askDownload(kind) {
     if (prefs.dlConfirm === false) { runDownload(kind); return; }
-    var pr = P(), n = curEntries().length, name, what, count;
-    if (kind === 'pdf') { name = exportName('pdf'); what = T('PDF রিপোর্ট: এই পিরিয়ডের হিসাব', 'PDF report of this period'); count = T(n + 'টা এন্ট্রি', n + ' entries'); }
+    var pr = kind === 'pdf' ? pdfRange() : P(), n = kind === 'pdf' ? entries.filter(function (e) { return e.date >= pr.s && e.date <= pr.e; }).length : curEntries().length, name, what, count;
+    if (kind === 'pdf') { name = exportName('pdf'); what = pr.n > 1 ? T('PDF রিপোর্ট: ' + pr.n + ' পিরিয়ড একসাথে', 'PDF report: ' + pr.n + ' periods together') : T('PDF রিপোর্ট: এই পিরিয়ডের হিসাব', 'PDF report of this period'); count = T(n + 'টা এন্ট্রি', n + ' entries'); }
     else if (kind === 'csv') { name = exportName('csv'); what = T('CSV: এই পিরিয়ডের লেনদেন আর সব সেভিংস', 'CSV: this period’s transactions plus all savings'); count = T(n + 'টা ক্যাশ এন্ট্রি, ' + savings.length + 'টা সেভিংস এন্ট্রি', n + ' cash entries, ' + savings.length + ' savings entries'); }
     else { name = 'cash-book-backup_' + dstr(new Date()) + '.json'; what = T('Backup: সব এন্ট্রি আর সেটিংস', 'Backup: all entries and settings'); count = T(entries.length + 'টা ক্যাশ এন্ট্রি, ' + savings.length + 'টা সেভিংস এন্ট্রি', entries.length + ' cash entries, ' + savings.length + ' savings entries'); }
     dlKind = kind;
@@ -2291,7 +2359,20 @@ body { background: var(--bgimg), var(--bg); }
 
   /* ---------- export ---------- */
   function sortAsc(list) { return list.slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : (a.ts || 0) - (b.ts || 0); }); }
-  function exportName(ext) { var p = P(); return 'cash-book_' + p.s + '_to_' + p.e + '.' + ext; }
+  /* PDF range: the period you are viewing, the last 3 periods together, or any one of the last 12 periods */
+  function pdfStarts() {
+    var v = ($('pdf-range') && $('pdf-range').value) || 'view', now = parseDate(todayCycle()), out = [], k;
+    if (v === 'last3') { for (k = 2; k >= 0; k--) out.push(dstr(new Date(now.getFullYear(), now.getMonth() - k, SD()))); return out; }
+    return [v === 'view' ? P().s : v];
+  }
+  function pdfRange() { var st = pdfStarts(); return { s: st[0], e: dstr(cycleEnd(parseDate(st[st.length - 1]))), n: st.length }; }
+  function fillPdfRange() {
+    var sel = $('pdf-range'); if (!sel) return;
+    var keep = sel.value || 'view', now = parseDate(todayCycle()), h = '<option value="view">' + T('এই পিরিয়ড', 'This period') + '</option><option value="last3">' + T('শেষ ৩ পিরিয়ড একসাথে', 'Last 3 periods together') + '</option>', k, d, s0;
+    for (k = 0; k < 12; k++) { d = new Date(now.getFullYear(), now.getMonth() - k, SD()); s0 = dstr(d); h += '<option value="' + s0 + '">' + shortD(s0) + ' – ' + shortD(dstr(cycleEnd(d))) + '</option>'; }
+    sel.innerHTML = h; sel.value = keep; if (sel.value !== keep) sel.value = 'view';
+  }
+  function exportName(ext) { var p = ext === 'pdf' ? pdfRange() : P(); return 'cash-book_' + p.s + '_to_' + p.e + '.' + ext; }
   function saveFile(name, data) {
     if (!dl) {
       try {
@@ -2321,7 +2402,20 @@ body { background: var(--bgimg), var(--bg); }
   }
   function exportPdf() {
     if (!window.jspdf) { toast('PDF টুল লোড হয়নি'); return; }
-    var doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' }), pr = P(), PLN = PL(), t = totals();
+    var doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' }), starts = pdfStarts(), keepView = viewStart;
+    try {
+      starts.forEach(function (st, i) {
+        viewStart = st; refreshHints();
+        if (i) doc.addPage();
+        pdfBody(doc, i === starts.length - 1);   /* savings list is printed once, after the newest period */
+      });
+    } finally { viewStart = keepView; refreshHints(); }
+    var np = doc.getNumberOfPages(), i2;
+    for (i2 = 1; i2 <= np; i2++) { doc.setPage(i2); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(112, 114, 136); doc.text('Page ' + i2 + ' of ' + np, 555, 822, { align: 'right' }); doc.text('Generated by Salary Cash Book', 40, 822); }
+    saveFile(exportName('pdf'), doc.output('arraybuffer'));
+  }
+  function pdfBody(doc, withSav) {
+    var pr = P(), PLN = PL(), t = totals();
     var W = 595, M = 40, R = W - M, y = 0, hdrFn = null;
     var GREEN = [16, 150, 100], RED = [214, 48, 49], INDIGO = [79, 70, 229], AMBER = [201, 124, 8], INK = [24, 24, 43], GREY = [112, 114, 136], LINE = [226, 228, 240], ZEB = [246, 247, 252];
     function lab(c) { return ascii(c.en) || ascii(c.bn) || 'Item'; }
@@ -2360,7 +2454,7 @@ body { background: var(--bgimg), var(--bg); }
 
     /* ---- 3 summary cards ---- */
     var bal = t.tin - t.tout, cw = (R - M - 24) / 3;
-    [['CASH IN', '+' + money(t.tin), GREEN, 'Total received'], ['CASH OUT', '-' + money(t.tout), RED, 'Total spent and saved'],
+    [['CASH IN', money(t.tin), GREEN, 'Total received'], ['CASH OUT', money(t.tout), RED, 'Total spent and saved'],
      ['NET BALANCE', (bal < 0 ? '-' : '') + money(Math.abs(bal)), bal < 0 ? RED : GREEN, bal < 0 ? 'Overspent' : bal === 0 ? 'Balanced' : 'In hand']].forEach(function (c, i) {
       var x = M + i * (cw + 12);
       fc(ZEB); doc.roundedRect(x, y, cw, 62, 7, 7, 'F'); fc(c[2]); doc.roundedRect(x, y + 12, 3.5, 38, 1.5, 1.5, 'F');
@@ -2385,16 +2479,16 @@ body { background: var(--bgimg), var(--bg); }
     var ov = [['Cash in', '', t.tin, '+', GREEN], ['Moved to savings', grp.sav.n.join(', '), grp.sav.v, '-', RED],
       ['Fixed costs', grp.fix.n.join(', '), grp.fix.v, '-', RED], ['Day-to-day spending', grp['var'].n.join(', '), grp['var'].v, '-', RED],
       ['Unbudgeted / one-off', grp.exc.n.join(', '), grp.exc.v, '-', RED]].filter(function (r) { return r[2] > 0 || r[0] === 'Cash in'; });
-    ensure(ov.length * 24 + 44);
-    var bh = ov.length * 24 + 40; fc(ZEB); doc.roundedRect(M, y - 6, R - M, bh, 7, 7, 'F'); y += 12;
+    ensure(ov.length * 24 + 58);
+    var bh = ov.length * 24 + 54; fc(ZEB); doc.roundedRect(M, y - 6, R - M, bh, 7, 7, 'F'); y += 12;
     ov.forEach(function (r) {
       fnt('normal', 10); tc(INK); doc.text(r[0], M + 14, y);
       if (r[1]) { fnt('normal', 8.5); tc(GREY); doc.text(fit(r[1], 230), M + 150, y); }
       fnt('bold', 10); tc(r[4]); doc.text(r[3] + fp(r[2]), R - 14, y, { align: 'right' }); y += 24;
     });
-    dc(LINE); doc.line(M + 14, y - 14, R - 14, y - 14); y += 2;
-    fnt('bold', 10.5); tc(INK); doc.text('Balance in hand', M + 14, y - 8);
-    tc(bal < 0 ? RED : GREEN); doc.text((bal < 0 ? '-' : '') + fp(Math.abs(bal)), R - 14, y - 8, { align: 'right' }); y += 26;
+    y += 4; dc(LINE); doc.line(M + 14, y - 14, R - 14, y - 14);
+    fnt('bold', 10.5); tc(INK); doc.text('Balance in hand', M + 14, y + 4);
+    tc(bal < 0 ? RED : GREEN); doc.text((bal < 0 ? '-' : '') + fp(Math.abs(bal)), R - 14, y + 4, { align: 'right' }); y += 34;
 
     /* ---- budget table ---- */
     sec('Budget vs spent', 'amounts in BDT');
@@ -2413,7 +2507,7 @@ body { background: var(--bgimg), var(--bg); }
         var left = bud - sp, pc = sp / bud;
         tc(left < 0 && c._kd !== 'sav' ? RED : INK); doc.text((left < 0 ? '-' : '') + fp(Math.abs(left)), 450, y, { align: 'right' });
         var col = c._kd === 'sav' ? GREEN : pc > 1 ? RED : pc >= 0.8 ? AMBER : INDIGO;
-        fc(LINE); doc.roundedRect(R - 58, y - 6, 34, 5, 2, 2, 'F'); fc(col); doc.roundedRect(R - 58, y - 6, Math.max(2, Math.min(1, pc) * 34), 5, 2, 2, 'F');
+        fc(LINE); doc.roundedRect(R - 88, y - 6, 42, 5, 2, 2, 'F'); fc(col); doc.roundedRect(R - 88, y - 6, Math.max(2, Math.min(1, pc) * 42), 5, 2, 2, 'F');
         fnt('normal', 8); tc(GREY); doc.text(Math.round(pc * 100) + '%', R - 8, y, { align: 'right' });
       } else { tc(GREY); doc.text('-', 450, y, { align: 'right' }); }
       if (c._kd !== 'sav') { totS += sp; if (bud) totB += bud; }
@@ -2429,7 +2523,7 @@ body { background: var(--bgimg), var(--bg); }
     /* ---- entries ---- */
     function ledger(list, inL, outL, noEmpty) {
       var IN = 392, OUT = 466, BAL = R - 8, run = 0, last = '';
-      hdrFn = function () { band([['DATE', M + 12], ['DESCRIPTION', M + 66], [inL, IN, 1], [outL, OUT, 1], ['BALANCE', BAL, 1]]); };
+      hdrFn = function () { band([['DATE', M + 12], ['DESCRIPTION', M + 66], [inL, IN, 1], [outL, OUT, 1], ['BALANCE', BAL, 1]]); last = ''; };
       ensure(60); hdrFn();
       if (!list.length) { fnt('normal', 10); tc(GREY); doc.text(noEmpty, M + 12, y); y += 20; hdrFn = null; return; }
       var tin = 0, tout = 0;
@@ -2445,24 +2539,26 @@ body { background: var(--bgimg), var(--bg); }
         y += 19;
       });
       ensure(28); dc(LINE); doc.line(M, y - 11, R, y - 11); fnt('bold', 10); tc(INK); doc.text('Total', M + 12, y + 3);
-      tc(GREEN); doc.text('+' + fp(tin), IN, y + 3, { align: 'right' }); tc(RED); doc.text('-' + fp(tout), OUT, y + 3, { align: 'right' });
+      tc(tin ? GREEN : GREY); doc.text(tin ? '+' + fp(tin) : '-', IN, y + 3, { align: 'right' }); tc(tout ? RED : GREY); doc.text(tout ? '-' + fp(tout) : '-', OUT, y + 3, { align: 'right' });
       tc(run < 0 ? RED : GREEN); doc.text((run < 0 ? '-' : '') + fp(Math.abs(run)), BAL, y + 3, { align: 'right' }); y += 26; hdrFn = null;
     }
     sec('Cash book', 'green = cash in, red = cash out');
     ledger(sortAsc(curEntries()), 'CASH IN', 'CASH OUT', 'No entries yet.');
 
     /* ---- savings ---- */
-    var sin = 0, sout = 0; savings.forEach(function (e) { if (e.type === 'in') sin += e.amount; else sout += e.amount; });
-    sec('Savings', 'saved balance ' + money(sin - sout));
-    ledger(sortAsc(savings).map(function (e) { return Object.assign({}, e, { _sav: 1 }); }), 'SAVED', 'TAKEN OUT', 'No savings entries yet.');
-
-    /* ---- footer on every page ---- */
-    var np = doc.getNumberOfPages(), i2;
-    for (i2 = 1; i2 <= np; i2++) { doc.setPage(i2); fnt('normal', 8); tc(GREY); doc.text('Page ' + i2 + ' of ' + np, R, 822, { align: 'right' }); doc.text('Generated by Salary Cash Book', M, 822); }
-    saveFile(exportName('pdf'), doc.output('arraybuffer'));
+    if (withSav) {
+      var sin = 0, sout = 0; savings.forEach(function (e) { if (e.type === 'in') sin += e.amount; else sout += e.amount; });
+      sec('Savings', 'saved balance ' + money(sin - sout));
+      ledger(sortAsc(savings).map(function (e) { return Object.assign({}, e, { _sav: 1 }); }), 'SAVED', 'TAKEN OUT', 'No savings entries yet.');
+    }
   }
 
   /* ---------- events ---------- */
+  $('f-note').addEventListener('input', function () {
+    if (catTouched || tab === 'sav') return;
+    var g = guessCat(this.value);
+    if (g) { if (g !== selCat) { selCat = g; renderCatChips(curCatList()); } showCatHint(true); } else showCatHint(false);
+  });
   function findEntry(id, list) { return (list === 'sav' ? savings : entries).filter(function (x) { return x.id === id; })[0]; }
 
   document.addEventListener('click', function (ev) {
@@ -2487,7 +2583,7 @@ body { background: var(--bgimg), var(--bg); }
     }
     // entry sheet chips
     var pk = ev.target.closest('[data-pick]');
-    if (pk) { selCat = pk.getAttribute('data-pick'); renderCatChips(curCatList()); return; }
+    if (pk) { selCat = pk.getAttribute('data-pick'); catTouched = true; showCatHint(false); renderCatChips(curCatList()); return; }
     var ad = ev.target.closest('[data-add]');
     if (ad) {
       var v = ad.getAttribute('data-add'), inp = $('f-amount');
@@ -2497,7 +2593,7 @@ body { background: var(--bgimg), var(--bg); }
     var rc = ev.target.closest('[data-recent]');
     if (rc) {
       var r = recents[Number(rc.getAttribute('data-recent'))];
-      if (r) { $('f-note').value = r.note; if (tab !== 'sav' && r.cat && curCatList().some(function (c) { return c.id === r.cat; })) { selCat = r.cat; renderCatChips(curCatList()); } }
+      if (r) { catTouched = true; showCatHint(false); $('f-note').value = r.note; if (tab !== 'sav' && r.cat && curCatList().some(function (c) { return c.id === r.cat; })) { selCat = r.cat; renderCatChips(curCatList()); } }
       return;
     }
     var dy = ev.target.closest('[data-day]');
@@ -2598,7 +2694,7 @@ body { background: var(--bgimg), var(--bg); }
   render();
   var loadTimer = null;
   function showNote(msg, warn) { var n = $('sync-note'); n.hidden = !msg; n.textContent = msg || ''; n.className = 'note' + (warn ? ' warn' : ''); }
-  function hideExport() { $('btn-csv').hidden = true; $('btn-pdf').hidden = true; }
+  function hideExport() { $('btn-csv').hidden = true; $('pdf-row').hidden = true; }
 
   function goLocal() {
     localMode = true; $('btn-sync').hidden = false;
