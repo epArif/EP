@@ -354,9 +354,21 @@ body { padding: 0 !important; margin: 0; }
 .chips, .chips * { touch-action: pan-x pan-y; }
 /* ---- insights: summary, alerts, tips, comparison, trend, goal ---- */
 .insight { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.num { font-variant-numeric: tabular-nums; }
+.kd { font-style: normal; font-size: 10px; font-weight: 600; padding: 1px 7px; margin-left: 7px; border-radius: 999px; vertical-align: middle; background: var(--surface2); color: var(--muted); }
+.kd.fx { color: var(--accent); }
+.kd.ex { color: var(--warn); }
 .ins-sum { font-family: var(--font-bn); font-size: 14px; line-height: 1.5; }
 .ins-sum b { font-weight: 700; }
-.ins-fc { font-family: var(--font-bn); font-size: 13px; color: var(--muted); }
+.ins-fc { font-family: var(--font-bn); font-size: 13px; color: var(--muted); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ins-i { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface2); color: var(--muted); font: italic 700 13px/1 Georgia, serif; display: grid; place-items: center; padding: 0; -webkit-tap-highlight-color: transparent; }
+.ins-i.on { background: rgba(143,138,255,.22); border-color: var(--accent); color: var(--accent); }
+.ins-detail { background: var(--surface2); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 7px; font-family: var(--font-bn); font-size: 13px; }
+.ins-detail .ins-r { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.ins-detail .ins-r i { display: block; font-style: normal; font-size: 11.5px; color: var(--muted); }
+.ins-detail .ins-r b { white-space: nowrap; font-weight: 600; }
+.ins-detail .ins-r:last-of-type { border-top: 1px solid var(--line); padding-top: 7px; font-weight: 700; }
+.ins-detail p { margin: 2px 0 0; font-size: 12px; line-height: 1.5; color: var(--muted); }
 .ins-fc b { font-weight: 700; }
 .ins-fc.good b { color: var(--in); }
 .ins-fc.bad b { color: var(--out); }
@@ -429,6 +441,24 @@ body { background: var(--bgimg), var(--bg); }
 .big-btn { box-shadow: 0 8px 22px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.25); }
 .balance .big { background: linear-gradient(135deg, var(--fg), var(--accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .lock { background: var(--bgimg), var(--bg); }
+/* premium glass PIN screen: one blurred card, flat light keys, no looping animation */
+.lock-in { max-width: 328px; gap: 14px; padding: 30px 22px 22px; border-radius: 32px; border: 1px solid var(--line);
+  background: linear-gradient(160deg, rgba(255,255,255,.10), rgba(255,255,255,.02)), var(--surface);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: 0 18px 50px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.16); }
+.lock-in::before { content: ''; width: 52px; height: 52px; border-radius: 18px; margin-bottom: 2px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='9' rx='2.5'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E") center / 26px no-repeat, linear-gradient(135deg, var(--accent), #7a6ff0);
+  box-shadow: 0 8px 20px rgba(99,102,241,.35), inset 0 1px 0 rgba(255,255,255,.3); }
+.lock-t { font-size: 19px; font-weight: 700; letter-spacing: .2px; }
+.lock-s { font-size: 13.5px; }
+.dots { gap: 16px; padding: 4px 0 8px; }
+.dots i { width: 12px; height: 12px; border-width: 1.5px; border-color: var(--muted); opacity: .7; transition: background .12s, border-color .12s, opacity .12s; }
+.dots i.on { transform: none; opacity: 1; box-shadow: 0 0 10px rgba(143,138,255,.55); animation: none; }
+.pad { gap: 12px; }
+.pad button { width: 66px; height: 66px; justify-self: center; border: 1px solid var(--line); background: var(--surface2); font-size: 23px; font-weight: 500; font-family: var(--font-num, inherit); transition: transform .08s, background .12s; }
+.pad button[data-k="b"] { background: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; border-color: transparent !important; box-shadow: none !important; font-size: 20px; color: var(--muted); }
+.pad button:active, .pad button.pressed { transform: scale(.94); background: rgba(143,138,255,.26) !important; border-color: var(--accent); color: var(--fg); box-shadow: none; }
+.lock-x { font-size: 14px; padding: 6px 14px; }
 .bar > i { background: linear-gradient(90deg, var(--accent), #7a6ff0); }
 .bar.over > i { background: linear-gradient(90deg, var(--out), #f0504f); }
 .goal .bar > i { background: linear-gradient(90deg, var(--in), #1fb986); }
@@ -1019,6 +1049,41 @@ body { background: var(--bgimg), var(--bg); }
     })(t0);
   }
   function signed(v) { return (v < 0 ? '−' : '') + fmt(Math.abs(v)); }
+  /* count-up for the other numbers (daily limit, plan tiles, budget rows, savings box, summary): animates from what was on screen */
+  var cn_ = {}, cjobs = [], cloop = 0;
+  function countNums() {
+    var seenK = {};
+    ['daily', 'closebox', 'savebox', 'insight', 'plan'].forEach(function (cid) {
+      var root = $(cid); if (!root || root.hidden) return;
+      var pos = {};
+      Array.prototype.forEach.call(root.querySelectorAll('.num'), function (el) {
+        if (el.children.length || el.closest('.ins-detail')) return;
+        var tx = el.textContent, m, pre, post, v, pct = false;
+        if ((m = tx.match(/^(\d+)%$/))) { pre = ''; post = '%'; v = Number(m[1]); pct = true; }
+        else if ((tx.match(/৳/g) || []).length === 1 && (m = tx.match(/^(.*?)([−-]?)৳([\d,]+(?:\.\d+)?)(.*)$/))) { pre = m[1]; post = m[4]; v = Number(m[3].replace(/,/g, '')) * (m[2] ? -1 : 1); }
+        else return;
+        var anc = el.closest('[data-cat]'), base = cid + (anc ? ':' + anc.getAttribute('data-cat') : ''), k;
+        pos[base] = (pos[base] || 0) + 1; k = base + ':' + pos[base] + (pct ? '%' : '');
+        seenK[k] = 1;
+        var from = cn_[k];
+        cjobs = cjobs.filter(function (j) { return j.k !== k; });
+        if (from === undefined || from === v || reduce) { cn_[k] = v; return; }
+        var f = function (x) { return pct ? Math.round(x) + '%' : pre + (x < 0 ? '−' : '') + fmt(Math.abs(Math.round(x))) + post; };
+        el.textContent = f(from);
+        cjobs.push({ k: k, el: el, from: from, to: v, f: f, orig: tx, t0: performance.now() });
+      });
+    });
+    if (cjobs.length && !cloop) {
+      cloop = requestAnimationFrame(function step(t) {
+        cjobs = cjobs.filter(function (j) {
+          var p = Math.min(1, (t - j.t0) / 750), e = p >= 1 ? 1 : 1 - Math.pow(2, -10 * p), cur = j.from + (j.to - j.from) * e;
+          if (p >= 1 || !j.el.isConnected) { if (j.el.isConnected) j.el.textContent = j.orig; cn_[j.k] = j.to; return false; }
+          j.el.textContent = j.f(cur); cn_[j.k] = cur; return true;
+        });
+        cloop = cjobs.length ? requestAnimationFrame(step) : 0;
+      });
+    }
+  }
 
   /* ---------- render ---------- */
   function totals() {
@@ -1133,9 +1198,13 @@ body { background: var(--bgimg), var(--bg); }
       '<button class="tile" data-act="edit-plan" data-focus="salary" aria-label="Edit salary"><div class="label">Salary<span class="pen">✎</span></div><div class="v num">' + fmt(PL().salary) + '</div></button>' +
       '<div><div class="label">Planned</div><div class="v num">' + fmt(planned) + '</div></div>' +
       '<div><div class="label">' + (free >= 0 ? 'Unallocated' : 'Over plan') + '</div><div class="v num" style="color:var(--' + (free >= 0 ? 'in' : 'out') + ')">' + fmt(Math.abs(free)) + '</div></div></div>';
+    var fxP = (plan.rec || []).map(function (r) { return r.cat; }), cntP = {};
+    cur.forEach(function (e) { if (e.type === 'out' && e.cat !== 'save') { var kk = isPlanCat(e.cat) ? e.cat : 'other'; cntP[kk] = (cntP[kk] || 0) + 1; } });
     allOutCats().forEach(function (c) {
       var sp = t.spent[c.id] || 0;
       if (c.id === 'other' && sp === 0) return;
+      var kd = c.id === 'save' ? 'sav' : costKind(c.id, c, sp, cntP[c.id] || 0, fxP);
+      var pill = kd === 'fix' ? '<i class="kd fx">' + T('ফিক্সড', 'Fixed') + '</i>' : kd === 'var' ? '<i class="kd">' + T('দৈনিক', 'Daily') + '</i>' : kd === 'exc' ? '<i class="kd ex">' + (c.id === 'other' ? T('প্ল্যানের বাইরে', 'Unplanned') : T('বাজেটহীন', 'No budget')) + '</i>' : '';
       var budget = c.amt || 0, isSave = c.id === 'save', noBud = c.id !== 'other' && !isSave && budget <= 0 && sp > 0, over = c.id === 'other' ? sp > 0 : (noBud ? false : (sp > budget && !isSave));
       var pct = c.id === 'other' ? 100 : (budget > 0 ? Math.min(100, sp / budget * 100) : (sp > 0 ? 100 : 0));
       var from = lastPct[c.id] == null ? 0 : lastPct[c.id]; lastPct[c.id] = pct;
@@ -1146,13 +1215,13 @@ body { background: var(--bgimg), var(--bg); }
       var edm = editCats && c.id !== 'other';
       if (edm) {
         html += '<button class="env" data-act="edit-cat" data-cat="' + esc(c.id) + '" aria-label="Edit ' + esc(c.en) + '">' +
-          '<div class="env-main"><div class="env-row"><span class="env-name">' + esc(cn(c)) + '</span><span class="env-amt">' + right + '</span></div>' +
+          '<div class="env-main"><div class="env-row"><span class="env-name">' + esc(cn(c)) + pill + '</span><span class="env-amt">' + right + '</span></div>' +
           '<div class="bar' + (over ? ' over' : '') + '"><i style="--from:' + from + '%;--to:' + pct + '%;width:' + pct + '%"></i></div>' +
           (sub ? '<div class="env-amt" style="text-align:right">' + sub + '</div>' : '') + '</div>' +
           '<span class="env-plus ed" aria-hidden="true">✎</span></button>';
       } else {
         html += '<div class="env">' +
-          '<div class="env-main" role="button" tabindex="0" data-act="cat-hist" data-cat="' + esc(c.id) + '" aria-label="History of ' + esc(c.en) + '"><div class="env-row"><span class="env-name">' + esc(cn(c)) + '</span><span class="env-amt">' + right + '</span></div>' +
+          '<div class="env-main" role="button" tabindex="0" data-act="cat-hist" data-cat="' + esc(c.id) + '" aria-label="History of ' + esc(c.en) + '"><div class="env-row"><span class="env-name">' + esc(cn(c)) + pill + '</span><span class="env-amt">' + right + '</span></div>' +
           '<div class="bar' + (over ? ' over' : '') + '"><i style="--from:' + from + '%;--to:' + pct + '%;width:' + pct + '%"></i></div>' +
           (sub ? '<div class="env-amt" style="text-align:right">' + sub + '</div>' : '') + '</div>' +
           '<button type="button" class="env-plus-btn" data-act="add-out" data-cat="' + esc(c.id) + '" aria-label="Add expense to ' + esc(c.en) + '"><span class="env-plus" aria-hidden="true">+</span></button></div>';
@@ -1161,6 +1230,7 @@ body { background: var(--bgimg), var(--bg); }
     $('plan').innerHTML = html;
     renderChart(t, p);
     renderSaveBox(); renderInsight(); renderCompare(); renderTrend();
+    countNums();
 
     // entries
     var q = query.trim().toLowerCase();
@@ -1445,7 +1515,8 @@ body { background: var(--bgimg), var(--bg); }
     el.hidden = false;
     var DAY = 86400000, s0 = parseDate(p.s), n = Math.round((parseDate(p.e) - s0) / DAY) + 1, per = [], i;
     for (i = 0; i < n; i++) per.push(0);
-    curEntries().forEach(function (x) { if (x.type === 'out' && x.cat !== 'save') { var k = Math.round((parseDate(x.date) - s0) / DAY); if (k >= 0 && k < n) per[k] += x.amount; } });
+    var ccnt = {};
+    curEntries().forEach(function (x) { if (x.type === 'out' && x.cat !== 'save') { var k = Math.round((parseDate(x.date) - s0) / DAY); if (k >= 0 && k < n) per[k] += x.amount; var ck = isPlanCat(x.cat) ? x.cat : 'other'; ccnt[ck] = (ccnt[ck] || 0) + 1; } });
     var max = Math.max.apply(null, per), today = Math.round((parseDate(dstr(new Date())) - s0) / DAY);
     var elapsed = Math.min(n, Math.max(1, today + 1)), fx = (plan.rec || []).map(function (r) { return r.cat; }), vt = 0, W = 300, H = 56, bw = W / n, bars = '';
     per.forEach(function (v, k) {
@@ -1457,9 +1528,9 @@ body { background: var(--bgimg), var(--bg); }
     var legend = parts.sort(function (a, b) { return b.v - a.v; }).map(function (x) {
       return '<span><i style="background:' + x.col + '"></i>' + esc(cn(x.c)) + ' <b class="num">' + Math.round(x.v / tot * 100) + '%</b></span>';
     }).join('');
-    parts.forEach(function (x) { if (fx.indexOf(x.c.id) < 0) vt += x.v; });
-    var avgLbl = fx.length ? T('ভ্যারিয়েবল গড়', 'Variable avg') : 'গড়';
-    el.innerHTML = '<div class="ch-head"><span class="label">খরচের ছবি</span><span class="note num" style="padding:0">মোট <b>' + fmt(tot) + '</b> · ' + avgLbl + ' <b>' + fmt(Math.round((fx.length ? vt : tot) / elapsed)) + '</b>/দিন</span></div>' +
+    parts.forEach(function (x) { if (costKind(x.c.id, x.c, x.v, ccnt[x.c.id] || 0, fx) === 'var') vt += x.v; });
+    var avgLbl = vt < tot ? T('দৈনিক খরচের গড়', 'Day-to-day avg') : 'গড়';
+    el.innerHTML = '<div class="ch-head"><span class="label">খরচের ছবি</span><span class="note num" style="padding:0">মোট <b>' + fmt(tot) + '</b> · ' + avgLbl + ' <b>' + fmt(Math.round(vt / elapsed)) + '</b>/দিন</span></div>' +
       '<div class="stack" role="img" aria-label="Spending by category">' + stack + '</div><div class="legend">' + legend + '</div>' +
       '<svg class="daysvg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" role="img" aria-label="Daily spending">' + bars + '</svg>' +
       '<div class="note num" style="padding:0">সবচেয়ে বেশি খরচ: ' + esc(longDate(dstr(md))) + ' · <b>' + fmt(max) + '</b></div>';
@@ -1518,6 +1589,16 @@ body { background: var(--bgimg), var(--bg); }
     h.forEach(function (x) { if (x.from < first.from) first = x; if (x.from <= s && (!best || x.from >= best.from)) best = x; });
     return best || first;
   }
+  /* One rule for every number in the app (forecast, tips, compare, chart):
+     exc = no budget (loan, unplanned, one-off): count only what was actually paid, never project it
+     fix = budgeted lump (rent, family) or recurring: counts as its full budget, never scaled by days
+     var = budgeted day-to-day spending: projected from the real daily pace */
+  function costKind(id, it, sp, cnt, fxIds) {
+    var amt = it && it.amt > 0 ? it.amt : 0;
+    if (!amt) return 'exc';
+    if (fxIds.indexOf(id) >= 0 || (cnt <= 2 && sp >= amt * 0.5)) return 'fix';
+    return 'var';
+  }
   /* totals of one salary period; "exp" = spending without money moved to savings */
   function aggPeriod(s, lim) {
     var e = dstr(cycleEnd(parseDate(s))), ids = {}, a = { s: s, e: e, tin: 0, out: 0, exp: 0, spent: {}, cnt: {}, n: 0 };
@@ -1531,6 +1612,13 @@ body { background: var(--bgimg), var(--bg); }
       var k = ids[x.cat] ? x.cat : 'other';
       a.exp += x.amount; a.spent[k] = (a.spent[k] || 0) + x.amount; a.cnt[k] = (a.cnt[k] || 0) + 1;
     });
+    var fxI = (plan.rec || []).map(function (r) { return r.cat; }), its = planAt(s).items;
+    a.exc = 0; a.fx = 0;
+    Object.keys(a.spent).forEach(function (id) {
+      var kd = costKind(id, its.filter(function (i) { return i.id === id; })[0], a.spent[id], a.cnt[id] || 0, fxI);
+      if (kd === 'exc') a.exc += a.spent[id]; else if (kd === 'fix') a.fx += a.spent[id];
+    });
+    a.vr = a.exp - a.exc - a.fx;
     return a;
   }
   function catLbl(id, s1, s2) {
@@ -1539,56 +1627,70 @@ body { background: var(--bgimg), var(--bg); }
     return cn(OTHER_OUT);
   }
 
+  var insOpen = false;
   function renderInsight() {
     if (!showW('insight')) { $('insight').hidden = true; $('insight').innerHTML = ''; return; }
     var el = $('insight'), p = P(), a = aggPeriod(p.s), PLN = PL();
     if (!a.n) { el.hidden = true; el.innerHTML = ''; return; }
     var DAY = 86400000, s0 = parseDate(p.s), en = parseDate(p.e), n = Math.round((en - s0) / DAY) + 1, now = parseDate(dstr(new Date()));
-    var isCur = now >= s0 && now <= en, elapsed = isCur ? Math.round((now - s0) / DAY) + 1 : n, left = isCur ? n - elapsed : 0;
-    var budget = 0, alerts = [], varRem = 0, fxA = (plan.rec || []).map(function (r) { return r.cat; });
-    PLN.items.forEach(function (i) {
-      if (i.id === 'save') return;
-      budget += i.amt;
-      if (!(i.amt > 0)) return;
-      var sp = a.spent[i.id] || 0, pc = sp / i.amt * 100;
-      /* fixed costs (rent, family...) are already known: no alert unless they went over budget */
-      if ((fxA.indexOf(i.id) >= 0 || ((a.cnt[i.id] || 0) <= 2 && sp >= i.amt * 0.5)) && sp <= i.amt) return;
-      varRem += Math.max(0, i.amt - sp);
-      if (sp > 0) alerts.push({ c: i, sp: sp, pc: pc });
+    var isCur = now >= s0 && now <= en, elapsed = isCur ? Math.round((now - s0) / DAY) + 1 : n, left = isCur ? n - elapsed : 0, w = elapsed / n;
+    var fxIds = (plan.rec || []).map(function (r) { return r.cat; }), recAmt = {};
+    (plan.rec || []).forEach(function (r) { recAmt[r.cat] = (recAmt[r.cat] || 0) + (Number(r.amount) || 0); });
+    var budget = 0, planSp = 0, varRem = 0, pendFx = 0, vrSp = 0, rows = [], proj = { fix: 0, exc: 0, vr: 0 }, names = { fix: [], exc: [], vr: [] };
+
+    /* classify every category once: what is it, what has been spent, what will it end at */
+    Object.keys(a.spent).concat(PLN.items.map(function (i) { return i.id; })).filter(function (id, ix, arr) { return arr.indexOf(id) === ix && id !== 'save'; }).forEach(function (id) {
+      var it = PLN.items.filter(function (i) { return i.id === id; })[0], sp = a.spent[id] || 0, cnt = a.cnt[id] || 0, amt = it && it.amt > 0 ? it.amt : 0;
+      var kd = costKind(id, it, sp, cnt, fxIds), pj;
+      budget += amt;
+      if (kd !== 'exc') planSp += sp;
+      if (kd === 'exc') pj = sp;
+      else if (kd === 'fix') { var fa = Math.max(amt, recAmt[id] || 0); pj = Math.max(fa, sp); pendFx += Math.max(0, fa - sp); if (sp > amt) rows.push({ c: it, sp: sp, pc: sp / amt * 100 }); }
+      else {
+        pj = Math.max(sp, w * (sp / elapsed * n) + (1 - w) * Math.max(amt, sp));
+        varRem += Math.max(0, amt - sp); vrSp += sp;
+        if (sp > 0) rows.push({ c: it, sp: sp, pc: sp / amt * 100 });
+      }
+      var kk = kd === 'var' ? 'vr' : kd;
+      if (pj > 0) { proj[kk] += pj; names[kk].push(catLbl(id, p.s, p.s)); }
     });
-    alerts.sort(function (x, y) { return y.pc - x.pc; });
-    var pct = budget > 0 ? Math.round(a.exp / budget * 100) : 0;
+    rows.sort(function (x, y) { return y.pc - x.pc; });
+    var pct = budget > 0 ? Math.round(planSp / budget * 100) : 0, pb = null, canDay = 0;
 
     /* 1. short summary + forecast */
     var h = '<div class="ins-sum">' + T(
-      'এই পিরিয়ডে <b class="num">' + fmt(a.exp) + '</b> খরচ হয়েছে' + (budget > 0 ? ', বাজেটের <b class="num">' + pct + '%</b> শেষ' : '') + '।',
-      'Spent <b class="num">' + fmt(a.exp) + '</b> this period' + (budget > 0 ? ', <b class="num">' + pct + '%</b> of the budget used' : '') + '.') + '</div>';
+      'এই পিরিয়ডে <b class="num">' + fmt(a.exp) + '</b> খরচ হয়েছে' + (a.exc > 0 ? ' (বাজেটহীন ' + fmt(a.exc) + ' সহ)' : '') + (budget > 0 ? ', বাজেটের খাতে <b class="num">' + pct + '%</b> শেষ' : '') + '।',
+      'Spent <b class="num">' + fmt(a.exp) + '</b> this period' + (a.exc > 0 ? ' (incl. ' + fmt(a.exc) + ' unbudgeted)' : '') + (budget > 0 ? ', <b class="num">' + pct + '%</b> of budgeted categories used' : '') + '.') + '</div>';
     if (isCur && left > 0 && elapsed >= 3 && a.tin > 0) {
-      /* per category: early in the period lean on the planned budget, later on the real daily pace */
-      var w = elapsed / n, projExp = 0, fxIds = (plan.rec || []).map(function (r) { return r.cat; });
-      Object.keys(a.spent).concat(PLN.items.map(function (i) { return i.id; })).filter(function (id, ix, arr) { return arr.indexOf(id) === ix && id !== 'save'; }).forEach(function (id) {
-        var it = PLN.items.filter(function (i) { return i.id === id; })[0], sp = a.spent[id] || 0, pace = sp / elapsed * n, bud = it ? Math.max(it.amt, sp) : sp;
-        /* fixed cost (recurring, or 1-2 lump payments already covering half the budget, e.g. rent/family):
-           it does not grow with days, so project the full budget, never the daily pace */
-        var fixed = !!it && (fxIds.indexOf(id) >= 0 || ((a.cnt[id] || 0) <= 2 && sp >= it.amt * 0.5));
-        projExp += fixed ? bud : Math.max(sp, w * pace + (1 - w) * bud);
-      });
-      var pb = Math.round(a.tin - (a.out - a.exp) - projExp);
-      h += '<div class="ins-fc ' + (pb >= 0 ? 'good' : 'bad') + '">' + (pb >= 0
+      var sv = a.out - a.exp, R = function (l, v, sub) { return '<div class="ins-r"><span>' + l + (sub ? '<i>' + esc(sub) + '</i>' : '') + '</span><b class="num">' + v + '</b></div>'; };
+      pb = Math.round(a.tin - sv - proj.fix - proj.exc - proj.vr);
+      h += '<div class="ins-fc ' + (pb >= 0 ? 'good' : 'bad') + '"><span>' + (pb >= 0
         ? T('এভাবে চললে মাস শেষে প্রায় <b class="num">' + fmt(pb) + '</b> বাকি থাকবে', 'At this pace about <b class="num">' + fmt(pb) + '</b> will be left at the end of the period')
-        : T('এভাবে চললে মাস শেষে প্রায় <b class="num">' + fmt(-pb) + '</b> ঘাটতি হবে', 'At this pace you will be about <b class="num">' + fmt(-pb) + '</b> short at the end of the period')) + '</div>' +
-        '<div class="note" style="padding:0;margin:-4px 0 6px">' + T('বাসা ভাড়া, পরিবার, নিয়মিত খরচ ফিক্সড ধরা হয়েছে (বাজেটের পুরোটা)। বাকিগুলো এখন পর্যন্ত দিনে গড়ে যা খরচ হচ্ছে সেই হিসাবে।', 'Fixed costs (rent, family, recurring) are counted at their full budget; the rest is projected from your daily pace so far.') + '</div>';
+        : T('এভাবে চললে মাস শেষে প্রায় <b class="num">' + fmt(-pb) + '</b> ঘাটতি হবে', 'At this pace you will be about <b class="num">' + fmt(-pb) + '</b> short at the end of the period')) +
+        '</span><button type="button" class="ins-i' + (insOpen ? ' on' : '') + '" data-act="ins-info" aria-label="কীভাবে হিসাব হলো" aria-expanded="' + insOpen + '">i</button></div>';
+      if (insOpen) {
+        h += '<div class="ins-detail">' +
+          R(T('মোট আয়', 'Income'), '+' + fmt(a.tin)) +
+          (sv > 0 ? R(T('সেভিংসে গেছে', 'Sent to savings'), '−' + fmt(sv)) : '') +
+          (proj.fix > 0 ? R(T('ফিক্সড (পুরো বাজেট ধরা)', 'Fixed (full budget)'), '−' + fmt(Math.round(proj.fix)), names.fix.join(', ')) : '') +
+          (proj.exc > 0 ? R(T('বাজেটহীন (শুধু যা দিয়েছ)', 'Unbudgeted (only what was paid)'), '−' + fmt(Math.round(proj.exc)), names.exc.join(', ')) : '') +
+          (proj.vr > 0 ? R(T('দৈনিক খরচ (সম্ভাব্য)', 'Day-to-day (projected)'), '−' + fmt(Math.round(proj.vr)), names.vr.join(', ')) : '') +
+          R(pb >= 0 ? T('শেষে বাকি', 'Left at the end') : T('শেষে ঘাটতি', 'Short at the end'), (pb >= 0 ? '' : '−') + fmt(Math.abs(pb))) +
+          '<p>' + T('ঋণ বা বাজেট ছাড়া খরচ এলে শুধু যা দিয়েছ সেটাই গোনা হয়, মাস শেষ পর্যন্ত বাড়িয়ে ধরা হয় না। নতুন করে দিলে নিজে থেকে যোগ হবে। ভাড়া, পরিবারের মতো ফিক্সড খরচ বাজেটের পুরোটা ধরা হয়। শুধু দৈনিক খাতগুলো (খাওয়া, যাতায়াত...) এ পর্যন্ত দিনে গড়ে যা খরচ হচ্ছে সেই হারে হিসাব। আনুমানিক, ৩ দিন পর থেকে দেখায়।',
+            'Unbudgeted items (loans, one-offs) count only what you actually paid and are never stretched to month end; a new payment is added when you log it. Fixed costs use their full budget. Only day-to-day categories follow your daily pace. This is an estimate, shown after 3 days.') + '</p></div>';
+      }
     }
 
-    /* 2. where can I still spend: variable categories, most used first, with what is left and a daily limit */
-    if (alerts.length) {
-      var canDay = (isCur && left > 0) ? Math.floor(varRem / left) : 0;
-      if (isCur && left > 0 && varRem > 0) {
-        h += '<div class="note" style="padding:0 0 8px">' + T(
-          'ফিক্সড বাদে বাকি বাজেট <b class="num">' + fmt(varRem) + '</b>, মাস শেষ হতে ' + left + ' দিন। দিনে গড়ে <b class="num">' + fmt(canDay) + '</b> পর্যন্ত খরচ করা যাবে।',
-          'Beyond fixed costs, <b class="num">' + fmt(varRem) + '</b> of budget is left for ' + left + ' days. You can spend about <b class="num">' + fmt(canDay) + '</b> a day.') + '</div>';
-      }
-      h += '<div class="alerts">' + alerts.slice(0, 4).map(function (x) {
+    /* 2. where can I still spend: day-to-day categories, most used first; limit = min(budget left, cash left after fixed dues) */
+    if (isCur && left > 0 && varRem > 0) {
+      var cashFree = Math.max(0, a.tin - a.out - pendFx), canSpend = Math.min(varRem, cashFree);
+      canDay = Math.floor(canSpend / left);
+      h += '<div class="note" style="padding:0 0 8px">' + T(
+        'ফিক্সড বাদে খরচের মতো <b class="num">' + fmt(canSpend) + '</b> আছে' + (cashFree < varRem ? ' (হাতের টাকাই সীমা)' : '') + ', মাস শেষ হতে ' + left + ' দিন। দিনে গড়ে <b class="num">' + fmt(canDay) + '</b> পর্যন্ত খরচ করা যাবে।',
+        '<b class="num">' + fmt(canSpend) + '</b> is free to spend beyond fixed costs' + (cashFree < varRem ? ' (limited by cash in hand)' : '') + ', ' + left + ' days left. About <b class="num">' + fmt(canDay) + '</b> a day.') + '</div>';
+    }
+    if (rows.length) {
+      h += '<div class="alerts">' + rows.slice(0, 4).map(function (x) {
         var over = x.sp > x.c.amt, full = x.sp === x.c.amt, rem = x.c.amt - x.sp;
         return '<div class="alert' + (over ? ' over' : '') + '"><span>' + esc(cn(x.c)) + '<span class="a-sub num">' +
           (over ? T('বাজেট ছাড়িয়ে গেছে · ' + fmt(x.sp - x.c.amt) + ' বেশি', 'Over budget · ' + fmt(x.sp - x.c.amt) + ' over')
@@ -1600,29 +1702,30 @@ body { background: var(--bgimg), var(--bg); }
       }).join('') + '</div>';
     }
 
-    /* 3. smart tips, rule-based from this person's own data */
+    /* 3. tips: only things about habits, never one-off payments */
     var tips = [];
+    if (isCur && pb !== null && pb < 0 && left > 0 && vrSp > 0) {
+      var pace = Math.round(vrSp / elapsed);
+      if (pace > canDay) tips.push(T('দৈনিক খাতে এখন দিনে গড়ে ' + fmt(pace) + ' যাচ্ছে। ঘাটতি এড়াতে ' + fmt(canDay) + ' এর মধ্যে রাখো।', 'Day-to-day spending is ' + fmt(pace) + ' a day. Keep it within ' + fmt(canDay) + ' to avoid a shortfall.'));
+    }
     if (isCur && elapsed >= 3) {
       var ps = shiftStart(p.s, -1), pd = parseDate(ps), lim = dstr(new Date(pd.getFullYear(), pd.getMonth(), pd.getDate() + elapsed - 1)), pv = aggPeriod(ps, lim);
-      if (pv.exp > 0) {
-        var d = a.exp - pv.exp;
-        if (Math.abs(d) >= Math.max(100, pv.exp * 0.05)) {
-          var pcs = Math.round(Math.abs(d) / pv.exp * 100) + '%';
+      if (pv.vr > 0) {
+        var d = a.vr - pv.vr;
+        if (Math.abs(d) >= Math.max(100, pv.vr * 0.05)) {
+          var pcs = Math.round(Math.abs(d) / pv.vr * 100) + '%';
           tips.push(d < 0
-            ? T('আগের পিরিয়ডের একই সময়ের চেয়ে ' + fmt(-d) + ' (' + pcs + ') কম খরচ হচ্ছে। ভালো চলছে।', 'Spending is ' + fmt(-d) + ' (' + pcs + ') lower than the same point last period. Nice.')
-            : T('আগের পিরিয়ডের একই সময়ের চেয়ে ' + fmt(d) + ' (' + pcs + ') বেশি খরচ হচ্ছে।', 'Spending is ' + fmt(d) + ' (' + pcs + ') higher than the same point last period.'));
+            ? T('আগের পিরিয়ডের একই সময়ের চেয়ে দৈনিক খরচ ' + fmt(-d) + ' (' + pcs + ') কম। ভালো চলছে।', 'Day-to-day spending is ' + fmt(-d) + ' (' + pcs + ') lower than the same point last period. Nice.')
+            : T('আগের পিরিয়ডের একই সময়ের চেয়ে দৈনিক খরচ ' + fmt(d) + ' (' + pcs + ') বেশি।', 'Day-to-day spending is ' + fmt(d) + ' (' + pcs + ') higher than the same point last period.'));
         }
       }
     }
     if (a.spent.other > 0) tips.push(T('প্ল্যানের বাইরে ' + fmt(a.spent.other) + ' খরচ হয়েছে। বারবার হলে আলাদা খাত খুলে নাও।', fmt(a.spent.other) + ' went outside the plan. If it repeats, give it its own category.'));
-    if (isCur && left > 0 && budget - a.exp > 0) {
-      var rb = budget - a.exp;
-      tips.push(T('প্ল্যান অনুযায়ী বাজেটের ' + fmt(rb) + ' বাকি, দিনে গড়ে ' + fmt(Math.floor(rb / left)) + ' খরচ করা যায়।', fmt(rb) + ' of the planned budget is left, about ' + fmt(Math.floor(rb / left)) + ' a day.'));
-    }
     tips = tips.slice(0, 3);
     if (tips.length) h += '<div class="tips">' + tips.map(function (t) { return '<div class="tip"><span>' + t + '</span></div>'; }).join('') + '</div>';
     el.hidden = false; el.innerHTML = h;
   }
+
 
   function renderCompare() {
     if (!showW('compare')) { $('compare').hidden = true; $('compare').innerHTML = ''; return; }
@@ -2218,68 +2321,144 @@ body { background: var(--bgimg), var(--bg); }
   }
   function exportPdf() {
     if (!window.jspdf) { toast('PDF টুল লোড হয়নি'); return; }
-    var doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' }), pr = P();
-    var W = 595, M = 40, y = 48, t = totals();
+    var doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' }), pr = P(), PLN = PL(), t = totals();
+    var W = 595, M = 40, R = W - M, y = 0, hdrFn = null;
+    var GREEN = [16, 150, 100], RED = [214, 48, 49], INDIGO = [79, 70, 229], AMBER = [201, 124, 8], INK = [24, 24, 43], GREY = [112, 114, 136], LINE = [226, 228, 240], ZEB = [246, 247, 252];
     function lab(c) { return ascii(c.en) || ascii(c.bn) || 'Item'; }
+    function fp(n) { return fmtPlain(n); }
     function money(n) { return 'BDT ' + fmtPlain(n); }
-    function ensure(h) { if (y + h > 800) { doc.addPage(); y = 48; } }
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.text('Salary Cash Book', M, y); y += 20;
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(100);
-    doc.text('Period: ' + longDate(pr.s) + ' to ' + longDate(pr.e) + '   |   Printed: ' + longDate(dstr(new Date())), M, y); y += 24;
-    doc.setTextColor(0);
-    var bal = t.tin - t.tout;
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(11);
-    doc.text('Total cash in: ' + money(t.tin), M, y);
-    doc.text('Total cash out: ' + money(t.tout), M + 190, y);
-    doc.text('Net balance: ' + (bal < 0 ? '-' : '') + money(Math.abs(bal)), M + 390, y); y += 28;
-    doc.setFontSize(12); doc.text('Budget vs spent', M, y); y += 8;
-    doc.setDrawColor(200); doc.line(M, y, W - M, y); y += 14;
-    doc.setFontSize(9); doc.setTextColor(100);
-    doc.text('Category', M, y); doc.text('Budget', 330, y, { align: 'right' }); doc.text('Spent', 420, y, { align: 'right' }); doc.text('Left', W - M, y, { align: 'right' }); y += 14;
-    doc.setTextColor(0); doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
-    PL().items.forEach(function (i) {
-      ensure(16);
-      var sp = t.spent[i.id] || 0, left = i.amt - sp;
-      doc.text(lab(i), M, y); doc.text(fmtPlain(i.amt), 330, y, { align: 'right' }); doc.text(fmtPlain(sp), 420, y, { align: 'right' });
-      if (left < 0) doc.setTextColor(200, 30, 30);
-      doc.text((left < 0 ? '-' : '') + fmtPlain(Math.abs(left)), W - M, y, { align: 'right' }); doc.setTextColor(0); y += 15;
+    function tc(c) { doc.setTextColor(c[0], c[1], c[2]); }
+    function fc(c) { doc.setFillColor(c[0], c[1], c[2]); }
+    function dc(c) { doc.setDrawColor(c[0], c[1], c[2]); }
+    function fnt(style, size) { doc.setFont('helvetica', style); doc.setFontSize(size); }
+    function fit(s, wmax) { s = String(s); if (doc.getTextWidth(s) <= wmax) return s; while (s.length > 1 && doc.getTextWidth(s + '...') > wmax) s = s.slice(0, -1); return s + '...'; }
+    function running() {
+      fnt('normal', 8.5); tc(GREY); doc.text('Salary Cash Book  |  ' + longDate(pr.s) + ' to ' + longDate(pr.e), M, 32);
+      dc(LINE); doc.setLineWidth(0.6); doc.line(M, 40, R, 40); y = 62;
+    }
+    function ensure(h) { if (y + h > 786) { doc.addPage(); running(); if (hdrFn) hdrFn(); } }
+    function sec(title, sub) {
+      ensure(50); hdrFn = null; y += 6;
+      fc(INDIGO); doc.rect(M, y - 10, 3, 14, 'F'); fnt('bold', 12); tc(INK); doc.text(title, M + 10, y + 1);
+      if (sub) { fnt('normal', 8.5); tc(GREY); doc.text(sub, R, y + 1, { align: 'right' }); }
+      y += 18;
+    }
+    function band(cols) {
+      fc(INK); doc.roundedRect(M, y - 12, R - M, 20, 4, 4, 'F'); fnt('bold', 8.5); doc.setTextColor(255, 255, 255);
+      cols.forEach(function (c) { doc.text(c[0], c[1], y + 1, c[2] ? { align: 'right' } : undefined); });
+      y += 20;
+    }
+    function zebra(i, h) { if (i % 2 === 0) { fc(ZEB); doc.rect(M, y - 12, R - M, h || 19, 'F'); } }
+
+    /* ---- header band ---- */
+    fc(INDIGO); doc.rect(0, 0, W, 88, 'F');
+    fnt('bold', 22); doc.setTextColor(255, 255, 255); doc.text('Salary Cash Book', M, 42);
+    fnt('normal', 10); doc.setTextColor(222, 222, 255);
+    doc.text('Period: ' + longDate(pr.s) + ' to ' + longDate(pr.e), M, 63);
+    doc.text('Printed ' + longDate(dstr(new Date())), R, 63, { align: 'right' });
+    y = 112;
+
+    /* ---- 3 summary cards ---- */
+    var bal = t.tin - t.tout, cw = (R - M - 24) / 3;
+    [['CASH IN', '+' + money(t.tin), GREEN, 'Total received'], ['CASH OUT', '-' + money(t.tout), RED, 'Total spent and saved'],
+     ['NET BALANCE', (bal < 0 ? '-' : '') + money(Math.abs(bal)), bal < 0 ? RED : GREEN, bal < 0 ? 'Overspent' : bal === 0 ? 'Balanced' : 'In hand']].forEach(function (c, i) {
+      var x = M + i * (cw + 12);
+      fc(ZEB); doc.roundedRect(x, y, cw, 62, 7, 7, 'F'); fc(c[2]); doc.roundedRect(x, y + 12, 3.5, 38, 1.5, 1.5, 'F');
+      fnt('bold', 8); tc(GREY); doc.text(c[0], x + 15, y + 20);
+      fnt('bold', 14); tc(c[2]); doc.text(c[1], x + 15, y + 40);
+      fnt('normal', 8.5); tc(GREY); doc.text(c[3], x + 15, y + 54);
     });
-    if (t.spent.other) { doc.text('Other (not in plan)', M, y); doc.text('-', 330, y, { align: 'right' }); doc.text(fmtPlain(t.spent.other), 420, y, { align: 'right' }); y += 15; }
-    var planned = PL().items.reduce(function (a, i) { return a + i.amt; }, 0);
-    doc.setDrawColor(200); doc.line(M, y - 4, W - M, y - 4); y += 8;
-    doc.setFont('helvetica', 'bold');
-    doc.text('Salary ' + fmtPlain(PL().salary) + '  |  Planned ' + fmtPlain(planned) + '  |  Unallocated ' + fmtPlain(PL().salary - planned), M, y); y += 30;
-    doc.setFontSize(12); doc.text('Entries', M, y); y += 8; doc.line(M, y, W - M, y); y += 14;
-    doc.setFontSize(9); doc.setFont('helvetica', 'normal'); doc.setTextColor(100);
-    doc.text('Date', M, y); doc.text('Type', M + 80, y); doc.text('Category / note', M + 140, y); doc.text('Amount', W - M, y, { align: 'right' }); y += 14;
-    doc.setTextColor(0); doc.setFontSize(10);
-    var rows = sortAsc(curEntries());
-    if (!rows.length) { doc.text('No entries yet.', M, y); }
-    rows.forEach(function (e) {
-      ensure(16);
-      var note = ascii(e.note);
-      var desc = lab(catName(e.type, e.cat)) + (note ? ' - ' + note : '');
-      if (desc.length > 58) desc = desc.slice(0, 57) + '...';
-      doc.text(e.date, M, y); doc.text(e.type === 'in' ? 'In' : 'Out', M + 80, y); doc.text(desc, M + 140, y);
-      doc.setTextColor(e.type === 'in' ? 10 : 200, e.type === 'in' ? 130 : 30, e.type === 'in' ? 90 : 30);
-      doc.text((e.type === 'in' ? '+' : '-') + fmtPlain(e.amount), W - M, y, { align: 'right' }); doc.setTextColor(0); y += 15;
+    y += 90;
+
+    /* ---- classify every category the same way the app does ---- */
+    var fxIds = (plan.rec || []).map(function (r) { return r.cat; }), cnt = {};
+    curEntries().forEach(function (e) { if (e.type === 'out' && e.cat !== 'save') { var k = isPlanCat(e.cat) ? e.cat : 'other'; cnt[k] = (cnt[k] || 0) + 1; } });
+    var cats = PLN.items.slice(); if (t.spent.other) cats.push(OTHER_OUT);
+    var grp = { sav: { v: 0, n: [] }, fix: { v: 0, n: [] }, var: { v: 0, n: [] }, exc: { v: 0, n: [] } };
+    cats.forEach(function (c) {
+      var sp = t.spent[c.id] || 0, kd = c.id === 'save' ? 'sav' : costKind(c.id, c, sp, cnt[c.id] || 0, fxIds);
+      c._kd = kd; if (sp > 0) { grp[kd].v += sp; grp[kd].n.push(lab(c)); }
     });
-    y += 14; ensure(60);
-    var sin = 0, sout = 0;
-    savings.forEach(function (e) { if (e.type === 'in') sin += e.amount; else sout += e.amount; });
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.text('Savings', M, y); y += 8; doc.line(M, y, W - M, y); y += 14;
-    doc.setFontSize(10);
-    doc.text('Saved balance: ' + money(sin - sout) + '   (in ' + fmtPlain(sin) + ', out ' + fmtPlain(sout) + ')', M, y); y += 18;
-    doc.setFont('helvetica', 'normal');
-    if (!savings.length) { doc.text('No savings entries yet.', M, y); }
-    sortAsc(savings).forEach(function (e) {
-      ensure(16);
-      var n = ascii(e.note) || '-';
-      if (n.length > 58) n = n.slice(0, 57) + '...';
-      doc.text(e.date, M, y); doc.text(e.type === 'in' ? 'In' : 'Out', M + 80, y); doc.text(n, M + 140, y);
-      doc.setTextColor(e.type === 'in' ? 10 : 200, e.type === 'in' ? 130 : 30, e.type === 'in' ? 90 : 30);
-      doc.text((e.type === 'in' ? '+' : '-') + fmtPlain(e.amount), W - M, y, { align: 'right' }); doc.setTextColor(0); y += 15;
+
+    /* ---- where the money went ---- */
+    sec('How this period adds up', 'every taka counted once');
+    var ov = [['Cash in', '', t.tin, '+', GREEN], ['Moved to savings', grp.sav.n.join(', '), grp.sav.v, '-', RED],
+      ['Fixed costs', grp.fix.n.join(', '), grp.fix.v, '-', RED], ['Day-to-day spending', grp['var'].n.join(', '), grp['var'].v, '-', RED],
+      ['Unbudgeted / one-off', grp.exc.n.join(', '), grp.exc.v, '-', RED]].filter(function (r) { return r[2] > 0 || r[0] === 'Cash in'; });
+    ensure(ov.length * 24 + 44);
+    var bh = ov.length * 24 + 40; fc(ZEB); doc.roundedRect(M, y - 6, R - M, bh, 7, 7, 'F'); y += 12;
+    ov.forEach(function (r) {
+      fnt('normal', 10); tc(INK); doc.text(r[0], M + 14, y);
+      if (r[1]) { fnt('normal', 8.5); tc(GREY); doc.text(fit(r[1], 230), M + 150, y); }
+      fnt('bold', 10); tc(r[4]); doc.text(r[3] + fp(r[2]), R - 14, y, { align: 'right' }); y += 24;
     });
+    dc(LINE); doc.line(M + 14, y - 14, R - 14, y - 14); y += 2;
+    fnt('bold', 10.5); tc(INK); doc.text('Balance in hand', M + 14, y - 8);
+    tc(bal < 0 ? RED : GREEN); doc.text((bal < 0 ? '-' : '') + fp(Math.abs(bal)), R - 14, y - 8, { align: 'right' }); y += 26;
+
+    /* ---- budget table ---- */
+    sec('Budget vs spent', 'amounts in BDT');
+    var bcols = [['CATEGORY', M + 10], ['HOW COUNTED', M + 150], ['BUDGET', 318, 1], ['SPENT', 384, 1], ['LEFT', 450, 1], ['USED', R - 8, 1]];
+    hdrFn = function () { band(bcols); }; ensure(60); hdrFn();
+    var KD = { fix: ['Fixed', INDIGO], 'var': ['Daily', [14, 116, 144]], exc: ['Unbudgeted', AMBER], sav: ['Savings', GREY] }, bi = 0, totB = 0, totS = 0;
+    cats.forEach(function (c) {
+      var sp = t.spent[c.id] || 0, bud = c.amt > 0 ? c.amt : 0;
+      if (c._kd === 'exc' && !sp && !bud) return;
+      ensure(20); zebra(bi++);
+      fnt('normal', 10); tc(INK); doc.text(fit(lab(c), 135), M + 10, y);
+      fnt('bold', 8.5); tc(KD[c._kd][1]); doc.text(KD[c._kd][0], M + 150, y);
+      fnt('normal', 10); tc(INK);
+      doc.text(bud ? fp(bud) : '-', 318, y, { align: 'right' }); doc.text(fp(sp), 384, y, { align: 'right' });
+      if (bud) {
+        var left = bud - sp, pc = sp / bud;
+        tc(left < 0 && c._kd !== 'sav' ? RED : INK); doc.text((left < 0 ? '-' : '') + fp(Math.abs(left)), 450, y, { align: 'right' });
+        var col = c._kd === 'sav' ? GREEN : pc > 1 ? RED : pc >= 0.8 ? AMBER : INDIGO;
+        fc(LINE); doc.roundedRect(R - 58, y - 6, 34, 5, 2, 2, 'F'); fc(col); doc.roundedRect(R - 58, y - 6, Math.max(2, Math.min(1, pc) * 34), 5, 2, 2, 'F');
+        fnt('normal', 8); tc(GREY); doc.text(Math.round(pc * 100) + '%', R - 8, y, { align: 'right' });
+      } else { tc(GREY); doc.text('-', 450, y, { align: 'right' }); }
+      if (c._kd !== 'sav') { totS += sp; if (bud) totB += bud; }
+      y += 19;
+    });
+    ensure(30); dc(LINE); doc.line(M, y - 11, R, y - 11);
+    fnt('bold', 10); tc(INK); doc.text('Total (without savings)', M + 10, y + 3); doc.text(fp(totB), 318, y + 3, { align: 'right' }); doc.text(fp(totS), 384, y + 3, { align: 'right' });
+    y += 24; hdrFn = null; ensure(46);
+    fnt('normal', 8.5); tc(GREY);
+    doc.text('Fixed = lump payment (rent, family) or recurring: counted at full budget.  Daily = day-to-day spending, follows your daily pace.', M, y); y += 12;
+    doc.text('Unbudgeted = loan or one-off with no budget: counted only as paid.   Salary ' + fp(PLN.salary) + '  |  Planned ' + fp(PLN.items.reduce(function (a, i) { return a + i.amt; }, 0)) + '.', M, y); y += 14;
+
+    /* ---- entries ---- */
+    function ledger(list, inL, outL, noEmpty) {
+      var IN = 392, OUT = 466, BAL = R - 8, run = 0, last = '';
+      hdrFn = function () { band([['DATE', M + 12], ['DESCRIPTION', M + 66], [inL, IN, 1], [outL, OUT, 1], ['BALANCE', BAL, 1]]); };
+      ensure(60); hdrFn();
+      if (!list.length) { fnt('normal', 10); tc(GREY); doc.text(noEmpty, M + 12, y); y += 20; hdrFn = null; return; }
+      var tin = 0, tout = 0;
+      list.forEach(function (e, i) {
+        ensure(20); var isIn = e.type === 'in'; run += isIn ? e.amount : -e.amount; if (isIn) tin += e.amount; else tout += e.amount;
+        zebra(i); fc(isIn ? GREEN : RED); doc.rect(M, y - 12, 3, 19, 'F');
+        fnt('normal', 9); tc(GREY); doc.text(e.date !== last ? shortD(e.date) : '', M + 12, y); last = e.date;
+        var note = ascii(e.note), d = (e.cat !== undefined && !e._sav ? lab(catName(e.type, e.cat)) + (note ? ' - ' + note : '') : (note || 'Savings'));
+        fnt('normal', 9.5); tc(INK); doc.text(fit(d, 238), M + 66, y);
+        fnt('bold', 9.5);
+        if (isIn) { tc(GREEN); doc.text('+' + fp(e.amount), IN, y, { align: 'right' }); } else { tc(RED); doc.text('-' + fp(e.amount), OUT, y, { align: 'right' }); }
+        fnt('normal', 9.5); tc(run < 0 ? RED : INK); doc.text((run < 0 ? '-' : '') + fp(Math.abs(run)), BAL, y, { align: 'right' });
+        y += 19;
+      });
+      ensure(28); dc(LINE); doc.line(M, y - 11, R, y - 11); fnt('bold', 10); tc(INK); doc.text('Total', M + 12, y + 3);
+      tc(GREEN); doc.text('+' + fp(tin), IN, y + 3, { align: 'right' }); tc(RED); doc.text('-' + fp(tout), OUT, y + 3, { align: 'right' });
+      tc(run < 0 ? RED : GREEN); doc.text((run < 0 ? '-' : '') + fp(Math.abs(run)), BAL, y + 3, { align: 'right' }); y += 26; hdrFn = null;
+    }
+    sec('Cash book', 'green = cash in, red = cash out');
+    ledger(sortAsc(curEntries()), 'CASH IN', 'CASH OUT', 'No entries yet.');
+
+    /* ---- savings ---- */
+    var sin = 0, sout = 0; savings.forEach(function (e) { if (e.type === 'in') sin += e.amount; else sout += e.amount; });
+    sec('Savings', 'saved balance ' + money(sin - sout));
+    ledger(sortAsc(savings).map(function (e) { return Object.assign({}, e, { _sav: 1 }); }), 'SAVED', 'TAKEN OUT', 'No savings entries yet.');
+
+    /* ---- footer on every page ---- */
+    var np = doc.getNumberOfPages(), i2;
+    for (i2 = 1; i2 <= np; i2++) { doc.setPage(i2); fnt('normal', 8); tc(GREY); doc.text('Page ' + i2 + ' of ' + np, R, 822, { align: 'right' }); doc.text('Generated by Salary Cash Book', M, 822); }
     saveFile(exportName('pdf'), doc.output('arraybuffer'));
   }
 
@@ -2380,6 +2559,7 @@ body { background: var(--bgimg), var(--bg); }
     else if (act === 'rc-add') { var fi = PL().items.filter(function (i) { return i.id !== 'save'; })[0]; var w = document.createElement('div'); w.innerHTML = recRow({ id: 'q' + Date.now().toString(36), cat: fi ? fi.id : '', amount: fi ? fi.amt : 0, day: 1 }); $('p-rec').appendChild(w.firstChild); }
     else if (act === 'rc-del') { var rr = a.closest('.rc-row'); if (rr) rr.remove(); }
     else if (act === 'apply-rec') applyRec();
+    else if (act === 'ins-info') { insOpen = !insOpen; renderInsight(); }
     else if (act === 'close-month') closeMonth();
     else if (act === 'edit-goal') openGoal();
     else if (act === 'customize') { $('scrim-set').hidden = true; openCustom(); }
