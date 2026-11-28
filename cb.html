@@ -1520,7 +1520,7 @@ body { background: var(--bgimg), var(--bg); }
   }
   /* totals of one salary period; "exp" = spending without money moved to savings */
   function aggPeriod(s, lim) {
-    var e = dstr(cycleEnd(parseDate(s))), ids = {}, a = { s: s, e: e, tin: 0, out: 0, exp: 0, spent: {}, n: 0 };
+    var e = dstr(cycleEnd(parseDate(s))), ids = {}, a = { s: s, e: e, tin: 0, out: 0, exp: 0, spent: {}, cnt: {}, n: 0 };
     planAt(s).items.forEach(function (i) { ids[i.id] = 1; });
     entries.forEach(function (x) {
       if (x.date < s || x.date > e || (lim && x.date > lim)) return;
@@ -1529,7 +1529,7 @@ body { background: var(--bgimg), var(--bg); }
       a.out += x.amount;
       if (x.cat === 'save') return;
       var k = ids[x.cat] ? x.cat : 'other';
-      a.exp += x.amount; a.spent[k] = (a.spent[k] || 0) + x.amount;
+      a.exp += x.amount; a.spent[k] = (a.spent[k] || 0) + x.amount; a.cnt[k] = (a.cnt[k] || 0) + 1;
     });
     return a;
   }
@@ -1545,13 +1545,16 @@ body { background: var(--bgimg), var(--bg); }
     if (!a.n) { el.hidden = true; el.innerHTML = ''; return; }
     var DAY = 86400000, s0 = parseDate(p.s), en = parseDate(p.e), n = Math.round((en - s0) / DAY) + 1, now = parseDate(dstr(new Date()));
     var isCur = now >= s0 && now <= en, elapsed = isCur ? Math.round((now - s0) / DAY) + 1 : n, left = isCur ? n - elapsed : 0;
-    var budget = 0, alerts = [];
+    var budget = 0, alerts = [], varRem = 0, fxA = (plan.rec || []).map(function (r) { return r.cat; });
     PLN.items.forEach(function (i) {
       if (i.id === 'save') return;
       budget += i.amt;
       if (!(i.amt > 0)) return;
       var sp = a.spent[i.id] || 0, pc = sp / i.amt * 100;
-      if (pc >= alertAt()) alerts.push({ c: i, sp: sp, pc: pc });
+      /* fixed costs (rent, family...) are already known: no alert unless they went over budget */
+      if ((fxA.indexOf(i.id) >= 0 || ((a.cnt[i.id] || 0) <= 2 && sp >= i.amt * 0.5)) && sp <= i.amt) return;
+      varRem += Math.max(0, i.amt - sp);
+      if (sp > 0) alerts.push({ c: i, sp: sp, pc: pc });
     });
     alerts.sort(function (x, y) { return y.pc - x.pc; });
     var pct = budget > 0 ? Math.round(a.exp / budget * 100) : 0;
@@ -1562,36 +1565,43 @@ body { background: var(--bgimg), var(--bg); }
       'Spent <b class="num">' + fmt(a.exp) + '</b> this period' + (budget > 0 ? ', <b class="num">' + pct + '%</b> of the budget used' : '') + '.') + '</div>';
     if (isCur && left > 0 && elapsed >= 3 && a.tin > 0) {
       /* per category: early in the period lean on the planned budget, later on the real daily pace */
-      var w = elapsed / n, projExp = 0;
+      var w = elapsed / n, projExp = 0, fxIds = (plan.rec || []).map(function (r) { return r.cat; });
       Object.keys(a.spent).concat(PLN.items.map(function (i) { return i.id; })).filter(function (id, ix, arr) { return arr.indexOf(id) === ix && id !== 'save'; }).forEach(function (id) {
         var it = PLN.items.filter(function (i) { return i.id === id; })[0], sp = a.spent[id] || 0, pace = sp / elapsed * n, bud = it ? Math.max(it.amt, sp) : sp;
-        projExp += Math.max(sp, w * pace + (1 - w) * bud);
+        /* fixed cost (recurring, or 1-2 lump payments already covering half the budget, e.g. rent/family):
+           it does not grow with days, so project the full budget, never the daily pace */
+        var fixed = !!it && (fxIds.indexOf(id) >= 0 || ((a.cnt[id] || 0) <= 2 && sp >= it.amt * 0.5));
+        projExp += fixed ? bud : Math.max(sp, w * pace + (1 - w) * bud);
       });
       var pb = Math.round(a.tin - (a.out - a.exp) - projExp);
       h += '<div class="ins-fc ' + (pb >= 0 ? 'good' : 'bad') + '">' + (pb >= 0
         ? T('এভাবে চললে মাস শেষে প্রায় <b class="num">' + fmt(pb) + '</b> বাকি থাকবে', 'At this pace about <b class="num">' + fmt(pb) + '</b> will be left at the end of the period')
-        : T('এভাবে চললে মাস শেষে প্রায় <b class="num">' + fmt(-pb) + '</b> ঘাটতি হবে', 'At this pace you will be about <b class="num">' + fmt(-pb) + '</b> short at the end of the period')) + '</div>';
+        : T('এভাবে চললে মাস শেষে প্রায় <b class="num">' + fmt(-pb) + '</b> ঘাটতি হবে', 'At this pace you will be about <b class="num">' + fmt(-pb) + '</b> short at the end of the period')) + '</div>' +
+        '<div class="note" style="padding:0;margin:-4px 0 6px">' + T('বাসা ভাড়া, পরিবার, নিয়মিত খরচ ফিক্সড ধরা হয়েছে (বাজেটের পুরোটা)। বাকিগুলো এখন পর্যন্ত দিনে গড়ে যা খরচ হচ্ছে সেই হিসাবে।', 'Fixed costs (rent, family, recurring) are counted at their full budget; the rest is projected from your daily pace so far.') + '</div>';
     }
 
-    /* 2. budget alerts (80% / 100%) */
+    /* 2. where can I still spend: variable categories, most used first, with what is left and a daily limit */
     if (alerts.length) {
+      var canDay = (isCur && left > 0) ? Math.floor(varRem / left) : 0;
+      if (isCur && left > 0 && varRem > 0) {
+        h += '<div class="note" style="padding:0 0 8px">' + T(
+          'ফিক্সড বাদে বাকি বাজেট <b class="num">' + fmt(varRem) + '</b>, মাস শেষ হতে ' + left + ' দিন। দিনে গড়ে <b class="num">' + fmt(canDay) + '</b> পর্যন্ত খরচ করা যাবে।',
+          'Beyond fixed costs, <b class="num">' + fmt(varRem) + '</b> of budget is left for ' + left + ' days. You can spend about <b class="num">' + fmt(canDay) + '</b> a day.') + '</div>';
+      }
       h += '<div class="alerts">' + alerts.slice(0, 4).map(function (x) {
-        var over = x.sp > x.c.amt, full = x.sp === x.c.amt;
+        var over = x.sp > x.c.amt, full = x.sp === x.c.amt, rem = x.c.amt - x.sp;
         return '<div class="alert' + (over ? ' over' : '') + '"><span>' + esc(cn(x.c)) + '<span class="a-sub num">' +
           (over ? T('বাজেট ছাড়িয়ে গেছে · ' + fmt(x.sp - x.c.amt) + ' বেশি', 'Over budget · ' + fmt(x.sp - x.c.amt) + ' over')
                 : full ? T('বাজেট পুরোটা শেষ', 'Budget fully used')
-                : T('বাজেট প্রায় শেষ · ' + fmt(x.c.amt - x.sp) + ' বাকি', 'Almost used · ' + fmt(x.c.amt - x.sp) + ' left')) +
+                : (isCur && left > 0)
+                  ? T(fmt(rem) + ' বাকি · দিনে ' + fmt(Math.floor(rem / left)) + ' পর্যন্ত', fmt(rem) + ' left · up to ' + fmt(Math.floor(rem / left)) + ' a day')
+                  : T(fmt(rem) + ' বাকি ছিল', fmt(rem) + ' was left')) +
           '</span></span><b class="num">' + Math.round(x.pc) + '%</b></div>';
       }).join('') + '</div>';
     }
 
     /* 3. smart tips, rule-based from this person's own data */
-    var tips = [], nearA = alerts.filter(function (x) { return x.sp < x.c.amt; })[0];
-    if (isCur && left > 0 && nearA) {
-      var rem = nearA.c.amt - nearA.sp, nm = esc(cn(nearA.c)), perDay = fmt(Math.floor(rem / left));
-      tips.push(T(nm + ' খাতে আর ' + fmt(rem) + ' বাকি, মাস শেষ হতে ' + left + ' দিন। দিনে গড়ে ' + perDay + ' এর মধ্যে রাখো।',
-                  nm + ' has ' + fmt(rem) + ' left with ' + left + ' days to go. Keep it around ' + perDay + ' a day.'));
-    }
+    var tips = [];
     if (isCur && elapsed >= 3) {
       var ps = shiftStart(p.s, -1), pd = parseDate(ps), lim = dstr(new Date(pd.getFullYear(), pd.getMonth(), pd.getDate() + elapsed - 1)), pv = aggPeriod(ps, lim);
       if (pv.exp > 0) {
