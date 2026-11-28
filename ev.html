@@ -11951,14 +11951,17 @@ const MapView = (function(){
 
   // ── Tile URLs ─────────────────────────────────────────
   const TILES={
-    dark:{url:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',attr:'© CARTO',sub:'abcd'},
-    std:{url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',attr:'© CARTO',sub:'abcd'},
-    sat:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',attr:'© Esri',sub:null}
+    // ✅ CARTO basemaps এখন API key চায় ("API KEY REQUIRED" watermark) → keyless Esri ব্যবহার করা হলো
+    dark:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',attr:'© Esri',nz:16,
+          ref:'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',refNz:16,refOp:0.95},
+    std:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',attr:'© Esri',nz:18},
+    sat:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',attr:'© Esri',nz:17,
+         ref:'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',refNz:17,refOp:0.9}
   };
-  // Fallback URLs when primary fails
+  // Fallback URLs when primary fails (all keyless)
   const TILES_FB={
-    dark:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-    std:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    dark:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    std:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     sat:'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
   };
 
@@ -14158,44 +14161,106 @@ const MapView = (function(){
     }
   };
 
-  async function _renderBDBordersLayer(btn){
-    // ─ BD divisions GeoJSON: IDB → CDN (persisted offline after first online load) ─
-    if(!window._bdDivisionGeo) window._bdDivisionGeo=await _mapIDB.get('bd-divisions');
-    if(!window._bdDivisionGeo){
-      const urls=[
-        'https://cdn.jsdelivr.net/gh/fahimreza-dev/bangladesh-geojson@main/bd-divisions.json',
-        'https://raw.githubusercontent.com/fahimreza-dev/bangladesh-geojson/main/bd-divisions.json',
-        'https://cdn.jsdelivr.net/gh/nurulcse7/bangladesh-map-data@main/divisions.geojson'
-      ];
-      for(const url of urls){
-        try{
-          const ctrl=new AbortController();
-          const tid=setTimeout(()=>ctrl.abort(),8000);
-          const r=await fetch(url,{signal:ctrl.signal});
-          clearTimeout(tid);
-          if(r.ok){ window._bdDivisionGeo=await r.json(); _mapIDB.put('bd-divisions',window._bdDivisionGeo); break; }
-        }catch(e){}
-      }
-    }
+  // ══ Fast GeoJSON/TopoJSON loader ═════════════════════════════════════════
+  // • IndexedDB cache আগে (দ্বিতীয়বার থেকে instant, offline-ও চলে)
+  // • একাধিক mirror staggered race — প্রথম valid response জেতে
+  // • topojson-client library আর লাগে না (ছোট inline decoder)
+  function _topoFeatureShim(topo,obj){
+    const sc=topo.transform?topo.transform.scale:[1,1], tr=topo.transform?topo.transform.translate:[0,0];
+    const arcs=topo.arcs.map(a=>{let x=0,y=0;return a.map(p=>{x+=p[0];y+=p[1];return [x*sc[0]+tr[0],y*sc[1]+tr[1]];});});
+    const ring=idx=>{const out=[];for(let k=0;k<idx.length;k++){const i=idx[k];const a=i<0?arcs[~i].slice().reverse():arcs[i];for(let j=(k?1:0);j<a.length;j++)out.push(a[j]);}while(out.length<4)out.push(out[0]);return out;};
+    const geom=g=>{
+      if(g.type==='Polygon') return {type:'Polygon',coordinates:g.arcs.map(ring)};
+      if(g.type==='MultiPolygon') return {type:'MultiPolygon',coordinates:g.arcs.map(p=>p.map(ring))};
+      return null;
+    };
+    const o=typeof obj==='string'?topo.objects[obj]:obj;
+    const gs=o.type==='GeometryCollection'?o.geometries:[o];
+    return {type:'FeatureCollection',features:gs.map(g=>{const f={type:'Feature',properties:g.properties||{},geometry:geom(g)};if(g.id!=null)f.id=g.id;return f;})};
+  }
+  if(!window.topojson) window.topojson={feature:_topoFeatureShim};
 
-    // ─ BD districts GeoJSON: IDB → CDN ─
-    if(!window._bdDistrictGeo) window._bdDistrictGeo=await _mapIDB.get('bd-districts');
-    if(!window._bdDistrictGeo){
-      const distUrls=[
-        'https://cdn.jsdelivr.net/gh/fahimreza-dev/bangladesh-geojson@main/bd-districts.json',
-        'https://raw.githubusercontent.com/fahimreza-dev/bangladesh-geojson/main/bd-districts.json',
-        'https://cdn.jsdelivr.net/gh/nurulcse7/bangladesh-map-data@main/districts.geojson'
-      ];
-      for(const url of distUrls){
-        try{
-          const ctrl=new AbortController();
-          const tid=setTimeout(()=>ctrl.abort(),8000);
-          const r=await fetch(url,{signal:ctrl.signal});
-          clearTimeout(tid);
-          if(r.ok){ window._bdDistrictGeo=await r.json(); _mapIDB.put('bd-districts',window._bdDistrictGeo); break; }
-        }catch(e){}
+  function _fetchFirst(urls,valid,ms,stagger){
+    return new Promise((resolve,reject)=>{
+      let done=false, failed=0; const ctrls=[], timers=[], started=[];
+      const finish=(ok,val)=>{ if(done) return; done=true;
+        timers.forEach(clearTimeout); ctrls.forEach(c=>{try{c.abort();}catch(e){}});
+        ok?resolve(val):reject(val); };
+      // mirror i শুরু হয় — আগেরটা fail করলে সাথে সাথে, নইলে stagger ms পরে
+      const start=i=>{
+        if(done||i>=urls.length||started[i]) return;
+        started[i]=true;
+        const c=new AbortController(); ctrls.push(c);
+        const tid=setTimeout(()=>c.abort(),ms); timers.push(tid);
+        timers.push(setTimeout(()=>start(i+1),stagger));
+        fetch(urls[i],{signal:c.signal,credentials:'omit'})
+          .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+          .then(j=>{ if(valid&&!valid(j)) throw new Error('invalid'); finish(true,j); })
+          .catch(()=>{ if(done) return; if(++failed>=urls.length) finish(false,new Error('all mirrors failed')); else start(i+1); });
+      };
+      start(0);
+    });
+  }
+  const _geoInflight={}, _geoMem={}, _geoFailAt={};
+  function _loadGeo(key,urls,valid,ms){
+    if(_geoMem[key]) return Promise.resolve(_geoMem[key]);
+    if(_geoInflight[key]) return _geoInflight[key];
+    if(_geoFailAt[key] && Date.now()-_geoFailAt[key]<20000) return Promise.resolve(null); // retry-storm বন্ধ
+    return _geoInflight[key]=(async()=>{
+      let g=null;
+      try{ g=await _mapIDB.get(key); if(g&&valid&&!valid(g)) g=null; }catch(e){ g=null; }
+      if(!g){
+        try{ g=await _fetchFirst(urls,valid,ms||15000,2500); _mapIDB.put(key,g); }
+        catch(e){ g=null; _geoFailAt[key]=Date.now(); }
       }
-    }
+      if(g) _geoMem[key]=g;
+      delete _geoInflight[key];
+      return g;
+    })();
+  }
+  const _validFC=j=>j&&Array.isArray(j.features)&&j.features.length>0;
+  const _validTopo=j=>j&&j.arcs&&j.objects&&j.objects.countries;
+  const BD_DIV_URLS=[
+    'https://raw.githubusercontent.com/Tasmim-Adib/Bangladesh-GeoJson/main/bangladesh_divisions.geojson',
+    'https://cdn.jsdelivr.net/gh/Tasmim-Adib/Bangladesh-GeoJson@main/bangladesh_divisions.geojson'
+  ];
+  const BD_DIST_URLS=[
+    'https://raw.githubusercontent.com/Tasmim-Adib/Bangladesh-GeoJson/main/bangladesh_districts.json',
+    'https://cdn.jsdelivr.net/gh/Tasmim-Adib/Bangladesh-GeoJson@main/bangladesh_districts.json'
+  ];
+  // 50m = ~750KB (আগের 10m ছিল ~3.6MB → এটাই world map ধীর হওয়ার প্রধান কারণ)
+  const WORLD_TOPO_URLS=[
+    'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json',
+    'https://unpkg.com/world-atlas@2/countries-50m.json',
+    'https://fastly.jsdelivr.net/npm/world-atlas@2/countries-50m.json'
+  ];
+  async function _loadWorldTopo(){
+    if(_topoData) return _topoData;
+    const g=await _loadGeo('world-50m-v2',WORLD_TOPO_URLS,_validTopo,30000);
+    if(g){ _topoData=g; window._topo50Data=g; }
+    return _topoData;
+  }
+  // Idle এ background prefetch — map খোলার আগেই cache গরম হয়ে যায়
+  function _prefetchGeo(){
+    try{
+      if(!navigator.onLine) return;
+      const c=navigator.connection; if(c&&c.saveData) return;
+      _loadGeo('bd-div-v2',BD_DIV_URLS,_validFC,12000)
+        .then(()=>_loadWorldTopo())
+        .then(()=>_loadGeo('bd-dist-v2',BD_DIST_URLS,_validFC,30000))
+        .catch(()=>{});
+    }catch(e){}
+  }
+  window.addEventListener('load',()=>setTimeout(()=>{
+    if('requestIdleCallback' in window) requestIdleCallback(_prefetchGeo,{timeout:10000}); else _prefetchGeo();
+  },5000));
+
+  async function _renderBDBordersLayer(btn,mySeq){
+    // ─ BD divisions + districts: parallel load (IDB → mirrors), division আগে আঁকা হবে ─
+    const _pDiv =_loadGeo('bd-div-v2', BD_DIV_URLS, _validFC,12000).then(g=>{ if(g) window._bdDivisionGeo=g; return g; });
+    const _pDist=_loadGeo('bd-dist-v2',BD_DIST_URLS,_validFC,30000).then(g=>{ if(g) window._bdDistrictGeo=g; return g; });
+    await _pDiv;
+    if(mySeq!==undefined && mySeq!==_borderRenderSeq) return; // superseded by a newer render
 
     if(window._bdDivisionGeo){
       // ─ Draw division polygons — each division gets its unique color ─
@@ -14204,10 +14269,11 @@ const MapView = (function(){
         // Try Bengali name first, then English
         const bn=p.division||p.DIVISION||p.name||p.NAME||p.NAME_1||p.ADM1_BN||'';
         if(DIV_COLORS[bn]) return bn;
-        const en=(p.ADM1_EN||p.name_en||p.NAME_1||p.division_en||'').toLowerCase().trim();
+        const en=(p.ADM1_EN||p.name_en||p.NAME_1||p.division_en||p.shapeName||'').toLowerCase().replace(/\s*division$/,'').trim();
         return DIV_EN_BN[en]||bn;
       }
       const divLayer=L.geoJSON(window._bdDivisionGeo,{
+        smoothFactor:1.5,
         style(f){
           const div=_divBN(f.properties||{});
           const col=DIV_COLORS[div]||'#C8A96E';
@@ -14228,6 +14294,8 @@ const MapView = (function(){
       }).addTo(_map);
       _layerGroups.borders.push(divLayer);
     }
+    await _pDist;
+    if(mySeq!==undefined && mySeq!==_borderRenderSeq) return; // superseded
     // Note: old fallback circleMarker block removed — if GeoJSON fails, markers-toggle handles display
 
     // ─ District borders layer (thin dashed lines) ─
@@ -14235,16 +14303,34 @@ const MapView = (function(){
       if(_mode!=='bd'){ if(btn) btn.textContent='🗺️ দেশের সীমানা'; return; } // ← guard
       function _districtBN(p){
         return p.district||p.DISTRICT||p.name||p.NAME||p.ADM2_BN||
-               p.ADM2_EN||p.NAME_2||'';
+               p.ADM2_EN||p.NAME_2||p.shapeName||'';
+      }
+      // English নাম normalize + ছোট alias; না মিললে সবচেয়ে কাছের জেলা-মার্কার
+      const _nrm=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,'');
+      const _AL={chattogram:'chittagong',cumilla:'comilla',bogura:'bogra',jashore:'jessore',barishal:'barisal',
+                 jhalakathi:'jhalokathi',jhalokati:'jhalokathi',maulvibazar:'moulvibazar',netrakona:'netrokona',
+                 khagrachari:'khagrachhari',nawabganj:'chapainawabganj',chapainababganj:'chapainawabganj'};
+      const _BDIDX={}; Object.keys(BD).forEach(k=>{ _BDIDX[_nrm(BD[k].e)]=k; });
+      function _featCenter(f){
+        let a=999,b=-999,c=999,d=-999;
+        const walk=cs=>{ if(typeof cs[0]==='number'){ if(cs[1]<a)a=cs[1]; if(cs[1]>b)b=cs[1]; if(cs[0]<c)c=cs[0]; if(cs[0]>d)d=cs[0]; } else cs.forEach(walk); };
+        try{ walk(f.geometry.coordinates); }catch(e){}
+        return [(a+b)/2,(c+d)/2];
+      }
+      function _bdKeyFor(f){
+        const p=f.properties||{};
+        const n=_nrm(_districtBN(p)); const k=_BDIDX[_AL[n]||n];
+        if(k) return k;
+        const [la,lo]=_featCenter(f); let best=null,bd=1e9;
+        Object.keys(BD).forEach(key=>{ const x=BD[key]; const dd=(x.lat-la)*(x.lat-la)+(x.lng-lo)*(x.lng-lo); if(dd<bd){bd=dd;best=key;} });
+        return best;
       }
       const distLayer=L.geoJSON(window._bdDistrictGeo,{
+        smoothFactor:1.5,
         style(f){
-          const dn=_districtBN(f.properties||{});
-          // Find division for color
-          const bdInfo=Object.values(BD).find(b=>
-            b && (b.bn===dn||b.e===dn?.toLowerCase())
-          );
-          const div=bdInfo?.d||'';
+          const p=f.properties||{};
+          let div=DIV_EN_BN[String(p.ADM1_EN||'').toLowerCase().trim()];
+          if(!div){ const k=_bdKeyFor(f); div=k&&BD[k]?BD[k].d:''; }
           const col=DIV_COLORS[div]||'rgba(255,255,255,0.35)';
           return{
             fillColor:'transparent',fillOpacity:0,
@@ -14255,7 +14341,7 @@ const MapView = (function(){
         onEachFeature(f,lyr){
           const dn=_districtBN(f.properties||{});
           if(!dn) return;
-          const bdKey=Object.keys(BD).find(k=>k===dn||(BD[k]&&BD[k].e===dn?.toLowerCase()));
+          const bdKey=_bdKeyFor(f);
           const info=bdKey?BD[bdKey]:null;
           const col=info?DIV_COLORS[info.d]||'#C8A96E':'#C8A96E';
           lyr.on('click',e=>{
@@ -14272,30 +14358,17 @@ const MapView = (function(){
       _layerGroups.borders.push(distLayer);
     }
 
-    // ─ Bangladesh outer border (bold gold outline) ─
+    // ─ Bangladesh outer border (bold gold outline) — background এ, কোনো কিছু block করে না ─
     (async()=>{
       try{
-        if(!window.topojson){
-          await new Promise((res,rej)=>{
-            const s=document.createElement('script');
-            s.src='https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js';
-            s.onload=res; s.onerror=rej; document.head.appendChild(s);
-          });
-        }
-        if(_mode!=='bd') return; // ← guard: user may have switched mode while topojson loaded
-        if(!window._topo50Data){
-          const ctrl=new AbortController();
-          const tid=setTimeout(()=>ctrl.abort(),8000);
-          const r=await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-10m.json',{signal:ctrl.signal});
-          clearTimeout(tid);
-          window._topo50Data=await r.json();
-        }
-        if(_mode!=='bd') return; // ← guard: user may have switched mode while topo data fetched
-        const allC=window.topojson.feature(window._topo50Data,window._topo50Data.objects.countries);
-        // ISO 3166-1 numeric for Bangladesh = 050
-        const bdFeature=allC.features.find(f=>String(f.id)==='50'||String(f.id)==='050');
+        await _loadWorldTopo();
+        if(_mode!=='bd' || !_topoData) return;
+        if(mySeq!==undefined && mySeq!==_borderRenderSeq) return;
+        const allC=window.topojson.feature(_topoData,_topoData.objects.countries);
+        const bdFeature=allC.features.find(f=>String(parseInt(f.id,10))==='50');
         if(bdFeature){
           const outline=L.geoJSON(bdFeature,{
+            smoothFactor:1.5,interactive:false,
             style:{fillColor:'transparent',fillOpacity:0,color:'#C8A96E',weight:3,opacity:0.85,dashArray:null}
           }).addTo(_map);
           _layerGroups.borders.push(outline);
@@ -14317,37 +14390,15 @@ const MapView = (function(){
 
     // BD mode → district borders, World mode → country borders
     if(_mode==='bd'){
-      await _renderBDBordersLayer(btn);
+      await _renderBDBordersLayer(btn,mySeq);
       return;
     }
 
+    const hasHighlights=_dayHighlightCountries.size>0; // ✅ try এর বাইরে — নিচের legend code এও লাগে (আগে ReferenceError হতো)
     try{
-      // Load topojson-client library if needed
-      if(!window.topojson){
-        await new Promise((res,rej)=>{
-          const s=document.createElement('script');
-          s.src='https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js';
-          s.onload=res; s.onerror=rej;
-          document.head.appendChild(s);
-        });
-      }
-      if(mySeq!==_borderRenderSeq) return; // superseded by a newer render call
-      // Load world atlas topojson (cached) — use 50m for proper small-country borders
-      if(!_topoData){
-        if(window._topo50Data){
-          _topoData=window._topo50Data;
-        } else {
-          // Try IDB cache first (offline-safe)
-          const cached=await _mapIDB.get('world-atlas').catch(()=>null);
-          if(cached){ _topoData=cached; window._topo50Data=cached; }
-          else {
-            const r=await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-10m.json');
-            _topoData=await r.json();
-            window._topo50Data=_topoData;
-            _mapIDB.put('world-atlas',_topoData).catch(()=>{});
-          }
-        }
-      }
+      // ✅ topojson lib লাগে না (inline decoder), 50m atlas = ~750KB, IDB cache + prefetch
+      await _loadWorldTopo();
+      if(!_topoData) throw new Error('world topo unavailable');
       if(mySeq!==_borderRenderSeq) return; // superseded
       // ── Antimeridian fix ──
       // Problem: Russia, USA (Alaska), Fiji etc. cross the ±180° antimeridian.
@@ -14361,6 +14412,13 @@ const MapView = (function(){
       // No splitting needed — Leaflet renders the clamped polygon correctly.
       if(!window._processedWorldGeo){
         const _raw=window.topojson.feature(_topoData,_topoData.objects.countries);
+        // ✅ ID fix: world-atlas id হলো '050','004'… কিন্তু _ISO_BN key '50','4'… → মিলত না,
+        //    তাই ~২০টি দেশ (বাংলাদেশ, ভুটান, অস্ট্রিয়া, ব্রাজিল…) polygon এর বদলে শুধু dot দেখাত
+        _raw.features.forEach(f=>{
+          if(f.id==null) return;
+          const raw=String(f.id), k=String(parseInt(raw,10));
+          f.id=(_ISO_BN[k]!==undefined)?k:((_ISO_BN[raw]!==undefined)?raw:k);
+        });
 
         // Unwrap: make each point continuous with its predecessor
         const unwrap=ring=>{
@@ -14406,10 +14464,10 @@ const MapView = (function(){
       const _BN_ISO={};
       Object.entries(_ISO_BN).forEach(([iso,bn])=>{ _BN_ISO[bn]=iso; });
 
-      // Check if we have day-specific highlights
-      const hasHighlights=_dayHighlightCountries.size>0;
+      // Check if we have day-specific highlights (hasHighlights উপরে declare করা আছে)
 
       const layer=L.geoJSON(geojson,{
+        smoothFactor:1.5,
         style(feature){
           const id=String(feature.id);
           const bn=_ISO_BN[id]||null;
@@ -14600,8 +14658,9 @@ const MapView = (function(){
         });
       }
     }catch(e){
-      // Silently fail and turn off layer
+      // লোড না হলে layer বন্ধ + ছোট বার্তা
       _layers.borders=false;
+      try{ toast('⚠️ বিশ্ব সীমানা লোড হয়নি — ইন্টারনেট চেক করে আবার চালু করুন'); }catch(_e){}
     }
     if(btn) btn.textContent='🗺️ দেশের সীমানা';
     _updateLayerBtns();
@@ -14746,9 +14805,12 @@ const MapView = (function(){
       attributionControl:false,
       tap:false,
       bounceAtZoomLimits:false,
-      zoomSnap:0.5,
-      zoomDelta:0.5,
-      wheelDebounceTime:60,
+      zoomSnap:1,
+      zoomDelta:1,
+      wheelPxPerZoomLevel:90,
+      minZoom:2,
+      maxBounds:[[-85,-180],[85,180]],   // ← world এর কপি/উল্টাপাল্টা pan বন্ধ
+      maxBoundsViscosity:1.0,
       preferCanvas:true,
       touchZoom:true,
       dragging:true,
@@ -14764,6 +14826,9 @@ const MapView = (function(){
     // Without this, Leaflet caches 0×0 dimensions from before the CSS transition
     // and renders a blank tile grid even after setView is called.
     _map.invalidateSize({animate:false});
+    // Labels pane: polygons এর উপরে, markers এর নিচে
+    _map.createPane('mapLabels');
+    const _lp=_map.getPane('mapLabels'); _lp.style.zIndex=450; _lp.style.pointerEvents='none';
     L.control.zoom({position:'bottomright'}).addTo(_map);
     // Zoom button styling
     const zc=document.querySelector('.leaflet-control-zoom');
@@ -14773,42 +14838,37 @@ const MapView = (function(){
 
   function _applyTile(){
     if(!_map) return;
-    // Remove old satellite labels overlay
     if(_satLabels){ try{ _map.removeLayer(_satLabels); }catch(e){} _satLabels=null; }
-    // Safely remove old tile layer
     if(_tileLayer){ try{ _map.removeLayer(_tileLayer); }catch(e){} _tileLayer=null; }
     const t=TILES[_style]||TILES.dark;
-    const opts={maxZoom:19,minZoom:2,attribution:t.attr||'',
-      updateWhenIdle:true,updateWhenZooming:false,keepBuffer:1,
-      maxNativeZoom:18,tileSize:256};
-    if(t.sub){ opts.subdomains=t.sub; opts.detectRetina=true; }
+    const styleAtApply=_style;
+    const opts={maxZoom:19,minZoom:2,maxNativeZoom:t.nz||18,noWrap:true,
+      attribution:t.attr||'',updateWhenIdle:_isTouch,updateWhenZooming:false,keepBuffer:2};
     _tileLayer=L.tileLayer(t.url,opts);
-    // Fallback: if >3 tiles fail, switch to fallback URL automatically
-    let _errCount=0;
+    // Fallback: কয়েকটা tile fail করলে keyless fallback এ switch
+    let _errCount=0, _switched=false;
     _tileLayer.on('tileerror',function(){
-      _errCount++;
-      if(_errCount>=3){
-        _errCount=0;
-        const fbUrl=TILES_FB[_style];
+      if(_switched||styleAtApply!==_style) return;
+      if(++_errCount>=4){
+        _switched=true;
+        const fbUrl=TILES_FB[styleAtApply];
         if(fbUrl && this._url!==fbUrl){
           try{ _map.removeLayer(this); }catch(e){}
-          const fbOpts={maxZoom:19,minZoom:2,attribution:t.attr||''};
-          if(t.sub){ fbOpts.subdomains=t.sub; }
-          _tileLayer=L.tileLayer(fbUrl,fbOpts).addTo(_map);
+          _tileLayer=L.tileLayer(fbUrl,{maxZoom:19,minZoom:2,maxNativeZoom:19,noWrap:true,
+            attribution:t.attr||'',updateWhenIdle:_isTouch,updateWhenZooming:false,keepBuffer:2}).addTo(_map);
+          _tileLayer.bringToBack();
+          // OSM এর নিজের label আছে; satellite এর label overlay রাখা হবে
+          if(styleAtApply!=='sat' && _satLabels){ try{ _map.removeLayer(_satLabels); }catch(e){} _satLabels=null; }
         }
       }
     });
     _tileLayer.addTo(_map);
     _tileLayer.bringToBack();
 
-    // ── 🛰️ Satellite mode: add CARTO labels overlay on top for readability ──
-    if(_style==='sat'){
-      _satLabels=L.tileLayer(
-        'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png',
-        {maxZoom:19,minZoom:2,subdomains:'abcd',
-         updateWhenIdle:true,updateWhenZooming:false,
-         opacity:0.88,pane:'overlayPane'}
-      );
+    // Labels overlay (dark / satellite) — keyless Esri reference tiles
+    if(t.ref){
+      _satLabels=L.tileLayer(t.ref,{maxZoom:19,minZoom:2,maxNativeZoom:t.refNz||16,noWrap:true,
+        updateWhenIdle:_isTouch,updateWhenZooming:false,keepBuffer:1,opacity:t.refOp||0.9,pane:'mapLabels'});
       _satLabels.addTo(_map);
     }
   }
@@ -14851,7 +14911,7 @@ const MapView = (function(){
           className: '',
           html: `<div style="display:flex;flex-direction:column;align-items:center;pointer-events:none">
             <div style="width:${dotSz}px;height:${dotSz}px;border-radius:50%;background:${col};border:${isHL?'2.5':'1.5'}px solid ${isHL?'#fff':col+'aa'};box-shadow:0 0 ${isHL?8:4}px ${col}88;flex-shrink:0"></div>
-            <div style="margin-top:2px;background:${col}22;border:1px solid ${col}55;border-radius:4px;padding:1px 5px;font-size:${isHL?12:10}px;font-weight:${isHL?800:700};color:${isHL?'#fff':col};white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.85);backdrop-filter:blur(3px);line-height:1.4;max-width:80px;text-align:center">${name}</div>
+            <div style="margin-top:2px;background:${col}22;border:1px solid ${col}55;border-radius:4px;padding:1px 5px;font-size:${isHL?12:10}px;font-weight:${isHL?800:700};color:${isHL?'#fff':col};white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.85);line-height:1.4;max-width:80px;text-align:center">${name}</div>
             ${freqBadge}
           </div>`,
           iconSize: [80, 40],
@@ -15157,9 +15217,8 @@ const MapView = (function(){
           '<div style="color:#E57373;font-size:13px;text-align:center;padding:20px;line-height:1.7">🗺️ মানচিত্র লোড হয়নি<br><small style="opacity:.75;display:block;margin:5px 0">'+(navigator.onLine?'পুনরায় চেষ্টা করুন':'🛜 অফলাইনে আছেন — টাইলস দেখা যাবে না<br>মানচিত্রের সীমানা প্রথমবার অনলাইনে<br>খুললেই পরে অফলাইনেও দেখা যাবে')+'</small><button onclick="MapView.open()" style="margin-top:10px;padding:8px 16px;background:#C8A96E22;border:1px solid #C8A96E66;color:#C8A96E;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit">🔄 আবার চেষ্টা করুন</button></div>';
         return;
       }
-      _initMap();
+      _initMap();   // _initMap নিজেই _applyTile() চালায় — দ্বিতীয়বার চালালে tile দুইবার load হতো
       document.getElementById('map-loading').classList.add('hide');
-      _applyTile();
 
       // ── Day-specific sentinel: openForDay passes '__day__' to skip full text scan ──
       const isDaySentinel = (textOverride==='__day__');
